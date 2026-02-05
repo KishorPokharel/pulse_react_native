@@ -2,18 +2,42 @@ import { useAuth } from "@/src/hooks/useAuth";
 import { Pressable, Text, View } from "react-native";
 
 export default function Screen() {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   return (
     <View style={{ flex: 1, justifyContent: "center", padding: 16 }}>
-      <Text
+      <View
         style={{
-          marginBottom: 102,
-          textAlign: "center",
-          fontSize: 24,
+          marginBottom: 50,
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
-        Profile
-      </Text>
+        <Text
+          style={{
+            textAlign: "center",
+            fontSize: 24,
+            marginBlockEnd: 8,
+          }}
+        >
+          Profile
+        </Text>
+        <Text style={{ fontSize: 18 }}>{user?.name}</Text>
+        <Text>{user?.email}</Text>
+        {user?.emailVerified ? (
+          <Text
+            style={{
+              backgroundColor: "green",
+              borderRadius: 12,
+              color: "white",
+              paddingInline: 8,
+              paddingBlock: 4,
+              marginBlockStart: 8,
+            }}
+          >
+            Verified
+          </Text>
+        ) : null}
+      </View>
       <Pressable
         style={{
           backgroundColor: "#333",
