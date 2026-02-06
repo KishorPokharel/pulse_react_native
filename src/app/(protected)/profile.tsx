@@ -1,5 +1,6 @@
+import Button from "@/src/components/button";
 import { useAuth } from "@/src/hooks/useAuth";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 export default function Screen() {
   const { user, logout } = useAuth();
@@ -38,22 +39,7 @@ export default function Screen() {
           </Text>
         ) : null}
       </View>
-      <Pressable
-        style={{
-          backgroundColor: "#333",
-          paddingBlock: 12,
-          justifyContent: "center",
-          alignItems: "center",
-          borderRadius: 12,
-        }}
-        onPress={() => {
-          logout();
-        }}
-      >
-        <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>
-          Logout
-        </Text>
-      </Pressable>
+      <Button label="Logout" onPress={() => logout()}/>
     </View>
   );
 }

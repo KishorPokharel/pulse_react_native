@@ -16,7 +16,7 @@ type AuthState = {
   isLoggedIn: boolean;
   isAuthLoading: boolean;
   user: User | null;
-  login: () => void;
+  login: (input: { email: string; password: string }) => void;
   logout: () => void;
 };
 
@@ -57,12 +57,9 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
-  const login = async () => {
+  const login = async (input: { email: string; password: string }) => {
     try {
-      const { token } = await loginUser({
-        email: "kishor@example.com",
-        password: "kishor@1234",
-      });
+      const { token } = await loginUser(input);
       await SecureStore.setItemAsync(TOKEN_KEY, token);
       await loadAuthUser();
     } catch (e) {
