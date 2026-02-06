@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { AuthProvider } from "../context/AuthContext";
 import { useAuth } from "../hooks/useAuth";
@@ -19,11 +20,13 @@ function InnerLayout() {
     </Stack>
   );
 }
-
+const queryClient = new QueryClient();
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <InnerLayout />
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <InnerLayout />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
