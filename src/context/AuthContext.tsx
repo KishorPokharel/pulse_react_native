@@ -1,21 +1,23 @@
 import * as SecureStore from "expo-secure-store";
 import { createContext, PropsWithChildren, useEffect, useState } from "react";
 import { getUser, loginUser } from "../http/auth";
+import { apiClient } from "../http/client";
 
-type User = {
+export type User = {
   id: number;
   name: string;
   email: string;
   emailVerified: boolean;
   createdAt: string;
   updatedAt: string;
-  token: string;
 };
+
+type UserWithToken = User & { token: string };
 
 type AuthState = {
   isLoggedIn: boolean;
   isAuthLoading: boolean;
-  user: User | null;
+  user: UserWithToken | null;
   login: (input: { email: string; password: string }) => void;
   logout: () => void;
 };
@@ -33,7 +35,7 @@ const TOKEN_KEY = "PULSE_AUTH_TOKEN_KEY";
 export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<UserWithToken | null>(null);
 
   useEffect(() => {
     loadAuthUser();
@@ -45,8 +47,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       if (!token) {
         setIsLoggedIn(false);
         setUser(null);
+        apiClient.setToken(null);
         return;
       }
+
+      apiClient.setToken(token);
       const user = await getUser(token);
       setUser({ ...user, token });
       setIsLoggedIn(true);

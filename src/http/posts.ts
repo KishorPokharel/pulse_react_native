@@ -1,12 +1,6 @@
-import { API_BASE_URL } from "./auth";
+import { apiClient } from "./client";
 
-const feedRoute = API_BASE_URL + "/feed";
 export const apiGetFeed = async (token: string) => {
-  const response = await fetch(feedRoute, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  const data = await response.json();
+  const data = await apiClient.get("/feed");
   return data;
 };
