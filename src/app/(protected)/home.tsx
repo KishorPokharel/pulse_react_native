@@ -1,6 +1,7 @@
 import Avatar from "@/src/components/avatar";
 import { useAuth } from "@/src/hooks/useAuth";
 import { apiGetFeed } from "@/src/http/posts";
+import { formatDate } from "@/src/utils";
 import { useCallback, useEffect, useState } from "react";
 import { Alert, FlatList, Pressable, Text, View } from "react-native";
 
@@ -68,12 +69,8 @@ export default function Screen() {
                 <Text style={{ fontSize: 16 }}>{post.author.name}</Text>
               </Pressable>
               <Text style={{ fontSize: 12 }}>
-                {" • "}{" "}
-                {new Date(post.createdAt).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
+                {" • "}
+                {formatDate(post.createdAt)}
               </Text>
             </View>
 

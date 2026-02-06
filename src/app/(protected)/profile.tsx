@@ -1,9 +1,12 @@
+import Avatar from "@/src/components/avatar";
 import Button from "@/src/components/button";
 import { useAuth } from "@/src/hooks/useAuth";
-import { Alert, Text, View } from "react-native";
+import { formatDate } from "@/src/utils";
+import { Alert, Pressable, Text, View } from "react-native";
 
 export default function Screen() {
-  const { user, logout } = useAuth();
+  const { user: authUser, logout } = useAuth();
+  const user = authUser!;
 
   const handleLogout = () => {
     Alert.alert("Are you sure?", "", [
@@ -11,7 +14,7 @@ export default function Screen() {
       {
         text: "Logout",
         style: "destructive",
-        onPress: () => {
+        onPress: async () => {
           logout();
         },
       },
@@ -19,28 +22,30 @@ export default function Screen() {
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", padding: 16 }}>
+    <View style={{ flex: 1, padding: 16, paddingBlockStart: 32 }}>
       <View
         style={{
+          flex: 1,
           marginBottom: 50,
-          justifyContent: "center",
+          // justifyContent: "center",
           alignItems: "center",
         }}
       >
-        <Text
+        <View
           style={{
-            textAlign: "center",
-            fontSize: 24,
             marginBlockEnd: 8,
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          Profile
-        </Text>
-        <Text style={{ fontSize: 18 }}>{user?.name}</Text>
-        <Text>{user?.email}</Text>
-        {user?.emailVerified ? (
+          <Avatar name={user.name} />
+          <Text style={{ fontSize: 18 }}>{user.name}</Text>
+          <Text>{user.email}</Text>
+        </View>
+        {user.emailVerified ? (
           <Text
             style={{
+              fontSize: 12,
               backgroundColor: "green",
               borderRadius: 12,
               color: "white",
@@ -52,6 +57,17 @@ export default function Screen() {
             Verified
           </Text>
         ) : null}
+        <Text style={{ marginBlockStart: 10 }}>
+          Joined {formatDate(user.createdAt!)}
+        </Text>
+        <View style={{ flexDirection: "row", gap: 16, marginBlockStart: 8 }}>
+          <Pressable onPress={() => {}}>
+            <Text>233 Followers</Text>
+          </Pressable>
+          <Pressable onPress={() => {}}>
+            <Text>200 Following</Text>
+          </Pressable>
+        </View>
       </View>
       <Button label="Logout" onPress={handleLogout} />
     </View>
