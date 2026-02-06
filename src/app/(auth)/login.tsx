@@ -1,6 +1,8 @@
+import Button from "@/src/components/button";
+import Input from "@/src/components/input";
 import { useAuth } from "@/src/hooks/useAuth";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 export default function Screen() {
   const { login } = useAuth();
@@ -16,29 +18,24 @@ export default function Screen() {
     <View style={{ flex: 1, justifyContent: "center", padding: 16 }}>
       <Text
         style={{
-          marginBottom: 50,
+          marginBottom: 20,
           textAlign: "center",
           fontSize: 24,
         }}
       >
         Login to Pulse
       </Text>
-      <Pressable
+      <View style={{ gap: 8 }}>
+        <Input label="Email"></Input>
+        <Input label="Password"></Input>
+      </View>
+      <View
         style={{
-          backgroundColor: "#333",
-          paddingBlock: 12,
-          justifyContent: "center",
-          alignItems: "center",
-          borderRadius: 12,
-          opacity: loggingIn ? 0.5 : 1,
+          marginBlockStart: 16,
         }}
-        disabled={loggingIn}
-        onPress={handleLogin}
       >
-        <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>
-          Login
-        </Text>
-      </Pressable>
+        <Button label="Login" disabled={loggingIn} onPress={handleLogin} />
+      </View>
     </View>
   );
 }
