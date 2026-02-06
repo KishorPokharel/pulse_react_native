@@ -14,6 +14,15 @@ export default function Layout() {
         }}
       />
       <Tabs.Screen
+        name="post"
+        options={{
+          title: "Add Post",
+          tabBarIcon: ({ color }) => {
+            return <MaterialIcons color={color} size={28} name={"add"} />;
+          },
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: "Profile",
