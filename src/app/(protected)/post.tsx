@@ -2,6 +2,7 @@ import Button from "@/src/components/button";
 import TextArea from "@/src/components/textarea";
 import { useAuth } from "@/src/hooks/useAuth";
 import { apiCreatePost } from "@/src/http/posts";
+import { sleep } from "@/src/utils/sleep";
 import { useState } from "react";
 import { View } from "react-native";
 
@@ -10,12 +11,14 @@ export default function Screen() {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleCreatePost =async  () => {
-    if(content.trim() === "") {
+  const handleCreatePost = async () => {
+    if (content.trim() === "") {
       return;
     }
     setLoading(true);
-    const data = await apiCreatePost({content: content.trim()});
+    await sleep(1000);
+    const data = await apiCreatePost({ content: content.trim() });
+    setContent("")
     setLoading(false);
   };
 
@@ -33,7 +36,12 @@ export default function Screen() {
           onChangeText={setContent}
         />
       </View>
-      <Button label="Post" onPress={handleCreatePost} disabled={loading} loading={loading} />
+      <Button
+        label="Post"
+        onPress={handleCreatePost}
+        disabled={loading}
+        loading={loading}
+      />
     </View>
   );
 }

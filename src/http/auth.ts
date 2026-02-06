@@ -11,7 +11,7 @@ export const loginUser = async (body: LoginBody) => {
   return data;
 };
 
-export const getUser = async (token: string) => {
+export const getUser = async () => {
   const data = await apiClient.get<User>("/me");
   return data;
 };

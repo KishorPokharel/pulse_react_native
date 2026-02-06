@@ -1,11 +1,11 @@
 import { apiClient } from "./client";
 
-export const apiGetFeed = async (token: string) => {
-  const data = await apiClient.get("/feed");
+export const apiGetFeed = async <T>() => {
+  const data = await apiClient.get<T>("/feed");
   return data;
 };
 
-export const apiCreatePost = async (body: unknown) => {
-  const data = await apiClient.post("/posts", body);
+export const apiCreatePost = async <T>(body: unknown) => {
+  const data = await apiClient.post<T>("/posts", body);
   return data;
-}
+};

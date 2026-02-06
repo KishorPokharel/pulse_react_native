@@ -16,14 +16,15 @@ type Post = {
 
 export default function Screen() {
   const [feed, setFeed] = useState<Post[]>([]);
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+
   useEffect(() => {
-    const getFeed = async (token: string) => {
-      const data = await apiGetFeed(token);
+    const getFeed = async () => {
+      const data = await apiGetFeed<{ results: Post[] }>();
       setFeed(data.results);
       console.log(data);
     };
-    getFeed(user?.token!);
+    getFeed();
   }, [user?.token]);
 
   return (
@@ -35,6 +36,7 @@ export default function Screen() {
             style={{
               borderBottomWidth: 1,
               borderBottomColor: "#b3b3b3",
+              paddingBlock: 12,
             }}
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -57,13 +59,13 @@ export default function Screen() {
               </Text>
             </View>
 
-            <Text style={{ fontSize: 20 }}>{post.content}</Text>
+            <Text style={{ fontSize: 20, marginBlockStart: 10 }}>{post.content}</Text>
 
             <View
               style={{
                 flexDirection: "row",
                 gap: 12,
-                paddingBlock: 8,
+                paddingBlock: 4,
               }}
             >
               <Text>200 Likes</Text>
