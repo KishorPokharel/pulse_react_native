@@ -26,7 +26,7 @@ export default function Screen() {
 
   const feed = data?.results || [];
   return (
-    <View style={{ flex: 1, padding: 16, paddingBlockStart: 32 }}>
+    <View style={{ flex: 1, paddingInline: 16, paddingBlockStart: 32 }}>
       <FlatList
         showsVerticalScrollIndicator={false}
         refreshing={isRefetching}
