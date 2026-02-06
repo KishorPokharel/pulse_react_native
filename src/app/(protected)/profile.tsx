@@ -71,13 +71,13 @@ export default function Screen() {
         >
           <Pressable onPress={() => {}}>
             <Text>
-              <Text style={{ fontWeight: "bold" }}>233</Text>
+              <Text style={{ fontWeight: "bold" }}>{user.followersCount}</Text>
               {" Followers"}
             </Text>
           </Pressable>
           <Pressable onPress={() => {}}>
             <Text>
-              <Text style={{ fontWeight: "bold" }}>200</Text>
+              <Text style={{ fontWeight: "bold" }}>{user.followingCount}</Text>
               {" Following"}
             </Text>
           </Pressable>

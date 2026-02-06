@@ -10,6 +10,8 @@ export type User = {
   emailVerified: boolean;
   createdAt: string;
   updatedAt: string;
+  followersCount: number;
+  followingCount: number;
 };
 
 type UserWithToken = User & { token: string };
@@ -50,9 +52,8 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         apiClient.setToken(null);
         return;
       }
-
       apiClient.setToken(token);
-      const user = await getUser(token);
+      const user = await getUser();
       setUser({ ...user, token });
       setIsLoggedIn(true);
     } catch (e) {
