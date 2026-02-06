@@ -45,5 +45,6 @@ class ApiClient {
 }
 
 // const API_BASE_URL = "http://localhost:8787";
-const API_BASE_URL = "http://10.0.2.2:8787";
+const API_BASE_URL = "https://pulse-hono-api.kishorpokharel7.workers.dev/"
+// const API_BASE_URL = "http://10.0.2.2:8787";
 export const apiClient = new ApiClient(API_BASE_URL);
