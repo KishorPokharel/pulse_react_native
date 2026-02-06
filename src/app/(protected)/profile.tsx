@@ -39,7 +39,7 @@ export default function Screen() {
           </Text>
         ) : null}
       </View>
-      <Button label="Logout" onPress={() => logout()}/>
+      <Button label="Logout" onPress={() => logout()} />
     </View>
   );
 }

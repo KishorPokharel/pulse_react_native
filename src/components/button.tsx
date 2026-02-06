@@ -22,7 +22,7 @@ export default function Button(props: ButtonProps) {
       disabled={props.disabled}
     >
       {props.loading ? (
-        <ActivityIndicator size="small" />
+        <ActivityIndicator size="small" color="white" />
       ) : (
         <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>
           {props.label}

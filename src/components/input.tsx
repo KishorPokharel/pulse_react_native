@@ -1,20 +1,32 @@
-import { Text, TextInput, View } from "react-native";
+import { Text, TextInput, TextInputProps, View } from "react-native";
 
 type InputProps = {
-  label: string;
-};
+  value: string;
+  label?: string;
+  error?: string;
+} & TextInputProps;
 
-export default function Input(props: InputProps) {
+export default function Input({ label, value, error, ...props }: InputProps) {
   return (
     <View>
-      <Text style={{ fontSize: 16, marginBlockEnd: 6 }}>{props.label}</Text>
+      {label ? (
+        <Text style={{ fontSize: 16, marginBlockEnd: 6 }}>{label}</Text>
+      ) : null}
       <TextInput
+        value={value}
         style={{
           borderWidth: 1,
           borderColor: "#333",
           borderRadius: 12,
+          padding: 8,
         }}
+        {...props}
       />
+      {error ? (
+        <Text style={{ fontSize: 16, marginBlockStart: 6, color: "red" }}>
+          {error}
+        </Text>
+      ) : null}
     </View>
   );
 }

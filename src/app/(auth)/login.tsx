@@ -1,6 +1,7 @@
 import Button from "@/src/components/button";
 import Input from "@/src/components/input";
 import { useAuth } from "@/src/hooks/useAuth";
+import { sleep } from "@/src/utils/sleep";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { Text, View } from "react-native";
@@ -13,8 +14,7 @@ export default function Screen() {
 
   const handleLogin = async () => {
     setLoggingIn(true);
-    // await sleep(2000);
-    console.log(email, password)
+    await sleep(2000);
     await login({ email, password });
     setLoggingIn(false);
   };
@@ -29,16 +29,26 @@ export default function Screen() {
       >
         Login to Pulse
       </Text>
-      <View style={{ gap: 8 }}>
-        <Input label="Email"></Input>
-        <Input label="Password"></Input>
+      <View style={{ gap: 10 }}>
+        <Input label="Email" onChangeText={setEmail} value={email}></Input>
+        <Input
+          label="Password"
+          secureTextEntry
+          onChangeText={setPassword}
+          value={password}
+        ></Input>
       </View>
       <View
         style={{
           marginBlockStart: 20,
         }}
       >
-        <Button label="Login" disabled={loggingIn} onPress={handleLogin} />
+        <Button
+          label="Login"
+          loading={loggingIn}
+          disabled={loggingIn}
+          onPress={handleLogin}
+        />
       </View>
 
       <View

@@ -18,10 +18,10 @@ export default function Screen() {
         Register to Pulse
       </Text>
       <View style={{ gap: 8 }}>
-        <Input label="Name"></Input>
-        <Input label="Email"></Input>
-        <Input label="Password"></Input>
-        <Input label="Confirm Password"></Input>
+        <Input label="Name" value={""}></Input>
+        <Input label="Email" value={""}></Input>
+        <Input label="Password" value=""></Input>
+        <Input label="Confirm Password" value=""></Input>
       </View>
       <View
         style={{
