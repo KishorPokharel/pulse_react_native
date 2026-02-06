@@ -25,9 +25,11 @@ export default function Screen() {
     <View style={{ flex: 1, padding: 16, paddingBlockStart: 32 }}>
       <View
         style={{
-          flex: 1,
-          marginBottom: 50,
+          marginBottom: 20,
           // justifyContent: "center",
+          borderBottomWidth: 1,
+          borderBottomColor: "#b3b3b3",
+          paddingBlockEnd: 10,
           alignItems: "center",
         }}
       >
@@ -60,12 +62,24 @@ export default function Screen() {
         <Text style={{ marginBlockStart: 10 }}>
           Joined {formatDate(user.createdAt!)}
         </Text>
-        <View style={{ flexDirection: "row", gap: 16, marginBlockStart: 8 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            gap: 16,
+            marginBlockStart: 8,
+          }}
+        >
           <Pressable onPress={() => {}}>
-            <Text>233 Followers</Text>
+            <Text>
+              <Text style={{ fontWeight: "bold" }}>233</Text>
+              {" Followers"}
+            </Text>
           </Pressable>
           <Pressable onPress={() => {}}>
-            <Text>200 Following</Text>
+            <Text>
+              <Text style={{ fontWeight: "bold" }}>200</Text>
+              {" Following"}
+            </Text>
           </Pressable>
         </View>
       </View>
