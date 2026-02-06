@@ -1,9 +1,23 @@
 import Button from "@/src/components/button";
 import { useAuth } from "@/src/hooks/useAuth";
-import { Text, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 
 export default function Screen() {
   const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    Alert.alert("Are you sure?", "", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Logout",
+        style: "destructive",
+        onPress: () => {
+          logout();
+        },
+      },
+    ]);
+  };
+
   return (
     <View style={{ flex: 1, justifyContent: "center", padding: 16 }}>
       <View
@@ -39,7 +53,7 @@ export default function Screen() {
           </Text>
         ) : null}
       </View>
-      <Button label="Logout" onPress={() => logout()} />
+      <Button label="Logout" onPress={handleLogout} />
     </View>
   );
 }
