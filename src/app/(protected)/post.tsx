@@ -4,7 +4,7 @@ import { useAuth } from "@/src/hooks/useAuth";
 import { apiCreatePost } from "@/src/http/posts";
 import { sleep } from "@/src/utils/sleep";
 import { useState } from "react";
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 
 export default function Screen() {
   const { user } = useAuth();
@@ -18,8 +18,9 @@ export default function Screen() {
     setLoading(true);
     await sleep(1000);
     const data = await apiCreatePost({ content: content.trim() });
-    setContent("")
+    setContent("");
     setLoading(false);
+    Alert.alert("Done.");
   };
 
   return (
