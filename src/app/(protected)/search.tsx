@@ -41,7 +41,7 @@ export default function Screen() {
   ];
 
   return (
-    <View style={{ flex: 1, padding: 16 }}>
+    <View style={{ flex: 1, padding: 16, backgroundColor: "white" }}>
       <View style={{ flex: 1, borderWidth: 0 }}>
         <View
           style={{

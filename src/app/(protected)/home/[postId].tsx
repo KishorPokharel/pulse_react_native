@@ -10,7 +10,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, Alert, ScrollView, View } from "react-native";
+import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
 
 export default function Screen() {
   const params = useLocalSearchParams<{ postId: string }>();
@@ -45,7 +45,6 @@ export function FullPostView({ id }: FullPostViewProps) {
   const createReplyMutation = useMutation({
     mutationFn: apiCreateReply,
     onSuccess: () => {
-      Alert.alert("Done.");
       queryClient.invalidateQueries({ queryKey: ["posts", id, "children"] });
       setReply("");
     },
@@ -71,8 +70,9 @@ export function FullPostView({ id }: FullPostViewProps) {
       <View
         style={{
           flex: 1,
-          // backgroundColor: "red",
+          backgroundColor: "white",
           padding: 16,
+          paddingBottom: 0,
         }}
       >
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -90,30 +90,42 @@ export function FullPostView({ id }: FullPostViewProps) {
             style={{ height: 1, backgroundColor: "#e0e0e0", marginBlock: 12 }}
           />
 
+          {/* Reply Box Section */}
+          <View
+            style={{
+              backgroundColor: "white",
+            }}
+          >
+            <View
+              style={{
+                gap: 16,
+              }}
+            >
+              <TextArea
+                onFocus={(e) => {
+                  // console.log(e)
+                }}
+                value={reply}
+                onChangeText={setReply}
+                height={72}
+                placeholder="Reply..."
+              />
+                <Button
+                  label="Reply"
+                  disabled={
+                    reply.trim() === "" || createReplyMutation.isPending
+                  }
+                  loading={createReplyMutation.isPending}
+                  onPress={() => handlePostReply()}
+                ></Button>
+            </View>
+          </View>
+          {/* End Reply Section */}
+          <View
+            style={{ height: 1, backgroundColor: "#e0e0e0", marginBlock: 12 }}
+          />
           <PostRepliesView postId={post.id} />
         </ScrollView>
-      </View>
-
-      <View style={{ padding: 16, flexDirection: "column", gap: 10 }}>
-        <View>
-          <TextArea
-            onFocus={(e) => {
-              // console.log(e)
-            }}
-            value={reply}
-            onChangeText={setReply}
-            height={72}
-            placeholder="Reply..."
-          />
-        </View>
-        {reply.trim() === "" ? null : (
-          <Button
-            label="Reply"
-            disabled={reply.trim() === "" || createReplyMutation.isPending}
-            loading={createReplyMutation.isPending}
-            onPress={() => handlePostReply()}
-          ></Button>
-        )}
       </View>
     </>
   );
@@ -145,12 +157,15 @@ function PostRepliesView({ postId }: PostRepliesViewProps) {
 
   const posts = data?.results!;
   return (
-    <View style={{ gap: 18 }}>
-      {/* <Text>{JSON.stringify(posts)}</Text> */}
-      {posts.map((post) => {
+    <View style={{ gap: 20 }}>
+      <Text style={{fontSize: 18}}>Relevant Replies</Text>
+      <View>
+      {posts.map((post, idx) => {
         return (
-          <PostCard
+          <View
             key={post.id}
+          >
+          <PostCard
             post={{
               // id: post.id,
               content: post.content,
@@ -169,8 +184,15 @@ function PostRepliesView({ postId }: PostRepliesViewProps) {
               });
             }}
           />
+          {idx === posts.length - 1 ? null : 
+          <View
+            style={{ height: 1, backgroundColor: "#e0e0e0", marginBlock: 12 }}
+          />
+          }
+          </View>
         );
       })}
+      </View>
     </View>
   );
 }

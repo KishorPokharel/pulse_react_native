@@ -22,7 +22,7 @@ export default function Screen() {
   };
 
   return (
-    <View style={{ flex: 1, padding: 16 }}>
+    <View style={{ flex: 1, padding: 16, backgroundColor: "white" }}>
       <View
         style={{
           marginBottom: 20,
@@ -41,7 +41,7 @@ export default function Screen() {
           }}
         >
           <Avatar name={user.name} />
-          <Text style={{ fontSize: 18 }}>{user.name}</Text>
+          <Text style={{ fontSize: 18, marginBlockStart: 8 }}>{user.name}</Text>
           <Text>{user.email}</Text>
         </View>
         {user.emailVerified ? (

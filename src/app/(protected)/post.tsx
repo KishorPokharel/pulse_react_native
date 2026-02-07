@@ -46,7 +46,7 @@ export default function Screen() {
       >
         <TextArea
           autoFocus
-          placeholder="Write your thoughts here"
+          placeholder="Write your thoughts here..."
           value={content}
           onChangeText={setContent}
         />
