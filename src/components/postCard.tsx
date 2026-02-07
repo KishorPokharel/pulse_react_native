@@ -47,7 +47,7 @@ export default function PostCard({
         }}
       >
         <Text
-          style={{ fontSize: 18, marginBlockStart: 10, color: "#000000d3" }}
+          style={{ fontSize: 16, marginBlockStart: 10, color: "#000000d3" }}
         >
           {isPreview ? previewText(post.content, 150) : post.content}
         </Text>
@@ -70,9 +70,9 @@ export default function PostCard({
           }}
         >
           {post.isLiked ? (
-            <AntDesign name="heart" size={24} color={"#f43f5e"} />
+            <AntDesign name="heart" size={20} color={"#f43f5e"} />
           ) : (
-            <Feather name="heart" size={24} color="#000000b8" />
+            <Feather name="heart" size={20} color="#000000b8" />
           )}
           <Text style={{ fontSize: 18 }}>{post.numberOfLikes}</Text>
         </Pressable>
@@ -84,7 +84,7 @@ export default function PostCard({
             alignItems: "center",
           }}
         >
-          <AntDesign name="comment" size={24} color="#000000b8" />
+          <AntDesign name="comment" size={20} color="#000000b8" />
           <Text style={{ fontSize: 18 }}>{post.numberOfComments}</Text>
         </Pressable>
         <Pressable
@@ -95,7 +95,7 @@ export default function PostCard({
             alignItems: "center",
           }}
         >
-          <Feather name="share" size={24} color="#000000b8" />
+          <Feather name="share" size={20} color="#000000b8" />
         </Pressable>
         <Pressable
           onPress={() => {}}
@@ -105,7 +105,7 @@ export default function PostCard({
             alignItems: "center",
           }}
         >
-          <Ionicons name="ellipsis-vertical" size={24} color="#000000b8" />
+          <Ionicons name="ellipsis-vertical" size={20} color="#000000b8" />
         </Pressable>
       </View>
     </View>

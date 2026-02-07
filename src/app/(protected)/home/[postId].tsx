@@ -47,6 +47,7 @@ export function FullPostView({ id }: FullPostViewProps) {
   const createReplyMutation = useMutation({
     mutationFn: apiCreateReply,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts", id] });
       queryClient.invalidateQueries({ queryKey: ["posts", id, "children"] });
       setReply("");
     },
@@ -74,7 +75,7 @@ export function FullPostView({ id }: FullPostViewProps) {
           flex: 1,
           backgroundColor: "white",
           padding: 16,
-          paddingBottom: 0,
+          paddingBlock: 8,
         }}
       >
         <ScrollView showsVerticalScrollIndicator={false}>
