@@ -110,14 +110,12 @@ export function FullPostView({ id }: FullPostViewProps) {
                 height={72}
                 placeholder="Reply..."
               />
-                <Button
-                  label="Reply"
-                  disabled={
-                    reply.trim() === "" || createReplyMutation.isPending
-                  }
-                  loading={createReplyMutation.isPending}
-                  onPress={() => handlePostReply()}
-                ></Button>
+              <Button
+                label="Reply"
+                disabled={reply.trim() === "" || createReplyMutation.isPending}
+                loading={createReplyMutation.isPending}
+                onPress={() => handlePostReply()}
+              ></Button>
             </View>
           </View>
           {/* End Reply Section */}
@@ -158,40 +156,42 @@ function PostRepliesView({ postId }: PostRepliesViewProps) {
   const posts = data?.results!;
   return (
     <View style={{ gap: 20 }}>
-      <Text style={{fontSize: 18}}>Relevant Replies</Text>
+      <Text style={{ fontSize: 18 }}>Relevant Replies</Text>
       <View>
-      {posts.map((post, idx) => {
-        return (
-          <View
-            key={post.id}
-          >
-          <PostCard
-            post={{
-              // id: post.id,
-              content: post.content,
-              createdAt: post.createdAt,
-              isLiked: false,
-              name: "Kishor",
-              numberOfLikes: 0,
-              numberOfComments: 0,
-            }}
-            onShowMore={() => {
-              router.push({
-                pathname: "/home/[postId]",
-                params: {
-                  postId: post.id,
-                },
-              });
-            }}
-          />
-          {idx === posts.length - 1 ? null : 
-          <View
-            style={{ height: 1, backgroundColor: "#e0e0e0", marginBlock: 12 }}
-          />
-          }
-          </View>
-        );
-      })}
+        {posts.map((post, idx) => {
+          return (
+            <View key={post.id}>
+              <PostCard
+                post={{
+                  // id: post.id,
+                  content: post.content,
+                  createdAt: post.createdAt,
+                  isLiked: false,
+                  name: "Kishor",
+                  numberOfLikes: 0,
+                  numberOfComments: 0,
+                }}
+                onShowMore={() => {
+                  router.push({
+                    pathname: "/home/[postId]",
+                    params: {
+                      postId: post.id,
+                    },
+                  });
+                }}
+              />
+              {idx === posts.length - 1 ? null : (
+                <View
+                  style={{
+                    height: 1,
+                    backgroundColor: "#e0e0e0",
+                    marginBlock: 12,
+                  }}
+                />
+              )}
+            </View>
+          );
+        })}
       </View>
     </View>
   );
