@@ -1,10 +1,9 @@
-import Avatar from "@/src/components/avatar";
 import FullscreenLoader from "@/src/components/fullscreenLoader";
+import PostCard from "@/src/components/postCard";
 import { apiGetFeed } from "@/src/http/posts";
-import { formatDate, previewText } from "@/src/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { Alert, FlatList, Pressable, Text, View } from "react-native";
+import { Alert, FlatList, View } from "react-native";
 
 type Post = {
   author: {
@@ -14,6 +13,7 @@ type Post = {
   id: number;
   content: string;
   createdAt: string;
+  liked: boolean;
 };
 
 export default function Screen() {
@@ -44,45 +44,28 @@ export default function Screen() {
               paddingBlock: 16,
             }}
           >
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Pressable
-                style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
-                onPress={() => {
-                  Alert.alert("No page right now.");
-                }}
-              >
-                <Avatar name={post.author.name} />
-                <Text style={{ fontSize: 16 }}>{post.author.name}</Text>
-              </Pressable>
-              <Text style={{ fontSize: 12 }}>
-                {" • "}
-                {formatDate(post.createdAt)}
-              </Text>
-            </View>
-
-            <Pressable
-              onPress={() => {
+            <PostCard
+              post={{
+                name: post.author.name,
+                content: post.content,
+                createdAt: post.createdAt,
+                isLiked: false,
+                numberOfLikes: 12,
+                numberOfComments: 12,
+              }}
+              onLikeTap={() => {
+                Alert.alert("Not implemented");
+              }}
+              onShowMore={() => {
                 router.push({
                   pathname: "/home/[postId]",
                   params: { postId: post.id },
                 });
               }}
-            >
-              <Text style={{ fontSize: 18, marginBlockStart: 10 }}>
-                {previewText(post.content, 150)}
-              </Text>
-            </Pressable>
-
-            <View
-              style={{
-                flexDirection: "row",
-                gap: 12,
-                paddingBlockStart: 10,
+              onProfileClick={() => {
+                Alert.alert("Not implemented");
               }}
-            >
-              <Text>200 Likes</Text>
-              <Text>300 Comments</Text>
-            </View>
+            />
           </View>
         )}
         keyExtractor={(post) => post.id + ""}

@@ -2,22 +2,27 @@ import { Text, TextInput, TextInputProps, View } from "react-native";
 
 type InputProps = {
   value: string;
+  height?: number;
   error?: string;
 } & TextInputProps;
 
-export default function TextArea({ value, error, ...props }: InputProps) {
+export default function TextArea({
+  value,
+  height = 150,
+  error,
+  ...props
+}: InputProps) {
   return (
     <View>
       <TextInput
         multiline
-        numberOfLines={10}
         value={value}
         style={{
           borderWidth: 1,
           borderColor: "#333",
           borderRadius: 12,
           padding: 8,
-          height: 150,
+          height: height,
           textAlignVertical: "top",
         }}
         {...props}
