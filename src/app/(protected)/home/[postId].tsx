@@ -26,6 +26,8 @@ type Post = {
   id: number;
   content: string;
   createdAt: string;
+  likesCount: number;
+  repliesCount: number;
 };
 
 export function FullPostView({ id }: FullPostViewProps) {
@@ -82,8 +84,8 @@ export function FullPostView({ id }: FullPostViewProps) {
               content: post.content,
               createdAt: post.createdAt,
               isLiked: false,
-              numberOfLikes: 12,
-              numberOfComments: 12,
+              numberOfLikes: post.likesCount,
+              numberOfComments: post.repliesCount,
             }}
           />
           <View

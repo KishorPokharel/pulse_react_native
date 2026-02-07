@@ -50,8 +50,8 @@ export default function Screen() {
                 content: post.content,
                 createdAt: post.createdAt,
                 isLiked: false,
-                numberOfLikes: 12,
-                numberOfComments: 12,
+                numberOfLikes: 0,
+                numberOfComments: 0,
               }}
               onLikeTap={() => {
                 Alert.alert("Not implemented");
