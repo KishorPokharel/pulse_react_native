@@ -10,12 +10,20 @@ export const apiCreatePost = async (body: { content: string }) => {
   return data;
 };
 
+export const apiCreateReply = async (body: {
+  content: string;
+  parentPostId: number;
+}) => {
+  const data = await apiClient.post("/posts", body);
+  return data;
+};
+
 export const apiGetSinglePost = async <T>(id: number) => {
   const data = await apiClient.get<T>("/posts/" + id);
   return data;
 };
 
-export const apiGetPostChildren = async (id: number) => {
-  const data = await apiClient.get(`/posts/${id}/children`);
+export const apiGetPostChildren = async <T>(id: number) => {
+  const data = await apiClient.get<T>(`/posts/${id}/children`);
   return data;
 };
