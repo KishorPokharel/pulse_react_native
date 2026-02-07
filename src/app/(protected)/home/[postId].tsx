@@ -68,7 +68,6 @@ export function FullPostView({ id }: FullPostViewProps) {
   const post = data!;
   return (
     <>
-    {/* <Stack.Screen options={{headerShown: false}} /> */}
       <View
         style={{
           flex: 1,

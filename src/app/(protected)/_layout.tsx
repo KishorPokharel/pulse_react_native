@@ -16,6 +16,7 @@ export default function Layout() {
         name="home"
         options={{
           title: "Home",
+          headerShown: false,
           tabBarIcon: ({ color }) => {
             return <MaterialIcons color={color} size={28} name={"home"} />;
           },
