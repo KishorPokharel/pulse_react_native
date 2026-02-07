@@ -33,7 +33,7 @@ export default function PostCard({
           onPress={props.onProfileClick}
         >
           <Avatar name={post.name} />
-          <Text style={{ fontSize: 16 }}>{post.name}</Text>
+          <Text style={{ fontSize: 16, color: "#000000d3" }}>{post.name}</Text>
         </Pressable>
         <Text style={{ fontSize: 12 }}>
           {" • "}
@@ -47,7 +47,7 @@ export default function PostCard({
         }}
       >
         <Text
-          style={{ fontSize: 18, marginBlockStart: 10, color: "#000000b8" }}
+          style={{ fontSize: 18, marginBlockStart: 10, color: "#000000d3" }}
         >
           {isPreview ? previewText(post.content, 150) : post.content}
         </Text>
