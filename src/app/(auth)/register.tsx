@@ -1,20 +1,48 @@
 import Button from "@/src/components/button";
 import Input from "@/src/components/input";
-import { Link } from "expo-router";
+import { apiRegisterUser } from "@/src/http/auth";
+import { useMutation } from "@tanstack/react-query";
+import { Link, useRouter } from "expo-router";
 import { useState } from "react";
-import { Text, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 
 export default function Screen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+
+  const registerMutation = useMutation({
+    mutationFn: apiRegisterUser,
+    onSuccess: () => {
+      Alert.alert("Success.", "Please Login.");
+      clearForm();
+      router.replace("/login");
+    },
+    onError: (e) => {
+      Alert.alert("Could not register.");
+    },
+  });
+
+  const clearForm = () => {
+    setName("");
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+  };
 
   const handleRegister = async () => {
     if (password != confirmPassword) {
+      Alert.alert("Invalid fields");
       return;
     }
+    if (name === "" || email === "" || password === "") {
+      Alert.alert("Invalid fields");
+      return;
+    }
+    registerMutation.mutate({ name, email, password });
   };
 
   return (
@@ -33,11 +61,13 @@ export default function Screen() {
         <Input label="Email" onChangeText={setEmail} value={email}></Input>
         <Input
           label="Password"
+          secureTextEntry
           onChangeText={setPassword}
           value={password}
         ></Input>
         <Input
           label="Confirm Password"
+          secureTextEntry
           onChangeText={setConfirmPassword}
           value={confirmPassword}
         ></Input>
@@ -49,8 +79,8 @@ export default function Screen() {
       >
         <Button
           label="Register"
-          disabled={loading}
-          loading={loading}
+          disabled={registerMutation.isPending}
+          loading={registerMutation.isPending}
           onPress={handleRegister}
         />
       </View>

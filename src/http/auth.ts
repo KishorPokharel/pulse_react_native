@@ -11,6 +11,11 @@ export const loginUser = async (body: LoginBody) => {
   return data;
 };
 
+export const apiRegisterUser = async (body: unknown) => {
+  const data = await apiClient.post("/register", body);
+  return data;
+};
+
 export const getUser = async () => {
   const data = await apiClient.get<User>("/me");
   return data;
