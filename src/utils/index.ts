@@ -5,3 +5,8 @@ export const formatDate = (dateString: string) => {
     year: "numeric",
   });
 };
+
+export function previewText(str: string, max = 250) {
+  if (!str) return "";
+  return str.length > max ? str.slice(0, max) + "..." : str;
+}

@@ -1,7 +1,7 @@
 import Avatar from "@/src/components/avatar";
 import FullscreenLoader from "@/src/components/fullscreenLoader";
 import { apiGetFeed } from "@/src/http/posts";
-import { formatDate } from "@/src/utils";
+import { formatDate, previewText } from "@/src/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { Alert, FlatList, Pressable, Text, View } from "react-native";
@@ -62,11 +62,14 @@ export default function Screen() {
 
             <Pressable
               onPress={() => {
-                router.push({ pathname: "/home/[postId]", params: { postId: post.id } });
+                router.push({
+                  pathname: "/home/[postId]",
+                  params: { postId: post.id },
+                });
               }}
             >
               <Text style={{ fontSize: 18, marginBlockStart: 10 }}>
-                {post.content.length > 250 ? "..." : post.content}
+                {previewText(post.content, 150)}
               </Text>
             </Pressable>
 
