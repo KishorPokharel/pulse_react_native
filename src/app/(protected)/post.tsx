@@ -37,14 +37,15 @@ export default function Screen() {
   };
 
   return (
-    <View style={{ flex: 1, padding: 16, paddingBlockStart: 32 }}>
+    <View style={{ flex: 1, padding: 16, backgroundColor: "white" }}>
       <View
         style={{
-          flex: 1,
+          //flex: 1,
           marginBottom: 16,
         }}
       >
         <TextArea
+          autoFocus
           placeholder="Write your thoughts here"
           value={content}
           onChangeText={setContent}
@@ -53,7 +54,7 @@ export default function Screen() {
       <Button
         label="Post"
         onPress={handleCreatePost}
-        disabled={createPostMutation.isPending}
+        disabled={content.trim() === "" || createPostMutation.isPending}
         loading={createPostMutation.isPending}
       />
     </View>

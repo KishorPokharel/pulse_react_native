@@ -29,13 +29,13 @@ export default function Screen() {
 
   const feed = data?.results || [];
   return (
-    <View style={{ flex: 1, paddingInline: 16, paddingBlockStart: 32 }}>
+    <View style={{ flex: 1, paddingInline: 16, backgroundColor: "white" }}>
       <FlatList
         showsVerticalScrollIndicator={false}
         refreshing={isRefetching}
         onRefresh={refetch}
         ItemSeparatorComponent={() => (
-          <View style={{ height: 1, backgroundColor: "#b3b3b3" }} />
+          <View style={{ height: 1, backgroundColor: "#e0e0e0" }} />
         )}
         data={feed}
         renderItem={({ item: post }) => (

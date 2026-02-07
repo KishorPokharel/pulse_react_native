@@ -22,13 +22,13 @@ export default function Screen() {
   };
 
   return (
-    <View style={{ flex: 1, padding: 16, paddingBlockStart: 32 }}>
+    <View style={{ flex: 1, padding: 16 }}>
       <View
         style={{
           marginBottom: 20,
           // justifyContent: "center",
           borderBottomWidth: 1,
-          borderBottomColor: "#b3b3b3",
+          borderBottomColor: "#e0e0e0",
           paddingBlockEnd: 10,
           alignItems: "center",
         }}

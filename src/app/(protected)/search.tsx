@@ -41,12 +41,28 @@ export default function Screen() {
   ];
 
   return (
-    <View style={{ flex: 1, padding: 16, paddingBlockStart: 32 }}>
-      <View style={{ flex: 1, borderWidth: 0, marginTop: 12 }}>
+    <View style={{ flex: 1, padding: 16 }}>
+      <View style={{ flex: 1, borderWidth: 0 }}>
+        <View
+          style={{
+            gap: 8,
+            marginBlockEnd: 16,
+          }}
+        >
+          <Input placeholder="Search..." value={text} onChangeText={setText} />
+          {text.trim() === "" ? null : (
+            <Button
+              label="Search"
+              onPress={handleSearch}
+              disabled={text.trim() === ""}
+              loading={false}
+            />
+          )}
+        </View>
         <FlatList
           showsVerticalScrollIndicator={false}
           ItemSeparatorComponent={() => (
-            <View style={{ height: 1, backgroundColor: "#b3b3b3" }} />
+            <View style={{ height: 1, backgroundColor: "#e0e0e0" }} />
           )}
           data={users}
           renderItem={({ item: user }) => (
@@ -76,19 +92,6 @@ export default function Screen() {
               </Pressable>
             </View>
           )}
-        />
-      </View>
-      <View
-        style={{
-          gap: 8,
-        }}
-      >
-        <Input placeholder="Search..." value={text} onChangeText={setText} />
-        <Button
-          label="Search"
-          onPress={handleSearch}
-          disabled={text.trim() === ""}
-          loading={false}
         />
       </View>
     </View>

@@ -16,7 +16,7 @@ export default function Input({ label, value, error, ...props }: InputProps) {
         value={value}
         style={{
           borderWidth: 1,
-          borderColor: "#333",
+          borderColor: "#e0e0e0",
           borderRadius: 12,
           padding: 8,
         }}

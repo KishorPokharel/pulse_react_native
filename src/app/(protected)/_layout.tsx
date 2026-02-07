@@ -1,9 +1,17 @@
+import AppHeader from "@/src/components/appHeader";
+import { useAuth } from "@/src/hooks/useAuth";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Tabs } from "expo-router";
 
 export default function Layout() {
+  const { user } = useAuth();
   return (
-    <Tabs screenOptions={{ headerShown: false }}>
+    <Tabs
+      screenOptions={{
+        headerShown: true,
+        header: (props) => <AppHeader name={user?.name || ""} />,
+      }}
+    >
       <Tabs.Screen
         name="home"
         options={{
@@ -28,6 +36,17 @@ export default function Layout() {
           title: "Add Post",
           tabBarIcon: ({ color }) => {
             return <MaterialIcons color={color} size={28} name={"add-box"} />;
+          },
+        }}
+      />
+      <Tabs.Screen
+        name="notifications"
+        options={{
+          title: "Notifications",
+          tabBarIcon: ({ color }) => {
+            return (
+              <MaterialIcons color={color} size={28} name={"notifications"} />
+            );
           },
         }}
       />

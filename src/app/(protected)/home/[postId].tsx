@@ -68,6 +68,7 @@ export function FullPostView({ id }: FullPostViewProps) {
   const post = data!;
   return (
     <>
+    {/* <Stack.Screen options={{headerShown: false}} /> */}
       <View
         style={{
           flex: 1,
@@ -87,7 +88,7 @@ export function FullPostView({ id }: FullPostViewProps) {
             }}
           />
           <View
-            style={{ height: 1, backgroundColor: "#b3b3b3", marginBlock: 12 }}
+            style={{ height: 1, backgroundColor: "#e0e0e0", marginBlock: 12 }}
           />
 
           <PostRepliesView postId={post.id} />

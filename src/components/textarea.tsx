@@ -19,7 +19,7 @@ export default function TextArea({
         value={value}
         style={{
           borderWidth: 1,
-          borderColor: "#333",
+          borderColor: "#cdcdcd",
           borderRadius: 12,
           padding: 8,
           height: height,
