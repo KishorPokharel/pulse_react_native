@@ -66,9 +66,13 @@ export default function Screen() {
                   <Avatar name={user.name} />
                   <Text>{user.name}</Text>
                 </View>
-                <Text style={{
-                  marginBlockStart: 4
-                }}>{user.bio}</Text>
+                <Text
+                  style={{
+                    marginBlockStart: 4,
+                  }}
+                >
+                  {user.bio}
+                </Text>
               </Pressable>
             </View>
           )}

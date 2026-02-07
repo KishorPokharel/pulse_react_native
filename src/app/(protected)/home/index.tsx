@@ -3,6 +3,7 @@ import FullscreenLoader from "@/src/components/fullscreenLoader";
 import { apiGetFeed } from "@/src/http/posts";
 import { formatDate } from "@/src/utils";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import { Alert, FlatList, Pressable, Text, View } from "react-native";
 
 type Post = {
@@ -16,6 +17,8 @@ type Post = {
 };
 
 export default function Screen() {
+  const router = useRouter();
+
   const { data, isLoading, isRefetching, refetch } = useQuery<{
     results: Post[];
   }>({ queryKey: ["feed"], queryFn: apiGetFeed });
@@ -57,9 +60,15 @@ export default function Screen() {
               </Text>
             </View>
 
-            <Text style={{ fontSize: 18, marginBlockStart: 10 }}>
-              {post.content}
-            </Text>
+            <Pressable
+              onPress={() => {
+                router.push({ pathname: "/home/[postId]", params: { postId: post.id } });
+              }}
+            >
+              <Text style={{ fontSize: 18, marginBlockStart: 10 }}>
+                {post.content.length > 250 ? "..." : post.content}
+              </Text>
+            </Pressable>
 
             <View
               style={{
