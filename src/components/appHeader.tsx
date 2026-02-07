@@ -1,5 +1,5 @@
 import Octicons from "@expo/vector-icons/Octicons";
-import { Pressable, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Avatar from "./avatar";
 
@@ -24,8 +24,9 @@ export default function AppHeader({ name }: AppHeaderProps) {
         borderBottomColor: "#e0e0e0",
       }}
     >
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
         <Octicons name="pulse" size={24} color="black" />
+        <Text style={{ fontWeight: "bold", fontSize: 16 }}>Pulse</Text>
       </View>
       <Pressable onPress={() => {}}>
         <Avatar name={name} />

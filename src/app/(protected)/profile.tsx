@@ -26,64 +26,74 @@ export default function Screen() {
       <View
         style={{
           marginBottom: 20,
-          // justifyContent: "center",
           borderBottomWidth: 1,
           borderBottomColor: "#e0e0e0",
           paddingBlockEnd: 10,
-          alignItems: "center",
         }}
       >
-        <View
-          style={{
-            marginBlockEnd: 8,
-            justifyContent: "center",
-            alignItems: "center",
+        <UserProfileHeader
+          user={{
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            bio: "Software Engineer | No fluff Coding Courses",
+            joinedAt: user.createdAt,
+            followersCount: user.followersCount,
+            followingCount: user.followingCount,
           }}
-        >
-          <Avatar name={user.name} />
-          <Text style={{ fontSize: 18, marginBlockStart: 8 }}>{user.name}</Text>
-          <Text>{user.email}</Text>
-        </View>
-        {user.emailVerified ? (
-          <Text
-            style={{
-              fontSize: 12,
-              backgroundColor: "green",
-              borderRadius: 12,
-              color: "white",
-              paddingInline: 8,
-              paddingBlock: 4,
-              marginBlockStart: 8,
-            }}
-          >
-            Verified
-          </Text>
-        ) : null}
-        <Text style={{ marginBlockStart: 10 }}>
-          Joined {formatDate(user.createdAt!)}
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            gap: 16,
-            marginBlockStart: 8,
-          }}
-        >
-          <Pressable onPress={() => {}}>
-            <Text>
-              <Text style={{ fontWeight: "bold" }}>{user.followersCount}</Text>
-              {" Followers"}
-            </Text>
-          </Pressable>
-          <Pressable onPress={() => {}}>
-            <Text>
-              <Text style={{ fontWeight: "bold" }}>{user.followingCount}</Text>
-              {" Following"}
-            </Text>
-          </Pressable>
-        </View>
+        />
       </View>
       <Button label="Logout" onPress={handleLogout} />
+    </View>
+  );
+}
+
+type UserProfileHeaderProps = {
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    bio: string;
+    joinedAt: string;
+    followersCount: number;
+    followingCount: number;
+  };
+};
+
+function UserProfileHeader({ user }: UserProfileHeaderProps) {
+  return (
+    <View
+      style={{
+        gap: 8,
+      }}
+    >
+      <View style={{}}>
+        <Avatar name={user.name} size={48} />
+        <Text style={{ fontSize: 16, marginBlockStart: 8 }}>{user.name}</Text>
+        <Text>{user.email}</Text>
+        <Text style={{ marginBlockStart: 10 }}>{user.bio}</Text>
+      </View>
+
+      <Text style={{ fontSize: 12 }}>Joined {formatDate(user.joinedAt)}</Text>
+      <View
+        style={{
+          flexDirection: "row",
+          gap: 16,
+        }}
+      >
+        <Pressable onPress={() => {}}>
+          <Text>
+            <Text style={{ fontWeight: "bold" }}>{user.followersCount}</Text>
+            {" Followers"}
+          </Text>
+        </Pressable>
+        <Pressable onPress={() => {}}>
+          <Text>
+            <Text style={{ fontWeight: "bold" }}>{user.followingCount}</Text>
+            {" Following"}
+          </Text>
+        </Pressable>
+      </View>
     </View>
   );
 }

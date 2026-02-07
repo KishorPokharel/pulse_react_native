@@ -2,15 +2,16 @@ import { Text, View } from "react-native";
 
 type AvatarProps = {
   name: string;
+  size?: number;
 };
 
-export default function Avatar({ name }: AvatarProps) {
+export default function Avatar({ name, size = 32 }: AvatarProps) {
   return (
     <View
       style={{
-        width: 32,
-        height: 32,
-        borderRadius: 100,
+        width: size,
+        height: size,
+        borderRadius: "100%",
         backgroundColor: "steelblue",
         justifyContent: "center",
         alignItems: "center",

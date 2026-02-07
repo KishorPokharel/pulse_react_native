@@ -173,6 +173,7 @@ function PostRepliesView({ postId }: PostRepliesViewProps) {
                   numberOfLikes: 0,
                   numberOfComments: 0,
                 }}
+                isPreview={false}
                 onShowMore={() => {
                   router.push({
                     pathname: "/home/[postId]",

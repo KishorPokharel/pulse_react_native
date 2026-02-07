@@ -46,7 +46,9 @@ export default function Screen() {
           />
         </View>
         {isLoading ? (
-          <Text style={{fontSize: 20, paddingBlock: 12, textAlign: "center"}}>...</Text>
+          <Text style={{ fontSize: 20, paddingBlock: 12, textAlign: "center" }}>
+            ...
+          </Text>
         ) : (
           <FlatList
             showsVerticalScrollIndicator={false}
