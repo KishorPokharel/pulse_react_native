@@ -63,7 +63,11 @@ export default function Screen() {
                 });
               }}
               onProfileClick={() => {
-                Alert.alert("Not implemented");
+                router.push({
+                  pathname: "/user/[userId]",
+                  params: { userId: post.author.id },
+                });
+                // Alert.alert("Not implemented");
               }}
             />
           </View>

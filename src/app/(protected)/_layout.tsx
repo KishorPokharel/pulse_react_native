@@ -1,15 +1,28 @@
 import AppHeader from "@/src/components/appHeader";
 import { useAuth } from "@/src/hooks/useAuth";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 
 export default function Layout() {
-  const { user } = useAuth();
+  const router = useRouter();
+  let { user } = useAuth();
+  user = user!;
+
   return (
     <Tabs
       screenOptions={{
         headerShown: true,
-        header: (props) => <AppHeader name={user?.name || ""} />,
+        header: (props) => (
+          <AppHeader
+            user={{ id: user.id, name: user.name }}
+            onPressAvatar={() => {
+              router.push({
+                pathname: "/user/[userId]",
+                params: { userId: user.id },
+              });
+            }}
+          />
+        ),
       }}
     >
       <Tabs.Screen
@@ -48,15 +61,6 @@ export default function Layout() {
             return (
               <MaterialIcons color={color} size={28} name={"notifications"} />
             );
-          },
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Profile",
-          tabBarIcon: ({ color }) => {
-            return <MaterialIcons color={color} size={28} name={"person"} />;
           },
         }}
       />

@@ -33,6 +33,7 @@ type Post = {
 export function FullPostView({ id }: FullPostViewProps) {
   const [reply, setReply] = useState("");
 
+  const router = useRouter();
   const queryClient = useQueryClient();
 
   const {
@@ -87,6 +88,9 @@ export function FullPostView({ id }: FullPostViewProps) {
               isLiked: false,
               numberOfLikes: post.likesCount,
               numberOfComments: post.repliesCount,
+            }}
+            onProfileClick={() => {
+              router.push({pathname: "/user/[userId]", params: {userId: 1}}); // TODO: fix userid
             }}
           />
           <View

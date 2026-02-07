@@ -1,14 +1,20 @@
 import Octicons from "@expo/vector-icons/Octicons";
+import { useRouter } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Avatar from "./avatar";
 
 type AppHeaderProps = {
-  name: string;
+  user: {
+    id: number;
+    name: string;
+  };
+  onPressAvatar?: () => void;
 };
 
-export default function AppHeader({ name }: AppHeaderProps) {
+export default function AppHeader({ user, onPressAvatar }: AppHeaderProps) {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   return (
     <View
@@ -28,8 +34,8 @@ export default function AppHeader({ name }: AppHeaderProps) {
         <Octicons name="pulse" size={24} color="black" />
         <Text style={{ fontWeight: "bold", fontSize: 16 }}>Pulse</Text>
       </View>
-      <Pressable onPress={() => {}}>
-        <Avatar name={name} />
+      <Pressable onPress={onPressAvatar}>
+        <Avatar name={user.name} />
       </Pressable>
     </View>
   );

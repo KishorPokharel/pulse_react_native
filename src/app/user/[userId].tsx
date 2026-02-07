@@ -2,11 +2,15 @@ import Avatar from "@/src/components/avatar";
 import Button from "@/src/components/button";
 import { useAuth } from "@/src/hooks/useAuth";
 import { formatDate } from "@/src/utils";
+import { useLocalSearchParams } from "expo-router";
 import { Alert, Pressable, Text, View } from "react-native";
 
 export default function Screen() {
+  const params = useLocalSearchParams<{userId: string}>();
   const { user: authUser, logout } = useAuth();
   const user = authUser!;
+
+  const isMyProfile = +params.userId === user.id;
 
   const handleLogout = () => {
     Alert.alert("Are you sure?", "", [
@@ -35,7 +39,7 @@ export default function Screen() {
           user={{
             id: user.id,
             name: user.name,
-            email: user.email,
+            email: isMyProfile ? user.email : "",
             bio: "Software Engineer | No fluff Coding Courses",
             joinedAt: user.createdAt,
             followersCount: user.followersCount,
@@ -43,7 +47,7 @@ export default function Screen() {
           }}
         />
       </View>
-      <Button label="Logout" onPress={handleLogout} />
+     {isMyProfile ? <Button label="Logout" onPress={handleLogout} /> : null}
     </View>
   );
 }
@@ -70,7 +74,7 @@ function UserProfileHeader({ user }: UserProfileHeaderProps) {
       <View style={{}}>
         <Avatar name={user.name} size={48} />
         <Text style={{ fontSize: 16, marginBlockStart: 8 }}>{user.name}</Text>
-        <Text>{user.email}</Text>
+        {user.email === "" ? null :<Text>{user.email}</Text>}
         <Text style={{ marginBlockStart: 10 }}>{user.bio}</Text>
       </View>
 
