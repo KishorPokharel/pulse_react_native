@@ -2,25 +2,38 @@ import Button from "@/src/components/button";
 import TextArea from "@/src/components/textarea";
 import { useAuth } from "@/src/hooks/useAuth";
 import { apiCreatePost } from "@/src/http/posts";
-import { sleep } from "@/src/utils/sleep";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, View } from "react-native";
 
 export default function Screen() {
   const { user } = useAuth();
   const [content, setContent] = useState("");
-  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+
+  const queryClient = useQueryClient();
+
+  const createPostMutation = useMutation({
+    mutationFn: apiCreatePost,
+    onSuccess: () => {
+      Alert.alert("Done.");
+      queryClient.invalidateQueries({ queryKey: ["feed"] });
+      setContent("");
+      router.push("/home");
+    },
+    onError: () => {
+      Alert.alert("Failed to create post");
+    },
+  });
 
   const handleCreatePost = async () => {
-    if (content.trim() === "") {
+    const trimmed = content.trim();
+    if (trimmed === "") {
       return;
     }
-    setLoading(true);
-    await sleep(1000);
-    const data = await apiCreatePost({ content: content.trim() });
-    setContent("");
-    setLoading(false);
-    Alert.alert("Done.");
+    createPostMutation.mutate({ content: trimmed });
   };
 
   return (
@@ -40,8 +53,8 @@ export default function Screen() {
       <Button
         label="Post"
         onPress={handleCreatePost}
-        disabled={loading}
-        loading={loading}
+        disabled={createPostMutation.isPending}
+        loading={createPostMutation.isPending}
       />
     </View>
   );

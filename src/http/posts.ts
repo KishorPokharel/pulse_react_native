@@ -5,7 +5,7 @@ export const apiGetFeed = async <T>() => {
   return data;
 };
 
-export const apiCreatePost = async <T>(body: unknown) => {
-  const data = await apiClient.post<T>("/posts", body);
+export const apiCreatePost = async (body: { content: string }) => {
+  const data = await apiClient.post("/posts", body);
   return data;
 };
