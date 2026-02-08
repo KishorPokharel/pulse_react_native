@@ -19,7 +19,7 @@ type Post = {
 
 export default function Screen() {
   const router = useRouter();
-  let { user: authUser } = useAuth();
+  let { user: authUser, likedPostIds, setLikedPostIds } = useAuth();
   authUser = authUser!;
 
   const { data, isLoading, isRefetching, refetch } = useQuery({
@@ -31,14 +31,14 @@ export default function Screen() {
     mutationFn: apiLikeUnlikePost,
     onSuccess: (data) => {
       if (data.liked) {
-        alert("liked");
-        // TODO: put in app data
+        setLikedPostIds([...likedPostIds, data.postId]);
       } else {
-        alert("unliked");
-        // TODOremove from app data
+        setLikedPostIds((prev) => prev.filter((id) => id !== data.postId));
       }
     },
-    onError: () => {},
+    onError: () => {
+      alert("Something went wrong");
+    },
   });
 
   const handleLikeTap = (postId: number) => {
@@ -72,7 +72,7 @@ export default function Screen() {
                 name: post.author.name,
                 content: post.content,
                 createdAt: post.createdAt,
-                isLiked: authUser.likedPostIds.includes(post.id),
+                isLiked: likedPostIds.includes(post.id),
                 numberOfLikes: post.likesCount,
                 numberOfComments: post.repliesCount,
               }}
@@ -88,7 +88,6 @@ export default function Screen() {
                   pathname: "/user/[userId]",
                   params: { userId: post.author.id },
                 });
-                // Alert.alert("Not implemented");
               }}
             />
           </View>

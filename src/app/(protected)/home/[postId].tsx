@@ -39,8 +39,7 @@ type Post = {
 export function FullPostView({ id }: FullPostViewProps) {
   const [reply, setReply] = useState("");
 
-  let { user: authUser } = useAuth();
-  authUser = authUser!;
+  const { likedPostIds, setLikedPostIds } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -94,7 +93,7 @@ export function FullPostView({ id }: FullPostViewProps) {
               name: post.author.name,
               content: post.content,
               createdAt: post.createdAt,
-              isLiked: authUser.likedPostIds.includes(post.id),
+              isLiked: likedPostIds.includes(post.id),
               numberOfLikes: post.likesCount,
               numberOfComments: post.repliesCount,
             }}
@@ -155,8 +154,7 @@ type PostRepliesViewProps = {
 function PostRepliesView({ postId }: PostRepliesViewProps) {
   const router = useRouter();
 
-  let { user: authUser } = useAuth();
-  authUser = authUser!;
+  const { likedPostIds, setLikedPostIds } = useAuth();
 
   const { data, isLoading } = useQuery({
     queryKey: ["posts", postId, "children"],
@@ -190,7 +188,7 @@ function PostRepliesView({ postId }: PostRepliesViewProps) {
                   id: post.id,
                   content: post.content,
                   createdAt: post.createdAt,
-                  isLiked: authUser.likedPostIds.includes(post.id),
+                  isLiked: likedPostIds.includes(post.id),
                   name: post.author.name,
                   numberOfLikes: post.likesCount,
                   numberOfComments: post.repliesCount,

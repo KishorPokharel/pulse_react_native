@@ -1,4 +1,3 @@
-import { User } from "../context/AuthContext";
 import { apiClient } from "./client";
 
 type LoginBody = {
@@ -17,6 +16,14 @@ export const apiRegisterUser = async (body: unknown) => {
 };
 
 export const getMe = async () => {
-  const data = await apiClient.get<User>("/me");
+  const data = await apiClient.get<{
+    id: number;
+    name: string;
+    email: string;
+    emailVerified: boolean;
+    createdAt: string;
+    updatedAt: string;
+    likedPostIds: number[];
+  }>("/me");
   return data;
 };
