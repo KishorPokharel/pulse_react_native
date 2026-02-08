@@ -24,8 +24,13 @@ type FullPostViewProps = {
 
 type Post = {
   id: number;
+  userId: number;
   content: string;
   createdAt: string;
+  author: {
+    id: number;
+    name: string;
+  };
   likesCount: number;
   repliesCount: number;
 };
@@ -82,7 +87,7 @@ export function FullPostView({ id }: FullPostViewProps) {
         <ScrollView showsVerticalScrollIndicator={false}>
           <PostCard
             post={{
-              name: "Kishor Pokharel",
+              name: post.author.name,
               content: post.content,
               createdAt: post.createdAt,
               isLiked: false,
@@ -90,7 +95,10 @@ export function FullPostView({ id }: FullPostViewProps) {
               numberOfComments: post.repliesCount,
             }}
             onProfileClick={() => {
-              router.push({pathname: "/user/[userId]", params: {userId: 1}}); // TODO: fix userid
+              router.push({
+                pathname: "/user/[userId]",
+                params: { userId: post.userId },
+              });
             }}
           />
           <View
