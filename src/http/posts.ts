@@ -27,3 +27,8 @@ export const apiGetPostChildren = async <T>(id: number) => {
   const data = await apiClient.get<T>(`/posts/${id}/children`);
   return data;
 };
+
+export const apiLikeUnlikePost = async (postId: number) => {
+  const data = await apiClient.post(`/posts/${postId}/like-unlike`);
+  return data;
+};
