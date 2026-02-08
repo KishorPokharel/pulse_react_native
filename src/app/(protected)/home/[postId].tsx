@@ -2,6 +2,7 @@ import Button from "@/src/components/button";
 import FullscreenLoader from "@/src/components/fullscreenLoader";
 import PostCard from "@/src/components/postCard";
 import TextArea from "@/src/components/textarea";
+import { useAuth } from "@/src/hooks/useAuth";
 import {
   apiCreateReply,
   apiGetPostChildren,
@@ -38,6 +39,8 @@ type Post = {
 export function FullPostView({ id }: FullPostViewProps) {
   const [reply, setReply] = useState("");
 
+  let { user: authUser } = useAuth();
+  authUser = authUser!;
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -91,7 +94,7 @@ export function FullPostView({ id }: FullPostViewProps) {
               name: post.author.name,
               content: post.content,
               createdAt: post.createdAt,
-              isLiked: false, // TODO: fix
+              isLiked: authUser.likedPostIds.includes(post.id),
               numberOfLikes: post.likesCount,
               numberOfComments: post.repliesCount,
             }}
@@ -152,7 +155,10 @@ type PostRepliesViewProps = {
 function PostRepliesView({ postId }: PostRepliesViewProps) {
   const router = useRouter();
 
-  const { data, isLoading } = useQuery<{ results: Post[] }>({
+  let { user: authUser } = useAuth();
+  authUser = authUser!;
+
+  const { data, isLoading } = useQuery({
     queryKey: ["posts", postId, "children"],
     queryFn: () => apiGetPostChildren(postId),
   });
@@ -184,10 +190,10 @@ function PostRepliesView({ postId }: PostRepliesViewProps) {
                   id: post.id,
                   content: post.content,
                   createdAt: post.createdAt,
-                  isLiked: false, // TODO: fix
-                  name: "Kishor",
-                  numberOfLikes: 0,
-                  numberOfComments: 0,
+                  isLiked: authUser.likedPostIds.includes(post.id),
+                  name: post.author.name,
+                  numberOfLikes: post.likesCount,
+                  numberOfComments: post.repliesCount,
                 }}
                 isPreview={false}
                 onProfileClick={() => {

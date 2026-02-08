@@ -1,9 +1,10 @@
 import FullscreenLoader from "@/src/components/fullscreenLoader";
 import PostCard from "@/src/components/postCard";
-import { apiGetFeed } from "@/src/http/posts";
-import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/src/hooks/useAuth";
+import { apiGetFeed, apiLikeUnlikePost } from "@/src/http/posts";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { Alert, FlatList, View } from "react-native";
+import { FlatList, View } from "react-native";
 
 type Post = {
   author: {
@@ -18,10 +19,31 @@ type Post = {
 
 export default function Screen() {
   const router = useRouter();
+  let { user: authUser } = useAuth();
+  authUser = authUser!;
 
-  const { data, isLoading, isRefetching, refetch } = useQuery<{
-    results: Post[];
-  }>({ queryKey: ["feed"], queryFn: apiGetFeed });
+  const { data, isLoading, isRefetching, refetch } = useQuery({
+    queryKey: ["feed"],
+    queryFn: apiGetFeed,
+  });
+
+  const tapLikeMutation = useMutation({
+    mutationFn: apiLikeUnlikePost,
+    onSuccess: (data) => {
+      if (data.liked) {
+        alert("liked");
+        // TODO: put in app data
+      } else {
+        alert("unliked");
+        // TODOremove from app data
+      }
+    },
+    onError: () => {},
+  });
+
+  const handleLikeTap = (postId: number) => {
+    tapLikeMutation.mutate(postId);
+  };
 
   if (isLoading) {
     return <FullscreenLoader />;
@@ -46,16 +68,15 @@ export default function Screen() {
           >
             <PostCard
               post={{
+                id: post.id,
                 name: post.author.name,
                 content: post.content,
                 createdAt: post.createdAt,
-                isLiked: false,
-                numberOfLikes: 0,
-                numberOfComments: 0,
+                isLiked: authUser.likedPostIds.includes(post.id),
+                numberOfLikes: post.likesCount,
+                numberOfComments: post.repliesCount,
               }}
-              onLikeTap={() => {
-                Alert.alert("Not implemented");
-              }}
+              onLikeTap={() => handleLikeTap(post.id)}
               onShowMore={() => {
                 router.push({
                   pathname: "/home/[postId]",

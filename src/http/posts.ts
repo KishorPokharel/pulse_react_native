@@ -1,7 +1,19 @@
 import { apiClient } from "./client";
 
-export const apiGetFeed = async <T>() => {
-  const data = await apiClient.get<T>("/feed");
+export const apiGetFeed = async () => {
+  const data = await apiClient.get<{
+    results: {
+      id: number;
+      content: string;
+      createdAt: string;
+      author: {
+        id: number;
+        name: string;
+      };
+      likesCount: number;
+      repliesCount: number;
+    }[];
+  }>("/feed");
   return data;
 };
 
@@ -29,12 +41,28 @@ export const apiGetSinglePost = async <T>(id: number) => {
   return data;
 };
 
-export const apiGetPostChildren = async <T>(id: number) => {
-  const data = await apiClient.get<T>(`/posts/${id}/children`);
+export const apiGetPostChildren = async (id: number) => {
+  const data = await apiClient.get<{
+    results: {
+      id: number;
+      content: string;
+      parentPostId: number;
+      userId: number;
+      createdAt: string;
+      author: {
+        id: number;
+        name: string;
+      };
+      likesCount: number;
+      repliesCount: number;
+    }[];
+  }>(`/posts/${id}/children`);
   return data;
 };
 
 export const apiLikeUnlikePost = async (postId: number) => {
-  const data = await apiClient.post(`/posts/${postId}/like-unlike`);
+  const data = await apiClient.post<{ postId: number; liked: boolean }>(
+    `/posts/${postId}/like-unlike`,
+  );
   return data;
 };

@@ -12,6 +12,7 @@ export type User = {
   updatedAt: string;
   followersCount: number;
   followingCount: number;
+  likedPostIds: number[];
 };
 
 type UserWithToken = User & { token: string };
