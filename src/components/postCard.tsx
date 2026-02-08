@@ -89,7 +89,9 @@ export default function PostCard({
           <Text style={{ fontSize: 18 }}>{post.numberOfComments}</Text>
         </Pressable>
         <Pressable
-          onPress={() => {}}
+          onPress={() => {
+            alert("Not implemented");
+          }}
           style={{
             flexDirection: "row",
             gap: 8,
@@ -99,7 +101,9 @@ export default function PostCard({
           <Feather name="share" size={20} color="#000000b8" />
         </Pressable>
         <Pressable
-          onPress={() => {}}
+          onPress={() => {
+            alert("Not implemented");
+          }}
           style={{
             flexDirection: "row",
             gap: 8,

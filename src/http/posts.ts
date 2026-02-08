@@ -1,19 +1,21 @@
 import { apiClient } from "./client";
 
-export const apiGetFeed = async () => {
-  const data = await apiClient.get<{
-    results: {
+export type Feed = {
+  results: {
+    id: number;
+    content: string;
+    createdAt: string;
+    author: {
       id: number;
-      content: string;
-      createdAt: string;
-      author: {
-        id: number;
-        name: string;
-      };
-      likesCount: number;
-      repliesCount: number;
-    }[];
-  }>("/feed");
+      name: string;
+    };
+    likesCount: number;
+    repliesCount: number;
+  }[];
+};
+
+export const apiGetFeed = async () => {
+  const data = await apiClient.get<Feed>("/feed");
   return data;
 };
 

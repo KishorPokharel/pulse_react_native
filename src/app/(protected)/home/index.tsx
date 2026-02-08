@@ -1,8 +1,8 @@
 import FullscreenLoader from "@/src/components/fullscreenLoader";
 import PostCard from "@/src/components/postCard";
 import { useAuth } from "@/src/hooks/useAuth";
-import { apiGetFeed, apiLikeUnlikePost } from "@/src/http/posts";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { apiGetFeed, apiLikeUnlikePost, Feed } from "@/src/http/posts";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { FlatList, View } from "react-native";
 
@@ -22,7 +22,13 @@ export default function Screen() {
   let { user: authUser, likedPostIds, setLikedPostIds } = useAuth();
   authUser = authUser!;
 
-  const { data, isLoading, isRefetching, refetch } = useQuery({
+  const queryClient = useQueryClient();
+  const {
+    data: feedData,
+    isLoading,
+    isRefetching,
+    refetch,
+  } = useQuery({
     queryKey: ["feed"],
     queryFn: apiGetFeed,
   });
@@ -35,6 +41,22 @@ export default function Screen() {
       } else {
         setLikedPostIds((prev) => prev.filter((id) => id !== data.postId));
       }
+      queryClient.setQueryData<Feed>(["feed"], (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          results: old.results.map((post) =>
+            post.id === data.postId
+              ? {
+                  ...post,
+                  likesCount: data.liked
+                    ? post.likesCount + 1
+                    : post.likesCount - 1,
+                }
+              : post,
+          ),
+        };
+      });
     },
     onError: () => {
       alert("Something went wrong");
@@ -49,7 +71,7 @@ export default function Screen() {
     return <FullscreenLoader />;
   }
 
-  const feed = data?.results || [];
+  const feed = feedData?.results || [];
   return (
     <View style={{ flex: 1, paddingInline: 16, backgroundColor: "white" }}>
       <FlatList
