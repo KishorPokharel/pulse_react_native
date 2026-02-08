@@ -6,7 +6,13 @@ export const apiGetFeed = async <T>() => {
 };
 
 export const apiCreatePost = async (body: { content: string }) => {
-  const data = await apiClient.post("/posts", body);
+  const data = await apiClient.post<{
+    id: number;
+    parentPostId: number;
+    content: string;
+    createdAt: string;
+    userId: number;
+  }>("/posts", body);
   return data;
 };
 

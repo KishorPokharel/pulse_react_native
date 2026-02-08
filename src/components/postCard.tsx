@@ -7,6 +7,7 @@ import Avatar from "./avatar";
 
 type PostCardProps = {
   post: {
+    id: number;
     name: string;
     content: string;
     createdAt: string;

@@ -87,10 +87,11 @@ export function FullPostView({ id }: FullPostViewProps) {
         <ScrollView showsVerticalScrollIndicator={false}>
           <PostCard
             post={{
+              id: post.id,
               name: post.author.name,
               content: post.content,
               createdAt: post.createdAt,
-              isLiked: false,
+              isLiked: false, // TODO: fix
               numberOfLikes: post.likesCount,
               numberOfComments: post.repliesCount,
             }}
@@ -180,10 +181,10 @@ function PostRepliesView({ postId }: PostRepliesViewProps) {
             <View key={post.id}>
               <PostCard
                 post={{
-                  // id: post.id,
+                  id: post.id,
                   content: post.content,
                   createdAt: post.createdAt,
-                  isLiked: false,
+                  isLiked: false, // TODO: fix
                   name: "Kishor",
                   numberOfLikes: 0,
                   numberOfComments: 0,

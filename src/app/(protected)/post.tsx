@@ -17,11 +17,10 @@ export default function Screen() {
 
   const createPostMutation = useMutation({
     mutationFn: apiCreatePost,
-    onSuccess: () => {
-      Alert.alert("Done.");
-      queryClient.invalidateQueries({ queryKey: ["feed"] });
+    onSuccess: (data) => {
       setContent("");
-      router.push("/home");
+      router.push({ pathname: "/home/[postId]", params: { postId: data.id } });
+      queryClient.invalidateQueries({ queryKey: ["feed"] });
     },
     onError: () => {
       Alert.alert("Failed to create post");
