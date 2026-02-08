@@ -21,13 +21,6 @@ export default function Screen() {
     enabled: !!text.trim(),
   });
 
-  // const handleSearch = async () => {
-  //   const trimmed = text.trim();
-  //   if (trimmed === "") {
-  //     return;
-  //   }
-  // };
-
   const users = data?.results || [];
   return (
     <View style={{ flex: 1, padding: 16, backgroundColor: "white" }}>
@@ -62,7 +55,14 @@ export default function Screen() {
                   padding: 12,
                 }}
               >
-                <Pressable onPress={() => {}}>
+                <Pressable
+                  onPress={() => {
+                    router.push({
+                      pathname: "/user/[userId]",
+                      params: { userId: user.id },
+                    });
+                  }}
+                >
                   <View
                     style={{
                       flexDirection: "row",
