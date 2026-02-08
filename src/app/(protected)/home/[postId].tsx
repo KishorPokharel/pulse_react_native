@@ -190,6 +190,12 @@ function PostRepliesView({ postId }: PostRepliesViewProps) {
                   numberOfComments: 0,
                 }}
                 isPreview={false}
+                onProfileClick={() => {
+                  router.push({
+                    pathname: "/user/[userId]",
+                    params: { userId: post.userId },
+                  });
+                }}
                 onShowMore={() => {
                   router.push({
                     pathname: "/home/[postId]",
