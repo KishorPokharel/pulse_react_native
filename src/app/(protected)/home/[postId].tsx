@@ -171,7 +171,9 @@ function PostRepliesView({ postId }: PostRepliesViewProps) {
   const posts = data?.results!;
   return (
     <View style={{ gap: 20 }}>
-      <Text style={{ fontSize: 18 }}>Relevant Replies</Text>
+      {posts.length > 0 ? (
+        <Text style={{ fontSize: 18 }}>Relevant Replies</Text>
+      ) : null}
       <View>
         {posts.map((post, idx) => {
           return (
