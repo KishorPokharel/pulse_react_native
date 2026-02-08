@@ -16,17 +16,7 @@ export const apiRegisterUser = async (body: unknown) => {
   return data;
 };
 
-export const getUser = async () => {
+export const getMe = async () => {
   const data = await apiClient.get<User>("/me");
-  return data;
-};
-
-export const apiSearchUsers = async (name: string) => {
-  const params = new URLSearchParams({
-    search: name,
-  });
-  const data = await apiClient.get<{
-    results: { id: number; name: string; bio: string }[];
-  }>(`/users?${params}`);
   return data;
 };

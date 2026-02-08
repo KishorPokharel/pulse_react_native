@@ -1,6 +1,6 @@
 import * as SecureStore from "expo-secure-store";
 import { createContext, PropsWithChildren, useEffect, useState } from "react";
-import { getUser, loginUser } from "../http/auth";
+import { getMe, loginUser } from "../http/auth";
 import { apiClient } from "../http/client";
 
 export type User = {
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         return;
       }
       apiClient.setToken(token);
-      const user = await getUser();
+      const user = await getMe();
       setUser({ ...user, token });
       setIsLoggedIn(true);
     } catch (e) {

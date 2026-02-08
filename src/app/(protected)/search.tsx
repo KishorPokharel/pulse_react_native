@@ -1,7 +1,7 @@
 import Avatar from "@/src/components/avatar";
 import Input from "@/src/components/input";
 import { useAuth } from "@/src/hooks/useAuth";
-import { apiSearchUsers } from "@/src/http/auth";
+import { apiSearchUsers } from "@/src/http/users";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useState } from "react";

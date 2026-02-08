@@ -1,16 +1,28 @@
 import Avatar from "@/src/components/avatar";
 import Button from "@/src/components/button";
+import FullscreenLoader from "@/src/components/fullscreenLoader";
 import { useAuth } from "@/src/hooks/useAuth";
+import { apiGetUserProfile } from "@/src/http/users";
 import { formatDate } from "@/src/utils";
+import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { Alert, Pressable, Text, View } from "react-native";
 
 export default function Screen() {
-  const params = useLocalSearchParams<{userId: string}>();
-  const { user: authUser, logout } = useAuth();
-  const user = authUser!;
+  const params = useLocalSearchParams<{ userId: string }>();
 
-  const isMyProfile = +params.userId === user.id;
+  const { data, isLoading } = useQuery({
+    queryKey: ["users", params.userId],
+    queryFn: () => apiGetUserProfile(+params.userId),
+  });
+
+  let { user: authUser, logout } = useAuth();
+  authUser = authUser!;
+
+  const isMyProfile = +params.userId === authUser.id;
+  const user = data!;
+
+  console.log("USER", user);
 
   const handleLogout = () => {
     Alert.alert("Are you sure?", "", [
@@ -24,6 +36,10 @@ export default function Screen() {
       },
     ]);
   };
+
+  if (isLoading) {
+    return <FullscreenLoader />;
+  }
 
   return (
     <View style={{ flex: 1, padding: 16, backgroundColor: "white" }}>
@@ -39,15 +55,15 @@ export default function Screen() {
           user={{
             id: user.id,
             name: user.name,
-            email: isMyProfile ? user.email : "",
-            bio: "Software Engineer | No fluff Coding Courses",
+            email: user.email,
+            bio: user.bio || "",
             joinedAt: user.createdAt,
             followersCount: user.followersCount,
             followingCount: user.followingCount,
           }}
         />
       </View>
-     {isMyProfile ? <Button label="Logout" onPress={handleLogout} /> : null}
+      {isMyProfile ? <Button label="Logout" onPress={handleLogout} /> : null}
     </View>
   );
 }
@@ -74,8 +90,10 @@ function UserProfileHeader({ user }: UserProfileHeaderProps) {
       <View style={{}}>
         <Avatar name={user.name} size={48} />
         <Text style={{ fontSize: 16, marginBlockStart: 8 }}>{user.name}</Text>
-        {user.email === "" ? null :<Text>{user.email}</Text>}
-        <Text style={{ marginBlockStart: 10 }}>{user.bio}</Text>
+        {user.email === "" ? null : <Text>{user.email}</Text>}
+        {user.bio ? (
+          <Text style={{ marginBlockStart: 10 }}>{user.bio}</Text>
+        ) : null}
       </View>
 
       <Text style={{ fontSize: 12 }}>Joined {formatDate(user.joinedAt)}</Text>
