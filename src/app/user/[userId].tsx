@@ -2,9 +2,13 @@ import Avatar from "@/src/components/avatar";
 import Button from "@/src/components/button";
 import FullscreenLoader from "@/src/components/fullscreenLoader";
 import { useAuth } from "@/src/hooks/useAuth";
-import { apiGetUserProfile } from "@/src/http/users";
+import {
+  apiFollowUser,
+  apiGetUserProfile,
+  apiUnfollowUser,
+} from "@/src/http/users";
 import { formatDate } from "@/src/utils";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { Alert, Pressable, Text, View } from "react-native";
 
@@ -16,13 +20,33 @@ export default function Screen() {
     queryFn: () => apiGetUserProfile(+params.userId),
   });
 
+  const queryClient = useQueryClient();
+
+  const followMutation = useMutation({
+    mutationFn: apiFollowUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users", params.userId] });
+    },
+    onError: () => {
+      alert("Failed to follow");
+    },
+  });
+
+  const unfollowMutation = useMutation({
+    mutationFn: apiUnfollowUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users", params.userId] });
+    },
+    onError: () => {
+      alert("Failed to follow");
+    },
+  });
+
   let { user: authUser, logout } = useAuth();
   authUser = authUser!;
 
   const isMyProfile = +params.userId === authUser.id;
   const user = data!;
-
-  console.log("USER", user);
 
   const handleLogout = () => {
     Alert.alert("Are you sure?", "", [
@@ -61,6 +85,16 @@ export default function Screen() {
             followersCount: user.followersCount,
             followingCount: user.followingCount,
           }}
+          following={user.following}
+          followUser={() => {
+            followMutation.mutate(user.id);
+          }}
+          unfollowUser={() => {
+            unfollowMutation.mutate(user.id);
+          }}
+          followUnfollowRequestPending={
+            followMutation.isPending || unfollowMutation.isPending
+          }
         />
       </View>
       {isMyProfile ? <Button label="Logout" onPress={handleLogout} /> : null}
@@ -78,9 +112,22 @@ type UserProfileHeaderProps = {
     followersCount: number;
     followingCount: number;
   };
+  following: boolean;
+  followUser?: () => void;
+  unfollowUser?: () => void;
+  followUnfollowRequestPending: boolean;
 };
 
-function UserProfileHeader({ user }: UserProfileHeaderProps) {
+function UserProfileHeader({
+  user,
+  following,
+  followUser = () => {},
+  unfollowUser = () => {},
+  followUnfollowRequestPending = false,
+}: UserProfileHeaderProps) {
+  let { user: authUser } = useAuth();
+  authUser = authUser!;
+
   return (
     <View
       style={{
@@ -116,6 +163,26 @@ function UserProfileHeader({ user }: UserProfileHeaderProps) {
           </Text>
         </Pressable>
       </View>
+      {authUser.id === user.id ? null : (
+        <View
+          style={{
+            marginTop: 8,
+          }}
+        >
+          <Button
+            label={following ? "Unfollow" : "Follow"}
+            disabled={followUnfollowRequestPending}
+            loading={followUnfollowRequestPending}
+            onPress={() => {
+              if (following) {
+                unfollowUser();
+              } else {
+                followUser();
+              }
+            }}
+          />
+        </View>
+      )}
     </View>
   );
 }

@@ -7,6 +7,7 @@ export const apiGetUserProfile = async (userId: number) => {
     bio: string;
     email: string;
     createdAt: string;
+    following: boolean;
     followersCount: number;
     followingCount: number;
   }>("/users/" + userId);
