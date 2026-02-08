@@ -7,6 +7,7 @@ import {
   apiCreateReply,
   apiGetPostChildren,
   apiGetSinglePost,
+  apiLikeUnlikePost,
 } from "@/src/http/posts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -52,6 +53,21 @@ export function FullPostView({ id }: FullPostViewProps) {
     queryFn: () => apiGetSinglePost(id),
   });
 
+  const tapLikeMutation = useMutation({
+    mutationFn: apiLikeUnlikePost,
+    onSuccess: (data) => {
+      if (data.liked) {
+        setLikedPostIds([...likedPostIds, data.postId]);
+      } else {
+        setLikedPostIds((prev) => prev.filter((id) => id !== data.postId));
+      }
+      queryClient.invalidateQueries({ queryKey: ["posts", id] });
+    },
+    onError: () => {
+      alert("Something went wrong");
+    },
+  });
+
   const createReplyMutation = useMutation({
     mutationFn: apiCreateReply,
     onSuccess: () => {
@@ -64,16 +80,16 @@ export function FullPostView({ id }: FullPostViewProps) {
     },
   });
 
-  if (isPostLoading) {
-    return <FullscreenLoader />;
-  }
-
   const handlePostReply = () => {
     if (reply.trim() === "") {
       return;
     }
     createReplyMutation.mutate({ content: reply.trim(), parentPostId: id });
   };
+
+  if (isPostLoading) {
+    return <FullscreenLoader />;
+  }
 
   const post = data!;
   return (
@@ -96,6 +112,9 @@ export function FullPostView({ id }: FullPostViewProps) {
               isLiked: likedPostIds.includes(post.id),
               numberOfLikes: post.likesCount,
               numberOfComments: post.repliesCount,
+            }}
+            onLikeTap={() => {
+              tapLikeMutation.mutate(post.id);
             }}
             onProfileClick={() => {
               router.push({
@@ -156,9 +175,27 @@ function PostRepliesView({ postId }: PostRepliesViewProps) {
 
   const { likedPostIds, setLikedPostIds } = useAuth();
 
+  const queryClient = useQueryClient();
   const { data, isLoading } = useQuery({
     queryKey: ["posts", postId, "children"],
     queryFn: () => apiGetPostChildren(postId),
+  });
+
+  const tapLikeMutation = useMutation({
+    mutationFn: apiLikeUnlikePost,
+    onSuccess: (data) => {
+      if (data.liked) {
+        setLikedPostIds([...likedPostIds, data.postId]);
+      } else {
+        setLikedPostIds((prev) => prev.filter((id) => id !== data.postId));
+      }
+      queryClient.invalidateQueries({
+        queryKey: ["posts", postId, "children"],
+      });
+    },
+    onError: () => {
+      alert("Something went wrong");
+    },
   });
 
   if (isLoading) {
@@ -194,6 +231,9 @@ function PostRepliesView({ postId }: PostRepliesViewProps) {
                   numberOfComments: post.repliesCount,
                 }}
                 isPreview={false}
+                onLikeTap={() => {
+                  tapLikeMutation.mutate(post.id);
+                }}
                 onProfileClick={() => {
                   router.push({
                     pathname: "/user/[userId]",
