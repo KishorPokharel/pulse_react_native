@@ -113,6 +113,7 @@ export function FullPostView({ id }: FullPostViewProps) {
               numberOfLikes: post.likesCount,
               numberOfComments: post.repliesCount,
             }}
+            isPreview={false}
             onLikeTap={() => {
               tapLikeMutation.mutate(post.id);
             }}
@@ -230,7 +231,7 @@ function PostRepliesView({ postId }: PostRepliesViewProps) {
                   numberOfLikes: post.likesCount,
                   numberOfComments: post.repliesCount,
                 }}
-                isPreview={false}
+                isPreview={true}
                 onLikeTap={() => {
                   tapLikeMutation.mutate(post.id);
                 }}
