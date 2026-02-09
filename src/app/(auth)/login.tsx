@@ -2,6 +2,7 @@ import Button from "@/src/components/button";
 import Input from "@/src/components/input";
 import { useAuth } from "@/src/hooks/useAuth";
 import { sleep } from "@/src/utils/sleep";
+import Octicons from "@expo/vector-icons/Octicons";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { Text, View } from "react-native";
@@ -18,13 +19,17 @@ export default function Screen() {
     await login({ email, password });
     setLoggingIn(false);
   };
+
   return (
     <View style={{ flex: 1, justifyContent: "center", padding: 16 }}>
+      <View style={{ alignItems: "center", marginBottom: 18 }}>
+        <Octicons name="pulse" size={24} color="black" />
+      </View>
       <Text
         style={{
           marginBottom: 20,
           textAlign: "center",
-          fontSize: 24,
+          fontSize: 18,
         }}
       >
         Login to Pulse

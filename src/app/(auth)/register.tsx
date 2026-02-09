@@ -1,6 +1,7 @@
 import Button from "@/src/components/button";
 import Input from "@/src/components/input";
 import { apiRegisterUser } from "@/src/http/auth";
+import Octicons from "@expo/vector-icons/Octicons";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
@@ -47,11 +48,14 @@ export default function Screen() {
 
   return (
     <View style={{ flex: 1, justifyContent: "center", padding: 16 }}>
+      <View style={{ alignItems: "center", marginBottom: 18 }}>
+        <Octicons name="pulse" size={24} color="black" />
+      </View>
       <Text
         style={{
           marginBottom: 20,
           textAlign: "center",
-          fontSize: 24,
+          fontSize: 18,
         }}
       >
         Register to Pulse
