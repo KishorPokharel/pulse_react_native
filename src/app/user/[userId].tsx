@@ -1,7 +1,13 @@
 import Avatar from "@/src/components/avatar";
 import Button from "@/src/components/button";
 import FullscreenLoader from "@/src/components/fullscreenLoader";
+import PostCard from "@/src/components/postCard";
 import { useAuth } from "@/src/hooks/useAuth";
+import {
+  apiGetUserPosts,
+  apiLikeUnlikePost,
+  UserProfilePost,
+} from "@/src/http/posts";
 import {
   apiFollowUser,
   apiGetUserProfile,
@@ -9,8 +15,8 @@ import {
 } from "@/src/http/users";
 import { formatDate } from "@/src/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useLocalSearchParams } from "expo-router";
-import { Alert, Pressable, Text, View } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Alert, FlatList, Pressable, Text, View } from "react-native";
 
 export default function Screen() {
   const params = useLocalSearchParams<{ userId: string }>();
@@ -66,39 +72,57 @@ export default function Screen() {
   }
 
   return (
-    <View style={{ flex: 1, padding: 16, backgroundColor: "white" }}>
-      <View
-        style={{
-          marginBottom: 20,
-          borderBottomWidth: 1,
-          borderBottomColor: "#e0e0e0",
-          paddingBlockEnd: 10,
-        }}
-      >
-        <UserProfileHeader
-          user={{
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            bio: user.bio || "",
-            joinedAt: user.createdAt,
-            followersCount: user.followersCount,
-            followingCount: user.followingCount,
-          }}
-          following={user.following}
-          followUser={() => {
-            followMutation.mutate(user.id);
-          }}
-          unfollowUser={() => {
-            unfollowMutation.mutate(user.id);
-          }}
-          followUnfollowRequestPending={
-            followMutation.isPending || unfollowMutation.isPending
-          }
-        />
+    <>
+      <View style={{ padding: 16, backgroundColor: "white" }}>
+        <View>
+          <View
+            style={{
+              marginBottom: 20,
+              borderBottomWidth: 1,
+              borderBottomColor: "#e0e0e0",
+              paddingBlockEnd: 10,
+            }}
+          >
+            <UserProfileHeader
+              user={{
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                bio: user.bio || "",
+                joinedAt: user.createdAt,
+                followersCount: user.followersCount,
+                followingCount: user.followingCount,
+              }}
+              following={user.following}
+              followUser={() => {
+                followMutation.mutate(user.id);
+              }}
+              unfollowUser={() => {
+                unfollowMutation.mutate(user.id);
+              }}
+              followUnfollowRequestPending={
+                followMutation.isPending || unfollowMutation.isPending
+              }
+            />
+          </View>
+          {isMyProfile ? (
+            <Button label="Logout" onPress={handleLogout} />
+          ) : null}
+        </View>
+        <View>
+          <Text
+            style={{
+              fontSize: 24,
+              fontWeight: "bold",
+              color: "#333",
+            }}
+          >
+            Posts
+          </Text>
+          <UserProfilePosts user={{ id: user.id, name: user.name }} />
+        </View>
       </View>
-      {isMyProfile ? <Button label="Logout" onPress={handleLogout} /> : null}
-    </View>
+    </>
   );
 }
 
@@ -183,6 +207,114 @@ function UserProfileHeader({
           />
         </View>
       )}
+    </View>
+  );
+}
+
+type UserProfilePostsProps = {
+  user: {
+    id: number;
+    name: string;
+  };
+};
+
+function UserProfilePosts({ user }: UserProfilePostsProps) {
+  let { likedPostIds, setLikedPostIds } = useAuth();
+
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const { data, isLoading, isRefetching, refetch } = useQuery({
+    queryKey: ["users", user.id, "posts"],
+    queryFn: () => apiGetUserPosts(user.id),
+  });
+
+  const tapLikeMutation = useMutation({
+    mutationFn: apiLikeUnlikePost,
+    onSuccess: (data) => {
+      if (data.liked) {
+        setLikedPostIds([...likedPostIds, data.postId]);
+      } else {
+        setLikedPostIds((prev) => prev.filter((id) => id !== data.postId));
+      }
+      queryClient.setQueryData<UserProfilePost>(
+        ["users", user.id, "posts"],
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            results: old.results.map((post) =>
+              post.id === data.postId
+                ? {
+                    ...post,
+                    likesCount: data.liked
+                      ? post.likesCount + 1
+                      : post.likesCount - 1,
+                  }
+                : post,
+            ),
+          };
+        },
+      );
+    },
+    onError: () => {
+      alert("Something went wrong");
+    },
+  });
+
+  const handleLikeTap = (postId: number) => {
+    tapLikeMutation.mutate(postId);
+  };
+
+  if (isLoading) {
+    return <FullscreenLoader />;
+  }
+
+  const posts = data?.results || [];
+  return (
+    <View>
+      <FlatList
+        showsVerticalScrollIndicator={false}
+        refreshing={isRefetching}
+        onRefresh={refetch}
+        ItemSeparatorComponent={() => (
+          <View style={{ height: 1, backgroundColor: "#e0e0e0" }} />
+        )}
+        data={posts}
+        renderItem={({ item: post }) => (
+          <View
+            style={{
+              paddingBlock: 16,
+            }}
+          >
+            <PostCard
+              post={{
+                id: post.id,
+                name: user.name,
+                content: post.content,
+                createdAt: post.createdAt,
+                isLiked: likedPostIds.includes(post.id),
+                numberOfLikes: post.likesCount,
+                numberOfComments: post.repliesCount,
+              }}
+              onLikeTap={() => handleLikeTap(post.id)}
+              onShowMore={() => {
+                router.push({
+                  pathname: "/home/[postId]",
+                  params: { postId: post.id },
+                });
+              }}
+              // onProfileClick={() => {
+              //   router.push({
+              //     pathname: "/user/[userId]",
+              //     params: { userId: user.id },
+              //   });
+              // }}
+            />
+          </View>
+        )}
+        keyExtractor={(post) => post.id + ""}
+      />
     </View>
   );
 }

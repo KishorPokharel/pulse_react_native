@@ -43,6 +43,22 @@ export const apiGetSinglePost = async <T>(id: number) => {
   return data;
 };
 
+export type UserProfilePost = {
+  results: {
+    id: number;
+    userId: number;
+    content: string;
+    createdAt: string;
+    likesCount: number;
+    repliesCount: number;
+  }[];
+};
+
+export const apiGetUserPosts = async (userId: number) => {
+  const data = await apiClient.get<UserProfilePost>(`/users/${userId}/posts`);
+  return data;
+};
+
 export const apiGetPostChildren = async (id: number) => {
   const data = await apiClient.get<{
     results: {

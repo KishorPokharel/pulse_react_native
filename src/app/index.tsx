@@ -10,9 +10,9 @@ export default function Screen() {
         alignItems: "center",
       }}
     >
-      <View style={{ flexDirection: "row", gap: 8 }}>
-        <Octicons name="pulse" size={24} color="black" />
-        <Text style={{ fontSize: 16 }}>Pulse</Text>
+      <View style={{ flexDirection: "row", gap: 10 }}>
+        <Octicons name="pulse" size={36} color="black" />
+        <Text style={{ fontSize: 24 }}>Pulse</Text>
       </View>
     </View>
   );
