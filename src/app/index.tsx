@@ -1,4 +1,5 @@
-import { ActivityIndicator, View } from "react-native";
+import Octicons from "@expo/vector-icons/Octicons";
+import { Text, View } from "react-native";
 
 export default function Screen() {
   return (
@@ -9,7 +10,10 @@ export default function Screen() {
         alignItems: "center",
       }}
     >
-      <ActivityIndicator size="large" />
+      <View style={{ flexDirection: "row", gap: 12 }}>
+        <Octicons name="pulse" size={24} color="black" />
+        <Text style={{fontSize: 16}}>Pulse</Text>
+      </View>
     </View>
   );
 }
