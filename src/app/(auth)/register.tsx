@@ -6,19 +6,87 @@ import { useMutation } from "@tanstack/react-query";
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Text, View } from "react-native";
+import { z } from "zod";
+
+const registerSchema = z
+  .object({
+    name: z.string().trim().min(1, "Name is required"),
+    email: z.email("Invalid email"),
+    password: z
+      .string()
+      .trim()
+      .min(10, "Password must be at least 10 characters"),
+    confirmPassword: z.string().min(1, "Confirm Password is required"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Passwords do not match",
+  });
+
+type RegisterFormData = z.infer<typeof registerSchema>;
+
+type FormErrors = Partial<Record<keyof RegisterFormData, string>>;
 
 export default function Screen() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [form, setForm] = useState<RegisterFormData>({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [errors, setErrors] = useState<FormErrors>({});
+
+  const handleChange = <K extends keyof RegisterFormData>(
+    name: K,
+    value: string,
+  ) => {
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = () => {
+    const result = registerSchema.safeParse(form);
+
+    if (!result.success) {
+      const fieldErrors: FormErrors = {};
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof RegisterFormData;
+        fieldErrors[field] = issue.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    const data = result.data;
+    registerMutation.mutate({
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    });
+  };
+
+  const clearError = () => {
+    setErrors({});
+  };
+
+  const clearForm = () => {
+    setForm({
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    });
+  };
 
   const router = useRouter();
 
   const registerMutation = useMutation({
     mutationFn: apiRegisterUser,
     onSuccess: () => {
-      Alert.alert("Success.", "Please Login.");
+      Alert.alert("Success", "Registered successfully!");
+      clearError();
       clearForm();
       router.replace("/login");
     },
@@ -26,25 +94,6 @@ export default function Screen() {
       Alert.alert("Could not register.");
     },
   });
-
-  const clearForm = () => {
-    setName("");
-    setEmail("");
-    setPassword("");
-    setConfirmPassword("");
-  };
-
-  const handleRegister = async () => {
-    if (password != confirmPassword) {
-      Alert.alert("Invalid fields");
-      return;
-    }
-    if (name === "" || email === "" || password === "") {
-      Alert.alert("Invalid fields");
-      return;
-    }
-    registerMutation.mutate({ name, email, password });
-  };
 
   return (
     <View style={{ flex: 1, justifyContent: "center", padding: 16 }}>
@@ -61,20 +110,37 @@ export default function Screen() {
         Register to Pulse
       </Text>
       <View style={{ gap: 8 }}>
-        <Input label="Name" onChangeText={setName} value={name}></Input>
-        <Input label="Email" onChangeText={setEmail} value={email}></Input>
+        <Input
+          label="Name"
+          onChangeText={(text) => {
+            handleChange("name", text);
+          }}
+          value={form.name}
+          error={errors.name}
+        />
+
+        <Input
+          label="Email"
+          onChangeText={(text) => handleChange("email", text)}
+          value={form.email}
+          error={errors.email}
+        />
+
         <Input
           label="Password"
           secureTextEntry
-          onChangeText={setPassword}
-          value={password}
-        ></Input>
+          onChangeText={(text) => handleChange("password", text)}
+          value={form.password}
+          error={errors.password}
+        />
+
         <Input
           label="Confirm Password"
           secureTextEntry
-          onChangeText={setConfirmPassword}
-          value={confirmPassword}
-        ></Input>
+          onChangeText={(text) => handleChange("confirmPassword", text)}
+          error={errors.confirmPassword}
+          value={form.confirmPassword}
+        />
       </View>
       <View
         style={{
@@ -85,7 +151,7 @@ export default function Screen() {
           label="Register"
           disabled={registerMutation.isPending}
           loading={registerMutation.isPending}
-          onPress={handleRegister}
+          onPress={handleSubmit}
         />
       </View>
       <View
