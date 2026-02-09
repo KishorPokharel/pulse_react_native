@@ -77,7 +77,7 @@ export default function Screen() {
         <View>
           <View
             style={{
-              marginBottom: 20,
+              marginBottom: 10,
               borderBottomWidth: 1,
               borderBottomColor: "#e0e0e0",
               paddingBlockEnd: 10,
@@ -104,21 +104,14 @@ export default function Screen() {
                 followMutation.isPending || unfollowMutation.isPending
               }
             />
+            {isMyProfile ? (
+              <View style={{ marginBlock: 8 }}>
+                <Button label="Logout" onPress={handleLogout} />
+              </View>
+            ) : null}
           </View>
-          {isMyProfile ? (
-            <Button label="Logout" onPress={handleLogout} />
-          ) : null}
         </View>
         <View>
-          <Text
-            style={{
-              fontSize: 24,
-              fontWeight: "bold",
-              color: "#333",
-            }}
-          >
-            Posts
-          </Text>
           <UserProfilePosts user={{ id: user.id, name: user.name }} />
         </View>
       </View>
@@ -272,7 +265,15 @@ function UserProfilePosts({ user }: UserProfilePostsProps) {
 
   const posts = data?.results || [];
   return (
-    <View>
+    <View style={{ gap: 8 }}>
+      <Text
+        style={{
+          fontSize: 18,
+          color: "#333",
+        }}
+      >
+        Posts
+      </Text>
       <FlatList
         showsVerticalScrollIndicator={false}
         refreshing={isRefetching}
@@ -300,7 +301,7 @@ function UserProfilePosts({ user }: UserProfilePostsProps) {
               onLikeTap={() => handleLikeTap(post.id)}
               onShowMore={() => {
                 router.push({
-                  pathname: "/home/[postId]",
+                  pathname: "/(protected)/home/[postId]",
                   params: { postId: post.id },
                 });
               }}
