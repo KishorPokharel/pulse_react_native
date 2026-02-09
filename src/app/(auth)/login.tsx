@@ -6,17 +6,70 @@ import Octicons from "@expo/vector-icons/Octicons";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { Text, View } from "react-native";
+import { z } from "zod";
 
+const loginSchema = z.object({
+  email: z.email("Invalid email"),
+  password: z.string().min(1, "Must not be empty").trim(),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
+
+type FormErrors = Partial<Record<keyof LoginFormData, string>>;
 export default function Screen() {
   const { login } = useAuth();
-  const [email, setEmail] = useState("john@example.com");
-  const [password, setPassword] = useState("kishor@1234");
+
+  const [form, setForm] = useState({
+    // email: "john@example.com",
+    // password: "kishor@1234",
+    email: "",
+    password: "",
+  });
+
+  const [errors, setErrors] = useState<FormErrors>({});
   const [loggingIn, setLoggingIn] = useState(false);
 
-  const handleLogin = async () => {
+  const handleChange = <K extends keyof LoginFormData>(
+    name: K,
+    value: string,
+  ) => {
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const clearError = () => {
+    setErrors({});
+  };
+
+  const clearForm = () => {
+    setForm({
+      email: "",
+      password: "",
+    });
+  };
+
+  const handleSubmit = async () => {
+    const result = loginSchema.safeParse(form);
+
+    if (!result.success) {
+      const fieldErrors: FormErrors = {};
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof LoginFormData;
+        fieldErrors[field] = issue.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
     setLoggingIn(true);
-    await sleep(2000);
-    await login({ email, password });
+    try {
+      await sleep(2000);
+      await login(form);
+    } catch (e) {
+      alert("Invalid credentials");
+    }
     setLoggingIn(false);
   };
 
@@ -35,13 +88,20 @@ export default function Screen() {
         Login to Pulse
       </Text>
       <View style={{ gap: 10 }}>
-        <Input label="Email" onChangeText={setEmail} value={email}></Input>
+        <Input
+          label="Email"
+          onChangeText={(text) => handleChange("email", text)}
+          value={form.email}
+          error={errors.email}
+        />
+
         <Input
           label="Password"
           secureTextEntry
-          onChangeText={setPassword}
-          value={password}
-        ></Input>
+          onChangeText={(text) => handleChange("password", text)}
+          value={form.password}
+          error={errors.password}
+        />
       </View>
       <View
         style={{
@@ -52,7 +112,7 @@ export default function Screen() {
           label="Login"
           loading={loggingIn}
           disabled={loggingIn}
-          onPress={handleLogin}
+          onPress={handleSubmit}
         />
       </View>
 

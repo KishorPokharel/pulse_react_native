@@ -68,13 +68,9 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   };
 
   const login = async (input: { email: string; password: string }) => {
-    try {
-      const { token } = await loginUser(input);
-      await SecureStore.setItemAsync(TOKEN_KEY, token);
-      await loadAuthUser();
-    } catch (e) {
-      console.log(e);
-    }
+    const { token } = await loginUser(input);
+    await SecureStore.setItemAsync(TOKEN_KEY, token);
+    await loadAuthUser();
   };
 
   const logout = async () => {
