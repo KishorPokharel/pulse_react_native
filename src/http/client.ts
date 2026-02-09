@@ -1,6 +1,9 @@
+type UnauthorizedHandler = () => void;
+
 class ApiClient {
   private baseUrl: string;
   private token: string | null = null;
+  private onUnauthorized?: UnauthorizedHandler;
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl.replace(/\/+$/, ""); // trim trailing slash
@@ -8,6 +11,10 @@ class ApiClient {
 
   setToken(token: string | null) {
     this.token = token;
+  }
+
+  setUnauthorizedHandler(handler: UnauthorizedHandler) {
+    this.onUnauthorized = handler;
   }
 
   private getHeaders(extraHeaders?: HeadersInit): HeadersInit {
@@ -23,6 +30,10 @@ class ApiClient {
       ...options,
       headers: this.getHeaders(options.headers),
     });
+
+    if (response.status === 403) {
+        this.onUnauthorized?.();
+    }
 
     if (!response.ok) {
       const text = await response.text();

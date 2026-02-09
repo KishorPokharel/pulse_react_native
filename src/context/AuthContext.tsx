@@ -56,6 +56,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         return;
       }
       apiClient.setToken(token);
+      apiClient.setUnauthorizedHandler(() => { logout(); });
       const user = await getMe();
       setUser({ ...user, token });
       setLikedPostIds([...user.likedPostIds]);
