@@ -1,4 +1,5 @@
 import { Text, TextInput, TextInputProps, View } from "react-native";
+import { useTheme } from "../context/ThemeContext";
 
 type InputProps = {
   value: string;
@@ -12,6 +13,7 @@ export default function TextArea({
   error,
   ...props
 }: InputProps) {
+  const { theme } = useTheme();
   return (
     <View>
       <TextInput
@@ -24,6 +26,7 @@ export default function TextArea({
           padding: 8,
           height: height,
           textAlignVertical: "top",
+          color: theme.text,
         }}
         {...props}
       />

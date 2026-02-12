@@ -1,7 +1,8 @@
 import Octicons from "@expo/vector-icons/Octicons";
 import { useRouter } from "expo-router";
-import { Pressable, Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "../context/ThemeContext";
 import Avatar from "./avatar";
 
 type AppHeaderProps = {
@@ -15,6 +16,7 @@ type AppHeaderProps = {
 export default function AppHeader({ user, onPressAvatar }: AppHeaderProps) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { theme } = useTheme();
 
   return (
     <View
@@ -25,18 +27,20 @@ export default function AppHeader({ user, onPressAvatar }: AppHeaderProps) {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        backgroundColor: "#fff",
+        backgroundColor: theme.background,
         borderBottomWidth: 1,
         borderBottomColor: "#e0e0e0",
       }}
     >
       <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-        <Octicons name="pulse" size={24} color="black" />
-        <Text style={{ fontWeight: "bold", fontSize: 16 }}>Pulse</Text>
+        <Octicons name="pulse" size={24} color={theme.text} />
+        <Text style={{ fontWeight: "bold", fontSize: 16, color: theme.text }}>
+          Pulse
+        </Text>
       </View>
-      <Pressable onPress={onPressAvatar}>
+      <TouchableOpacity onPress={onPressAvatar}>
         <Avatar name={user.name} />
-      </Pressable>
+      </TouchableOpacity>
     </View>
   );
 }

@@ -1,5 +1,6 @@
 import FullscreenLoader from "@/src/components/fullscreenLoader";
 import PostCard from "@/src/components/postCard";
+import { useTheme } from "@/src/context/ThemeContext";
 import { useAuth } from "@/src/hooks/useAuth";
 import { apiGetFeed, apiLikeUnlikePost, Feed } from "@/src/http/posts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -22,6 +23,7 @@ export default function Screen() {
   let { user: authUser, likedPostIds, setLikedPostIds } = useAuth();
   authUser = authUser!;
 
+  const { theme } = useTheme();
   const queryClient = useQueryClient();
   const {
     data: feedData,
@@ -73,7 +75,9 @@ export default function Screen() {
 
   const feed = feedData?.results || [];
   return (
-    <View style={{ flex: 1, paddingInline: 16, backgroundColor: "white" }}>
+    <View
+      style={{ flex: 1, paddingInline: 16, backgroundColor: theme.background }}
+    >
       <FlatList
         showsVerticalScrollIndicator={false}
         refreshing={isRefetching}

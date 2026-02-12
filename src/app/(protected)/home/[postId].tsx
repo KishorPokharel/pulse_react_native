@@ -2,6 +2,7 @@ import Button from "@/src/components/button";
 import FullscreenLoader from "@/src/components/fullscreenLoader";
 import PostCard from "@/src/components/postCard";
 import TextArea from "@/src/components/textarea";
+import { useTheme } from "@/src/context/ThemeContext";
 import { useAuth } from "@/src/hooks/useAuth";
 import {
   apiCreateReply,
@@ -44,6 +45,7 @@ export function FullPostView({ id }: FullPostViewProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
+  const { theme } = useTheme();
   const {
     data,
     isLoading: isPostLoading,
@@ -97,7 +99,7 @@ export function FullPostView({ id }: FullPostViewProps) {
       <View
         style={{
           flex: 1,
-          backgroundColor: "white",
+          backgroundColor: theme.background,
           padding: 16,
           paddingBlock: 8,
         }}
@@ -131,7 +133,7 @@ export function FullPostView({ id }: FullPostViewProps) {
           {/* Reply Box Section */}
           <View
             style={{
-              backgroundColor: "white",
+              backgroundColor: theme.background,
             }}
           >
             <View
@@ -147,6 +149,7 @@ export function FullPostView({ id }: FullPostViewProps) {
                 onChangeText={setReply}
                 height={72}
                 placeholder="Reply..."
+                placeholderTextColor={theme.text}
               />
               <Button
                 label="Reply"
@@ -199,6 +202,8 @@ function PostRepliesView({ postId }: PostRepliesViewProps) {
     },
   });
 
+  const { theme } = useTheme();
+
   if (isLoading) {
     return (
       <View
@@ -213,9 +218,11 @@ function PostRepliesView({ postId }: PostRepliesViewProps) {
 
   const posts = data?.results!;
   return (
-    <View style={{ gap: 20 }}>
+    <View style={{ gap: 20, backgroundColor: theme.background }}>
       {posts.length > 0 ? (
-        <Text style={{ fontSize: 18 }}>Relevant Replies</Text>
+        <Text style={{ fontSize: 18, color: theme.text }}>
+          Relevant Replies
+        </Text>
       ) : null}
       <View>
         {posts.map((post, idx) => {
