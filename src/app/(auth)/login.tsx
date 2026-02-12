@@ -1,5 +1,6 @@
 import Button from "@/src/components/button";
 import Input from "@/src/components/input";
+import { useTheme } from "@/src/context/ThemeContext";
 import { useAuth } from "@/src/hooks/useAuth";
 import { sleep } from "@/src/utils";
 import Octicons from "@expo/vector-icons/Octicons";
@@ -19,6 +20,8 @@ type FormErrors = Partial<Record<keyof LoginFormData, string>>;
 
 export default function Screen() {
   const { login } = useAuth();
+
+  const { theme } = useTheme();
 
   const [form, setForm] = useState({
     // email: "john@example.com",
@@ -75,15 +78,23 @@ export default function Screen() {
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", padding: 16 }}>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        padding: 16,
+        backgroundColor: theme.background,
+      }}
+    >
       <View style={{ alignItems: "center", marginBottom: 18 }}>
-        <Octicons name="pulse" size={24} color="black" />
+        <Octicons name="pulse" size={24} color={theme.text} />
       </View>
       <Text
         style={{
           marginBottom: 20,
           textAlign: "center",
           fontSize: 18,
+          color: theme.text,
         }}
       >
         Login to Pulse
@@ -124,7 +135,7 @@ export default function Screen() {
           alignItems: "center",
         }}
       >
-        <Link href="/register" replace>
+        <Link style={{ color: theme.text }} href="/register" replace>
           Not registered yet? Register
         </Link>
       </View>

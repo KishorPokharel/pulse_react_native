@@ -1,5 +1,6 @@
 import Button from "@/src/components/button";
 import Input from "@/src/components/input";
+import { useTheme } from "@/src/context/ThemeContext";
 import { apiRegisterUser } from "@/src/http/auth";
 import Octicons from "@expo/vector-icons/Octicons";
 import { useMutation } from "@tanstack/react-query";
@@ -81,6 +82,7 @@ export default function Screen() {
   };
 
   const router = useRouter();
+  const { theme } = useTheme();
 
   const registerMutation = useMutation({
     mutationFn: apiRegisterUser,
@@ -96,15 +98,23 @@ export default function Screen() {
   });
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", padding: 16 }}>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        padding: 16,
+        backgroundColor: theme.background,
+      }}
+    >
       <View style={{ alignItems: "center", marginBottom: 18 }}>
-        <Octicons name="pulse" size={24} color="black" />
+        <Octicons name="pulse" size={24} color={theme.text} />
       </View>
       <Text
         style={{
           marginBottom: 20,
           textAlign: "center",
           fontSize: 18,
+          color: theme.text,
         }}
       >
         Register to Pulse
@@ -161,7 +171,7 @@ export default function Screen() {
           alignItems: "center",
         }}
       >
-        <Link href="/login" replace>
+        <Link style={{ color: theme.text }} href="/login" replace>
           Already registered? Login
         </Link>
       </View>

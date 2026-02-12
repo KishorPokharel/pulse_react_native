@@ -1,4 +1,5 @@
 import { Text, TextInput, TextInputProps, View } from "react-native";
+import { useTheme } from "../context/ThemeContext";
 
 type InputProps = {
   value: string;
@@ -7,10 +8,13 @@ type InputProps = {
 } & TextInputProps;
 
 export default function Input({ label, value, error, ...props }: InputProps) {
+  const { theme } = useTheme();
   return (
     <View>
       {label ? (
-        <Text style={{ fontSize: 16, marginBlockEnd: 6 }}>{label}</Text>
+        <Text style={{ fontSize: 16, marginBlockEnd: 6, color: theme.text }}>
+          {label}
+        </Text>
       ) : null}
       <TextInput
         value={value}
@@ -19,6 +23,7 @@ export default function Input({ label, value, error, ...props }: InputProps) {
           borderColor: "#e0e0e0",
           borderRadius: 12,
           padding: 8,
+          color: theme.text,
         }}
         {...props}
       />

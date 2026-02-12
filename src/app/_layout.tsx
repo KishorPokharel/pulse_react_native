@@ -2,13 +2,17 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { useColorScheme } from "react-native";
 import { AuthProvider } from "../context/AuthContext";
+import { ThemeProvider, useTheme } from "../context/ThemeContext";
 import { useAuth } from "../hooks/useAuth";
 
 function InnerLayout() {
   const { isAuthLoading, isLoggedIn } = useAuth();
+  const { theme } = useTheme();
 
   return (
-    <Stack>
+    <Stack
+      screenOptions={{ contentStyle: { backgroundColor: theme.background } }}
+    >
       <Stack.Protected guard={isAuthLoading}>
         <Stack.Screen name="index" options={{ headerShown: false }} />
       </Stack.Protected>
@@ -32,9 +36,11 @@ export default function RootLayout() {
   console.log(scheme);
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <InnerLayout />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <InnerLayout />
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
