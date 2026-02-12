@@ -1,7 +1,7 @@
 import Button from "@/src/components/button";
 import Input from "@/src/components/input";
 import { useAuth } from "@/src/hooks/useAuth";
-import { sleep } from "@/src/utils/sleep";
+import { sleep } from "@/src/utils";
 import Octicons from "@expo/vector-icons/Octicons";
 import { Link } from "expo-router";
 import { useState } from "react";
@@ -16,6 +16,7 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 type FormErrors = Partial<Record<keyof LoginFormData, string>>;
+
 export default function Screen() {
   const { login } = useAuth();
 

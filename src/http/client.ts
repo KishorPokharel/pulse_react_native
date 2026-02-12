@@ -32,7 +32,7 @@ class ApiClient {
     });
 
     if (response.status === 403) {
-        this.onUnauthorized?.();
+      this.onUnauthorized?.();
     }
 
     if (!response.ok) {

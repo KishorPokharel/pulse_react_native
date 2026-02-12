@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
+import { useColorScheme } from "react-native";
 import { AuthProvider } from "../context/AuthContext";
 import { useAuth } from "../hooks/useAuth";
 
@@ -23,8 +24,12 @@ function InnerLayout() {
     </Stack>
   );
 }
+
 const queryClient = new QueryClient();
+
 export default function RootLayout() {
+  const scheme = useColorScheme();
+  console.log(scheme);
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
