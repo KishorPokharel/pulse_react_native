@@ -25,6 +25,7 @@ export const getMe = async () => {
   const data = await apiClient.get<{
     id: number;
     name: string;
+    bio: string;
     email: string;
     emailVerified: boolean;
     createdAt: string;

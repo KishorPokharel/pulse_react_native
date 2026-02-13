@@ -53,6 +53,13 @@ class ApiClient {
       body: body ? JSON.stringify(body) : undefined,
     });
   }
+
+  put<T>(path: string, body?: unknown) {
+    return this.request<T>(path, {
+      method: "PUT",
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  }
 }
 
 // const API_BASE_URL = "http://localhost:8787";

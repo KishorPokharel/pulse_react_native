@@ -18,9 +18,11 @@ export const apiSearchUsers = async (name: string) => {
   const params = new URLSearchParams({
     search: name,
   });
+
   const data = await apiClient.get<{
     results: { id: number; name: string; bio: string }[];
   }>(`/users?${params}`);
+
   return data;
 };
 
