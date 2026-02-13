@@ -13,16 +13,15 @@ export type User = {
   updatedAt: string;
 };
 
-type UserWithToken = User & { token: string };
-
 type AuthState = {
   isLoggedIn: boolean;
   isAuthLoading: boolean;
-  user: UserWithToken | null;
+  user: User | null;
   likedPostIds: number[];
   login: (input: { email: string; password: string }) => void;
   logout: () => void;
   setLikedPostIds: React.Dispatch<React.SetStateAction<number[]>>;
+  setUpdatedUser: (user: { name: string; bio: string }) => void;
 };
 
 export const AuthContext = createContext<AuthState>({
@@ -33,6 +32,7 @@ export const AuthContext = createContext<AuthState>({
   login: () => {},
   logout: () => {},
   setLikedPostIds: () => {},
+  setUpdatedUser: (user: { name: string; bio: string }) => {},
 });
 
 const TOKEN_KEY = "PULSE_AUTH_TOKEN_KEY";
@@ -40,7 +40,7 @@ const TOKEN_KEY = "PULSE_AUTH_TOKEN_KEY";
 export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
-  const [user, setUser] = useState<UserWithToken | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [likedPostIds, setLikedPostIds] = useState<number[]>([]);
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         logout();
       });
       const user = await getMe();
-      setUser({ ...user, token });
+      setUser({ ...user });
       setLikedPostIds([...user.likedPostIds]);
       setIsLoggedIn(true);
     } catch (e) {
@@ -82,6 +82,17 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     await loadAuthUser();
   };
 
+  const setUpdatedUser = (input: { name: string; bio: string }) => {
+    if (user) {
+      const updatedUser: User = {
+        ...user,
+        name: input.name,
+        bio: input.bio,
+      };
+      setUser(updatedUser);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -92,6 +103,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         logout,
         isAuthLoading,
         setLikedPostIds,
+        setUpdatedUser,
       }}
     >
       {children}
