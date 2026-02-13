@@ -9,6 +9,10 @@ export const lightTheme: Theme = {
 };
 
 export const darkTheme: Theme = {
-  background: "#171717",
-  text: "white",
+  ...lightTheme,
 };
+
+// export const darkTheme: Theme = {
+//   background: "#171717",
+//   text: "white",
+// };
