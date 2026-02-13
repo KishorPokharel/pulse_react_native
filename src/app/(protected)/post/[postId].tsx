@@ -250,7 +250,7 @@ function PostRepliesView({ postId }: PostRepliesViewProps) {
                 }}
                 onShowMore={() => {
                   router.push({
-                    pathname: "/home/[postId]",
+                    pathname: "/post/[postId]",
                     params: {
                       postId: post.id,
                     },

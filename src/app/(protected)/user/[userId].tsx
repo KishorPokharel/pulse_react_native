@@ -27,7 +27,7 @@ export default function Screen() {
   });
 
   const queryClient = useQueryClient();
-
+  const router = useRouter();
   const followMutation = useMutation({
     mutationFn: apiFollowUser,
     onSuccess: () => {
@@ -105,7 +105,14 @@ export default function Screen() {
               }
             />
             {isMyProfile ? (
-              <View style={{ marginBlock: 8 }}>
+              <View style={{ marginBlock: 16, gap: 16 }}>
+                <Button
+                  label="Edit"
+                  type="secondary"
+                  onPress={() => {
+                    router.push("/user/edit");
+                  }}
+                />
                 <Button label="Logout" onPress={handleLogout} />
               </View>
             ) : null}
@@ -301,7 +308,7 @@ function UserProfilePosts({ user }: UserProfilePostsProps) {
               onLikeTap={() => handleLikeTap(post.id)}
               onShowMore={() => {
                 router.push({
-                  pathname: "/(protected)/home/[postId]",
+                  pathname: "/post/[postId]",
                   params: { postId: post.id },
                 });
               }}

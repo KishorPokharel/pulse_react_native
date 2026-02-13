@@ -35,3 +35,21 @@ export const apiUnfollowUser = async (userId: number) => {
   const data = await apiClient.post(`/users/${userId}/unfollow`);
   return data;
 };
+
+type UpdateProfileBody = {
+  name: string;
+  bio: string;
+};
+
+export const apiUpdateProfile = async (body: UpdateProfileBody) => {
+  const data = await apiClient.put<{
+    id: number;
+    name: string;
+    bio: string;
+    email: string;
+    emailVerified: boolean;
+    createdAt: string;
+    updatedAt: string;
+  }>("/profile", body);
+  return data;
+};

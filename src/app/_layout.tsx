@@ -23,9 +23,6 @@ function InnerLayout() {
         <Stack.Protected guard={isLoggedIn}>
           <Stack.Screen name="(protected)" options={{ headerShown: false }} />
         </Stack.Protected>
-        <Stack.Protected guard={isLoggedIn}>
-          <Stack.Screen name="user" options={{ headerShown: false }} />
-        </Stack.Protected>
       </Stack>
       <StatusBar barStyle="dark-content" />
     </>

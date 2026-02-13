@@ -19,7 +19,7 @@ export default function Screen() {
     mutationFn: apiCreatePost,
     onSuccess: (data) => {
       setContent("");
-      router.push({ pathname: "/home/[postId]", params: { postId: data.id } });
+      router.push({ pathname: "/post/[postId]", params: { postId: data.id } });
       queryClient.invalidateQueries({ queryKey: ["feed"] });
     },
     onError: () => {

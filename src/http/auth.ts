@@ -31,6 +31,6 @@ export const getMe = async () => {
     createdAt: string;
     updatedAt: string;
     likedPostIds: number[];
-  }>("/me");
+  }>("/profile");
   return data;
 };

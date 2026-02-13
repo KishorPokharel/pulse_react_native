@@ -1,17 +1,22 @@
 import { ActivityIndicator, Pressable, Text } from "react-native";
+import { useTheme } from "../context/ThemeContext";
 
 type ButtonProps = {
   label: string;
   disabled?: boolean;
   loading?: boolean;
+  type?: "primary" | "secondary";
   onPress: () => void;
 };
 
-export default function Button(props: ButtonProps) {
+export default function Button({ type = "primary", ...props }: ButtonProps) {
+  const { theme } = useTheme();
   return (
     <Pressable
       style={{
-        backgroundColor: "#333",
+        backgroundColor: type === "primary" ? "#333" : "transparent",
+        borderWidth: 1,
+        borderColor: "#333",
         paddingBlock: 12,
         justifyContent: "center",
         alignItems: "center",
@@ -24,7 +29,13 @@ export default function Button(props: ButtonProps) {
       {props.loading ? (
         <ActivityIndicator size="small" color="white" />
       ) : (
-        <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>
+        <Text
+          style={{
+            color: type === "primary" ? "white" : theme.text,
+            fontWeight: "bold",
+            fontSize: 16,
+          }}
+        >
           {props.label}
         </Text>
       )}

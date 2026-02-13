@@ -6,6 +6,7 @@ import { apiClient } from "../http/client";
 export type User = {
   id: number;
   name: string;
+  bio: string;
   email: string;
   emailVerified: boolean;
   createdAt: string;

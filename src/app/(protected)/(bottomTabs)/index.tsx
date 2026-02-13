@@ -105,7 +105,7 @@ export default function Screen() {
               onLikeTap={() => handleLikeTap(post.id)}
               onShowMore={() => {
                 router.push({
-                  pathname: "/home/[postId]",
+                  pathname: "/post/[postId]",
                   params: { postId: post.id },
                 });
               }}

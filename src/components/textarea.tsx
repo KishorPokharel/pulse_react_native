@@ -1,21 +1,28 @@
 import { Text, TextInput, TextInputProps, View } from "react-native";
 import { useTheme } from "../context/ThemeContext";
 
-type InputProps = {
+type TextAreaProps = {
+  label?: string;
   value: string;
   height?: number;
   error?: string;
 } & TextInputProps;
 
 export default function TextArea({
+  label = "",
   value,
   height = 150,
   error,
   ...props
-}: InputProps) {
+}: TextAreaProps) {
   const { theme } = useTheme();
   return (
     <View>
+      {label ? (
+        <Text style={{ fontSize: 16, marginBlockEnd: 6, color: theme.text }}>
+          {label}
+        </Text>
+      ) : null}
       <TextInput
         multiline
         value={value}
