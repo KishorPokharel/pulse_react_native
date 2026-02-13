@@ -3,7 +3,8 @@ import Input from "@/src/components/input";
 import TextArea from "@/src/components/textarea";
 import { useAuth } from "@/src/hooks/useAuth";
 import { apiUpdateProfile } from "@/src/http/users";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, View } from "react-native";
 import { z } from "zod";
@@ -37,10 +38,17 @@ export default function Screen() {
     }));
   };
 
+  const queryClient = useQueryClient();
+  const router = useRouter();
   const updateProfileMutation = useMutation({
     mutationFn: apiUpdateProfile,
     onSuccess: (data) => {
-      Alert.alert("Updated");
+      queryClient.invalidateQueries({ queryKey: ["users", authUser.id] });
+      router.replace({
+        pathname: "/user/[userId]",
+        params: { userId: authUser.id },
+      });
+      Alert.alert("Profile Updated");
     },
     onError: () => {
       Alert.alert("Failed to update profile");
