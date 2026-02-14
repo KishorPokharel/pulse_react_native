@@ -35,6 +35,7 @@ export default function TextArea({
           textAlignVertical: "top",
           color: theme.text,
         }}
+        placeholderTextColor={theme.text}
         {...props}
       />
       {error ? (

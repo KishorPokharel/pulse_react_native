@@ -16,7 +16,7 @@ export default function Button({ type = "primary", ...props }: ButtonProps) {
       style={{
         backgroundColor: type === "primary" ? "#333" : "transparent",
         borderWidth: 1,
-        borderColor: "#333",
+        borderColor: props.disabled ? "rgba(51, 51 , 51, 0.5)" : "#333333",
         paddingBlock: 12,
         justifyContent: "center",
         alignItems: "center",

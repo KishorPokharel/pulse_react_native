@@ -61,6 +61,7 @@ export default function Screen() {
           </TouchableOpacity>
           <View style={{ flex: 1 }}>
             <Input
+              placeholderTextColor={theme.text}
               autoFocus
               placeholder="Search..."
               value={text}
