@@ -50,8 +50,8 @@ export default function PostCard({
           props.onShowMore?.();
         }}
       >
-        <Text style={{ fontSize: 16, marginBlockStart: 10, color: theme.text }}>
-          {isPreview ? previewText(post.content, 150) : post.content}
+        <Text style={{ fontSize: 16, marginBlockStart: 10, color: theme.text, lineHeight: 16 * 1.5 }}>
+          {isPreview ? previewText(post.content, 350) : post.content}
         </Text>
       </Pressable>
 
@@ -60,7 +60,7 @@ export default function PostCard({
           flexDirection: "row",
           justifyContent: "space-between",
           gap: 18,
-          paddingBlockStart: 10,
+          paddingBlockStart: 16,
         }}
       >
         <Pressable
