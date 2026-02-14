@@ -5,9 +5,17 @@ import { apiSearchUsers } from "@/src/http/users";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Screen() {
+  const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const [text, setText] = useState("");
 
@@ -21,9 +29,18 @@ export default function Screen() {
     enabled: !!text.trim(),
   });
 
+  const authUser = user!;
   const users = data?.results || [];
+
   return (
-    <View style={{ flex: 1, padding: 16, backgroundColor: "white" }}>
+    <View
+      style={{
+        flex: 1,
+        paddingTop: insets.top + 8,
+        padding: 16,
+        backgroundColor: "white",
+      }}
+    >
       <View style={{ flex: 1, borderWidth: 0 }}>
         <View
           style={{
@@ -35,13 +52,14 @@ export default function Screen() {
             autoFocus
             placeholder="Search..."
             value={text}
+            inputStyle={{ borderRadius: 100 }}
             onChangeText={setText}
           />
         </View>
         {isLoading ? (
-          <Text style={{ fontSize: 20, paddingBlock: 12, textAlign: "center" }}>
-            ...
-          </Text>
+          <View style={{ paddingBlock: 16 }}>
+            <ActivityIndicator color="steelblue" size="large" />
+          </View>
         ) : (
           <FlatList
             showsVerticalScrollIndicator={false}
@@ -55,7 +73,7 @@ export default function Screen() {
                   padding: 12,
                 }}
               >
-                <Pressable
+                <TouchableOpacity
                   onPress={() => {
                     router.push({
                       pathname: "/user/[userId]",
@@ -67,20 +85,21 @@ export default function Screen() {
                     style={{
                       flexDirection: "row",
                       gap: 8,
-                      alignItems: "center",
                     }}
                   >
                     <Avatar name={user.name} />
-                    <Text>{user.name}</Text>
+                    <View>
+                      <Text>{user.name}</Text>
+                      <Text
+                        style={{
+                          marginBlockStart: 4,
+                        }}
+                      >
+                        {user.bio || ""}
+                      </Text>
+                    </View>
                   </View>
-                  <Text
-                    style={{
-                      marginBlockStart: 4,
-                    }}
-                  >
-                    {user.bio || ""}
-                  </Text>
-                </Pressable>
+                </TouchableOpacity>
               </View>
             )}
           />

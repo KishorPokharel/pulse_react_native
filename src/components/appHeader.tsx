@@ -26,7 +26,7 @@ export default function AppHeader({ user, onPressAvatar }: AppHeaderProps) {
         paddingBottom: 12,
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between",
+        gap: 16,
         backgroundColor: theme.background,
         borderBottomWidth: 1,
         borderBottomColor: "#e0e0e0",
@@ -34,10 +34,22 @@ export default function AppHeader({ user, onPressAvatar }: AppHeaderProps) {
     >
       <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
         <Octicons name="pulse" size={24} color={theme.text} />
-        <Text style={{ fontWeight: "bold", fontSize: 16, color: theme.text }}>
+        {/* <Text style={{ fontWeight: "bold", fontSize: 18, color: theme.text }}>
           Pulse
-        </Text>
+        </Text> */}
       </View>
+      <TouchableOpacity
+        onPress={() => router.push("/search")}
+        style={{
+          flex: 1,
+          backgroundColor: "#f1f5f9",
+          paddingBlock: 8,
+          paddingInline: 10,
+          borderRadius: 100,
+        }}
+      >
+        <Text style={{ color: "#94a3b8" }}>Search...</Text>
+      </TouchableOpacity>
       <TouchableOpacity onPress={onPressAvatar}>
         <Avatar name={user.name} />
       </TouchableOpacity>

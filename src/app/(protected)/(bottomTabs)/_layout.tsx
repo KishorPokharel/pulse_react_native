@@ -35,15 +35,6 @@ export default function Layout() {
         }}
       />
       <Tabs.Screen
-        name="search"
-        options={{
-          title: "Search",
-          tabBarIcon: ({ color }) => {
-            return <MaterialIcons color={color} size={28} name={"search"} />;
-          },
-        }}
-      />
-      <Tabs.Screen
         name="post"
         options={{
           title: "Add Post",
