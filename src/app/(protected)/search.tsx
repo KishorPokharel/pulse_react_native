@@ -1,11 +1,11 @@
 import Avatar from "@/src/components/avatar";
 import Input from "@/src/components/input";
 import { useTheme } from "@/src/context/ThemeContext";
-import { useAuth } from "@/src/hooks/useAuth";
+import useDebounce from "@/src/hooks/useDebounce";
 import { apiSearchUsers } from "@/src/http/users";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -18,22 +18,19 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Screen() {
-  const insets = useSafeAreaInsets();
-  const { user } = useAuth();
   const [text, setText] = useState("");
+  const debouncedText = useDebounce(text, 500);
 
+  const insets = useSafeAreaInsets();
   const router = useRouter();
-  const {theme } = useTheme();
-
-  const queryClient = useQueryClient();
+  const { theme } = useTheme();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["users", text.trim()],
-    queryFn: () => apiSearchUsers(text.trim()),
-    enabled: !!text.trim(),
+    queryKey: ["users", debouncedText.trim()],
+    queryFn: () => apiSearchUsers(debouncedText.trim()),
+    enabled: !!debouncedText.trim(),
   });
 
-  const authUser = user!;
   const users = data?.results || [];
 
   return (
@@ -60,7 +57,7 @@ export default function Screen() {
               router.back();
             }}
           >
-            <Ionicons name="arrow-back" size={24} color={theme.text}/>
+            <Ionicons name="arrow-back" size={24} color={theme.text} />
           </TouchableOpacity>
           <View style={{ flex: 1 }}>
             <Input
