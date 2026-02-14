@@ -50,7 +50,14 @@ export default function PostCard({
           props.onShowMore?.();
         }}
       >
-        <Text style={{ fontSize: 16, marginBlockStart: 10, color: theme.text, lineHeight: 16 * 1.5 }}>
+        <Text
+          style={{
+            fontSize: 16,
+            marginBlockStart: 10,
+            color: theme.text,
+            lineHeight: 16 * 1.5,
+          }}
+        >
           {isPreview ? previewText(post.content, 350) : post.content}
         </Text>
       </Pressable>
