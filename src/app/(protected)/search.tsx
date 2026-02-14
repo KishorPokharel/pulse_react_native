@@ -1,7 +1,10 @@
 import Avatar from "@/src/components/avatar";
 import Input from "@/src/components/input";
+import { useTheme } from "@/src/context/ThemeContext";
 import { useAuth } from "@/src/hooks/useAuth";
 import { apiSearchUsers } from "@/src/http/users";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -20,6 +23,7 @@ export default function Screen() {
   const [text, setText] = useState("");
 
   const router = useRouter();
+  const {theme } = useTheme();
 
   const queryClient = useQueryClient();
 
@@ -45,16 +49,31 @@ export default function Screen() {
         <View
           style={{
             gap: 8,
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
             marginBlockEnd: 16,
           }}
         >
-          <Input
-            autoFocus
-            placeholder="Search..."
-            value={text}
-            inputStyle={{ borderRadius: 100 }}
-            onChangeText={setText}
-          />
+          <TouchableOpacity
+            onPress={() => {
+              router.back();
+            }}
+          >
+            <Ionicons name="arrow-back" size={24} color={theme.text}/>
+          </TouchableOpacity>
+          <View style={{ flex: 1 }}>
+            <Input
+              autoFocus
+              placeholder="Search..."
+              value={text}
+              inputStyle={{ borderRadius: 100 }}
+              onChangeText={setText}
+            />
+          </View>
+          <TouchableOpacity onPress={() => setText("")}>
+            <MaterialIcons name="clear" size={24} color={theme.text} />
+          </TouchableOpacity>
         </View>
         {isLoading ? (
           <View style={{ paddingBlock: 16 }}>
