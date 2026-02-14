@@ -1,7 +1,7 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import { useTheme } from "../context/ThemeContext";
 import { formatDate, previewText } from "../utils";
 import Avatar from "./avatar";
@@ -32,13 +32,13 @@ export default function PostCard({
   return (
     <View style={{ backgroundColor: theme.background }}>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Pressable
+        <TouchableOpacity
           style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
           onPress={props.onProfileClick}
         >
           <Avatar name={post.name} />
           <Text style={{ fontSize: 16, color: theme.text }}>{post.name}</Text>
-        </Pressable>
+        </TouchableOpacity>
         <Text style={{ fontSize: 12, color: theme.text }}>
           {" • "}
           {formatDate(post.createdAt)}
