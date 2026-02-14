@@ -1,7 +1,7 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { Pressable, Text, TouchableOpacity, View } from "react-native";
+import { Pressable, Share, Text, TouchableOpacity, View } from "react-native";
+import { WEB_FRONTEND_URL } from "../constants";
 import { useTheme } from "../context/ThemeContext";
 import { formatDate, previewText } from "../utils";
 import Avatar from "./avatar";
@@ -102,7 +102,7 @@ export default function PostCard({
         </Pressable>
         <Pressable
           onPress={() => {
-            alert("Not implemented");
+            Share.share({ message: `${WEB_FRONTEND_URL}/posts/${post.id}` });
           }}
           style={{
             flexDirection: "row",
@@ -111,8 +111,9 @@ export default function PostCard({
           }}
         >
           <Feather name="share" size={20} color={theme.text} />
+          <Text style={{ fontSize: 18, color: theme.text }}>Share</Text>
         </Pressable>
-        <Pressable
+        {/* <Pressable
           onPress={() => {
             alert("Not implemented");
           }}
@@ -123,7 +124,7 @@ export default function PostCard({
           }}
         >
           <Ionicons name="ellipsis-vertical" size={20} color={theme.text} />
-        </Pressable>
+        </Pressable> */}
       </View>
     </View>
   );
