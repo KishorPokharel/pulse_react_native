@@ -73,7 +73,7 @@ export default function Screen() {
 
   return (
     <>
-      <View style={{ padding: 16, backgroundColor: "white" }}>
+      <View style={{ flex: 1, padding: 16, backgroundColor: "white" }}>
         <View>
           <View
             style={{
@@ -273,18 +273,23 @@ function UserProfilePosts({ user }: UserProfilePostsProps) {
   const posts = data?.results || [];
   return (
     <View style={{ gap: 8 }}>
-      <Text
-        style={{
-          fontSize: 18,
-          color: "#333",
-        }}
-      >
-        Posts
-      </Text>
+      {posts.length > 0 ? (
+        <Text
+          style={{
+            fontSize: 18,
+            color: "#333",
+          }}
+        >
+          Posts
+        </Text>
+      ) : null}
       <FlatList
         showsVerticalScrollIndicator={false}
         refreshing={isRefetching}
         onRefresh={refetch}
+        contentContainerStyle={{
+          paddingBlockEnd: 450,
+        }}
         ItemSeparatorComponent={() => (
           <View style={{ height: 1, backgroundColor: "#e0e0e0" }} />
         )}
