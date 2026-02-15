@@ -159,7 +159,7 @@ function UserProfileHeader({
       }}
     >
       <View style={{}}>
-        <Avatar name={user.name} size={48} />
+        <Avatar id={user.id} name={user.name} size={48} />
         <Text style={{ fontSize: 16, marginBlockStart: 8 }}>{user.name}</Text>
         {user.email === "" ? null : <Text>{user.email}</Text>}
         {user.bio ? (
@@ -303,7 +303,10 @@ function UserProfilePosts({ user }: UserProfilePostsProps) {
             <PostCard
               post={{
                 id: post.id,
-                name: user.name,
+                author: {
+                  id: user.id,
+                  name: user.name,
+                },
                 content: post.content,
                 createdAt: post.createdAt,
                 isLiked: likedPostIds.includes(post.id),

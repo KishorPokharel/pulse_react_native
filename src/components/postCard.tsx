@@ -10,7 +10,10 @@ import Avatar from "./avatar";
 type PostCardProps = {
   post: {
     id: number;
-    name: string;
+    author: {
+      id: number;
+      name: string;
+    };
     content: string;
     createdAt: string;
     numberOfLikes: number;
@@ -39,25 +42,27 @@ export default function PostCard({
           alignItems: "flex-start",
         }}
       >
-          <TouchableOpacity
-            style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
-            onPress={props.onProfileClick}
-          >
-            <Avatar name={post.name} />
-            <View>
-              <Text style={{ fontSize: 14, color: theme.text }}>
-                {post.name}
-              </Text>
-              <Text style={{ fontSize: 10, color: theme.text }}>
-                {formatDate(post.createdAt)}
-              </Text>
-            </View>
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+          onPress={props.onProfileClick}
+        >
+          <Avatar id={post.author.id} name={post.author.name} />
+          <View>
+            <Text
+              style={{ fontSize: 14, color: theme.text, fontWeight: "bold" }}
+            >
+              {post.author.name}
+            </Text>
+            <Text style={{ fontSize: 10, color: theme.text }}>
+              {formatDate(post.createdAt)}
+            </Text>
+          </View>
+        </TouchableOpacity>
 
-          <TouchableOpacity>
-            <Ionicons name="ellipsis-vertical" size={20} color={theme.text} />
-            {/* <Entypo name="dots-three-vertical" size={20} color={theme.text} /> */}
-          </TouchableOpacity>
+        <TouchableOpacity>
+          <Ionicons name="ellipsis-vertical" size={20} color={theme.text} />
+          {/* <Entypo name="dots-three-vertical" size={20} color={theme.text} /> */}
+        </TouchableOpacity>
       </View>
 
       <Pressable
@@ -89,7 +94,7 @@ export default function PostCard({
           onPress={props.onLikeTap}
           style={{
             flexDirection: "row",
-            gap: 8,
+            gap: 6,
             alignItems: "center",
           }}
         >
@@ -106,7 +111,7 @@ export default function PostCard({
           onPress={props.onShowMore}
           style={{
             flexDirection: "row",
-            gap: 8,
+            gap: 6,
             alignItems: "center",
           }}
         >
@@ -121,7 +126,7 @@ export default function PostCard({
           }}
           style={{
             flexDirection: "row",
-            gap: 8,
+            gap: 6,
             alignItems: "center",
           }}
         >

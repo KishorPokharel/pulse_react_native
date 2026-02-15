@@ -108,7 +108,10 @@ export function FullPostView({ id }: FullPostViewProps) {
           <PostCard
             post={{
               id: post.id,
-              name: post.author.name,
+              author: {
+                id: post.author.id,
+                name: post.author.name,
+              },
               content: post.content,
               createdAt: post.createdAt,
               isLiked: likedPostIds.includes(post.id),
@@ -234,7 +237,11 @@ function PostRepliesView({ postId }: PostRepliesViewProps) {
                   content: post.content,
                   createdAt: post.createdAt,
                   isLiked: likedPostIds.includes(post.id),
-                  name: post.author.name,
+                  author: {
+                    id: post.author.id,
+
+                    name: post.author.name,
+                  },
                   numberOfLikes: post.likesCount,
                   numberOfComments: post.repliesCount,
                 }}

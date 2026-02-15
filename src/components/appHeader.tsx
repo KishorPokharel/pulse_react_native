@@ -51,7 +51,7 @@ export default function AppHeader({ user, onPressAvatar }: AppHeaderProps) {
         <Text style={{ color: "#94a3b8" }}>Search...</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={onPressAvatar}>
-        <Avatar name={user.name} />
+        <Avatar id={user.id} name={user.name} />
       </TouchableOpacity>
     </View>
   );

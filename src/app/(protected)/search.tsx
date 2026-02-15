@@ -104,7 +104,7 @@ export default function Screen() {
                       gap: 8,
                     }}
                   >
-                    <Avatar name={user.name} />
+                    <Avatar id={user.id} name={user.name} />
                     <View>
                       <Text>{user.name}</Text>
                       <Text

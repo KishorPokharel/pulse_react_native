@@ -95,7 +95,10 @@ export default function Screen() {
             <PostCard
               post={{
                 id: post.id,
-                name: post.author.name,
+                author: {
+                  id: post.author.id,
+                  name: post.author.name,
+                },
                 content: post.content,
                 createdAt: post.createdAt,
                 isLiked: likedPostIds.includes(post.id),
