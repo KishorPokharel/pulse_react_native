@@ -1,5 +1,6 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Pressable, Share, Text, TouchableOpacity, View } from "react-native";
 import { WEB_FRONTEND_URL } from "../constants";
 import { useTheme } from "../context/ThemeContext";
@@ -31,18 +32,32 @@ export default function PostCard({
 
   return (
     <View style={{ backgroundColor: theme.background }}>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <TouchableOpacity
-          style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
-          onPress={props.onProfileClick}
-        >
-          <Avatar name={post.name} />
-          <Text style={{ fontSize: 16, color: theme.text }}>{post.name}</Text>
-        </TouchableOpacity>
-        <Text style={{ fontSize: 12, color: theme.text }}>
-          {" • "}
-          {formatDate(post.createdAt)}
-        </Text>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+        }}
+      >
+          <TouchableOpacity
+            style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+            onPress={props.onProfileClick}
+          >
+            <Avatar name={post.name} />
+            <View>
+              <Text style={{ fontSize: 14, color: theme.text }}>
+                {post.name}
+              </Text>
+              <Text style={{ fontSize: 10, color: theme.text }}>
+                {formatDate(post.createdAt)}
+              </Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity>
+            <Ionicons name="ellipsis-vertical" size={20} color={theme.text} />
+            {/* <Entypo name="dots-three-vertical" size={20} color={theme.text} /> */}
+          </TouchableOpacity>
       </View>
 
       <Pressable
@@ -83,7 +98,7 @@ export default function PostCard({
           ) : (
             <Feather name="heart" size={20} color={theme.text} />
           )}
-          <Text style={{ fontSize: 18, color: theme.text }}>
+          <Text style={{ fontSize: 16, color: theme.text }}>
             {post.numberOfLikes}
           </Text>
         </Pressable>
@@ -96,7 +111,7 @@ export default function PostCard({
           }}
         >
           <AntDesign name="comment" size={20} color={theme.text} />
-          <Text style={{ fontSize: 18, color: theme.text }}>
+          <Text style={{ fontSize: 16, color: theme.text }}>
             {post.numberOfComments}
           </Text>
         </Pressable>
@@ -111,7 +126,7 @@ export default function PostCard({
           }}
         >
           <Feather name="share" size={20} color={theme.text} />
-          <Text style={{ fontSize: 18, color: theme.text }}>Share</Text>
+          <Text style={{ fontSize: 16, color: theme.text }}>Share</Text>
         </Pressable>
         {/* <Pressable
           onPress={() => {

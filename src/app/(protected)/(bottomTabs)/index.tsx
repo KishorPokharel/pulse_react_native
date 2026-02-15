@@ -83,13 +83,13 @@ export default function Screen() {
         refreshing={isRefetching}
         onRefresh={refetch}
         ItemSeparatorComponent={() => (
-          <View style={{ height: 1, backgroundColor: "#e0e0e0" }} />
+          <View style={{ height: 1, backgroundColor: "#e9e9e97c" }} />
         )}
         data={feed}
         renderItem={({ item: post }) => (
           <View
             style={{
-              paddingBlock: 16,
+              paddingBlock: 12,
             }}
           >
             <PostCard
