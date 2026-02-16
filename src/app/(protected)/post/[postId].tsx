@@ -1,6 +1,7 @@
 import Button from "@/src/components/button";
 import FullscreenLoader from "@/src/components/fullscreenLoader";
 import PostCard from "@/src/components/postCard";
+import PostCardSkeleton from "@/src/components/postCardSkeleton";
 import TextArea from "@/src/components/textarea";
 import { useAuth } from "@/src/context/AuthContext";
 import { useTheme } from "@/src/context/ThemeContext";
@@ -9,27 +10,25 @@ import { apiCreateReply, apiLikeUnlikePost } from "@/src/http/posts";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
+import { Alert, FlatList, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function Screen() {
-  const params = useLocalSearchParams<{ postId: string }>();
-
-  return <FullPostView id={+params.postId} />;
-}
-
-type FullPostViewProps = {
-  id: number;
+type PostViewProps = {
+  postId: number;
 };
 
-export function FullPostView({ id }: FullPostViewProps) {
-  const [reply, setReply] = useState("");
-
-  const router = useRouter();
+function PostView({ postId }: PostViewProps) {
   const { theme } = useTheme();
-
+  const router = useRouter();
   const { likedPostIds, setLikedPostIds } = useAuth();
 
-  const { data, isLoading: isPostLoading, isError } = usePost(id);
+  const [reply, setReply] = useState("");
+
+  const {
+    data: postResponse,
+    isLoading: isPostLoading,
+    refetch: refetchPost,
+  } = usePost(postId);
 
   const queryClient = useQueryClient();
   const tapLikeMutation = useMutation({
@@ -40,7 +39,7 @@ export function FullPostView({ id }: FullPostViewProps) {
       } else {
         setLikedPostIds((prev) => prev.filter((id) => id !== data.postId));
       }
-      queryClient.invalidateQueries({ queryKey: ["posts", id] });
+      queryClient.invalidateQueries({ queryKey: ["posts", postId] });
     },
     onError: () => {
       alert("Something went wrong");
@@ -50,8 +49,10 @@ export function FullPostView({ id }: FullPostViewProps) {
   const createReplyMutation = useMutation({
     mutationFn: apiCreateReply,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts", id] });
-      queryClient.invalidateQueries({ queryKey: ["posts", id, "children"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", postId] });
+      queryClient.invalidateQueries({
+        queryKey: ["posts", postId, "children"],
+      });
       setReply("");
     },
     onError: () => {
@@ -63,104 +64,100 @@ export function FullPostView({ id }: FullPostViewProps) {
     if (reply.trim() === "") {
       return;
     }
-    createReplyMutation.mutate({ content: reply.trim(), parentPostId: id });
+    createReplyMutation.mutate({ content: reply.trim(), parentPostId: postId });
   };
 
   if (isPostLoading) {
-    return <FullscreenLoader />;
+    return <PostCardSkeleton />;
   }
 
-  const post = data!;
+  const post = postResponse!;
   return (
-    <>
+    <View style={{ paddingTop: 16 }}>
+      <PostCard
+        post={{
+          id: post.id,
+          author: {
+            id: post.author.id,
+            name: post.author.name,
+          },
+          content: post.content,
+          createdAt: post.createdAt,
+          isLiked: likedPostIds.includes(post.id),
+          numberOfLikes: post.likesCount,
+          numberOfComments: post.repliesCount,
+        }}
+        isPreview={false}
+        onLikeTap={() => {
+          tapLikeMutation.mutate(post.id);
+        }}
+        onProfileClick={() => {
+          router.push({
+            pathname: "/user/[userId]",
+            params: { userId: post.userId },
+          });
+        }}
+      />
+      <View
+        style={{ height: 1, backgroundColor: "#e0e0e0", marginBlock: 12 }}
+      />
+
+      {/* Reply Box Section */}
       <View
         style={{
-          flex: 1,
           backgroundColor: theme.background,
-          padding: 16,
-          paddingBlock: 8,
         }}
       >
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <PostCard
-            post={{
-              id: post.id,
-              author: {
-                id: post.author.id,
-                name: post.author.name,
-              },
-              content: post.content,
-              createdAt: post.createdAt,
-              isLiked: likedPostIds.includes(post.id),
-              numberOfLikes: post.likesCount,
-              numberOfComments: post.repliesCount,
-            }}
-            isPreview={false}
-            onLikeTap={() => {
-              tapLikeMutation.mutate(post.id);
-            }}
-            onProfileClick={() => {
-              router.push({
-                pathname: "/user/[userId]",
-                params: { userId: post.userId },
-              });
-            }}
+        <View
+          style={{
+            gap: 16,
+          }}
+        >
+          <TextArea
+            value={reply}
+            onChangeText={setReply}
+            height={72}
+            placeholder="Reply..."
+            placeholderTextColor={theme.text}
           />
-          <View
-            style={{ height: 1, backgroundColor: "#e0e0e0", marginBlock: 12 }}
-          />
-
-          {/* Reply Box Section */}
-          <View
-            style={{
-              backgroundColor: theme.background,
-            }}
-          >
-            <View
-              style={{
-                gap: 16,
-              }}
-            >
-              <TextArea
-                onFocus={(e) => {
-                  // console.log(e)
-                }}
-                value={reply}
-                onChangeText={setReply}
-                height={72}
-                placeholder="Reply..."
-                placeholderTextColor={theme.text}
-              />
-              <Button
-                label="Reply"
-                disabled={reply.trim() === "" || createReplyMutation.isPending}
-                loading={createReplyMutation.isPending}
-                onPress={() => handlePostReply()}
-              ></Button>
-            </View>
-          </View>
-          {/* End Reply Section */}
-          <View
-            style={{ height: 1, backgroundColor: "#e0e0e0", marginBlock: 12 }}
-          />
-          <PostRepliesView postId={post.id} />
-        </ScrollView>
+          <Button
+            label="Reply"
+            disabled={reply.trim() === "" || createReplyMutation.isPending}
+            loading={createReplyMutation.isPending}
+            onPress={() => handlePostReply()}
+          ></Button>
+        </View>
       </View>
-    </>
+      {/* End Reply Section */}
+
+      <View
+        style={{ height: 1, backgroundColor: "#e0e0e0", marginBlock: 12 }}
+      />
+    </View>
   );
 }
 
-type PostRepliesViewProps = {
-  postId: number;
-};
+export default function Screen() {
+  const params = useLocalSearchParams<{ postId: string }>();
+  const postId = +params.postId;
 
-function PostRepliesView({ postId }: PostRepliesViewProps) {
   const router = useRouter();
   const { theme } = useTheme();
-
+  const insets = useSafeAreaInsets();
   const { likedPostIds, setLikedPostIds } = useAuth();
 
-  const { data, isLoading } = usePostReplies(postId);
+  const {
+    data: postResponse,
+    isLoading: isPostLoading,
+    refetch: refetchPost,
+  } = usePost(postId);
+
+  const {
+    data: postRepliesResponse,
+    isLoading: isRepliesLoading,
+    refetch: refetchReplies,
+    isRefetching: isRefetchingReplies,
+  } = usePostReplies(postId);
 
   const queryClient = useQueryClient();
   const tapLikeMutation = useMutation({
@@ -180,75 +177,80 @@ function PostRepliesView({ postId }: PostRepliesViewProps) {
     },
   });
 
-  if (isLoading) {
-    return (
-      <View
-        style={{
-          paddingBlock: 20,
-        }}
-      >
-        <ActivityIndicator size={"large"} />
-      </View>
-    );
+  if (isPostLoading || isRepliesLoading) {
+    return <FullscreenLoader />;
   }
 
-  const posts = data?.results!;
+  const replies = postRepliesResponse?.results || [];
   return (
-    <View style={{ gap: 20, backgroundColor: theme.background }}>
-      {posts.length > 0 ? (
-        <Text style={{ fontSize: 18, color: theme.text }}>
-          Relevant Replies
-        </Text>
-      ) : null}
-      <View>
-        {posts.map((post, idx) => {
-          return (
-            <View key={post.id}>
-              <PostCard
-                post={{
-                  id: post.id,
-                  content: post.content,
-                  createdAt: post.createdAt,
-                  isLiked: likedPostIds.includes(post.id),
-                  author: {
-                    id: post.author.id,
-                    name: post.author.name,
-                  },
-                  numberOfLikes: post.likesCount,
-                  numberOfComments: post.repliesCount,
+    <View
+      style={{
+        flex: 1,
+        paddingInline: 16,
+        paddingBottom: insets.bottom,
+        backgroundColor: theme.background,
+      }}
+    >
+      <FlatList
+        onRefresh={refetchReplies}
+        refreshing={isRefetchingReplies}
+        showsVerticalScrollIndicator={false}
+        ItemSeparatorComponent={() => (
+          <View style={{ height: 1, backgroundColor: "#e9e9e97c" }} />
+        )}
+        ListHeaderComponent={
+          <>
+            <PostView postId={postId} />
+            {replies.length > 0 ? (
+              <Text
+                style={{
+                  paddingBlock: 8,
+                  fontWeight: "bold",
+                  color: theme.text,
                 }}
-                isPreview={true}
-                onLikeTap={() => {
-                  tapLikeMutation.mutate(post.id);
-                }}
-                onProfileClick={() => {
-                  router.push({
-                    pathname: "/user/[userId]",
-                    params: { userId: post.userId },
-                  });
-                }}
-                onShowMore={() => {
-                  router.push({
-                    pathname: "/post/[postId]",
-                    params: {
-                      postId: post.id,
-                    },
-                  });
-                }}
-              />
-              {idx === posts.length - 1 ? null : (
-                <View
-                  style={{
-                    height: 1,
-                    backgroundColor: "#e0e0e0",
-                    marginBlock: 12,
-                  }}
-                />
-              )}
-            </View>
-          );
-        })}
-      </View>
+              >
+                Relevant Replies
+              </Text>
+            ) : null}
+          </>
+        }
+        data={replies}
+        keyExtractor={(post) => post.id + ""}
+        renderItem={({ item: post }) => (
+          <View style={{ paddingBlock: 12 }}>
+            <PostCard
+              post={{
+                id: post.id,
+                author: {
+                  id: post.author.id,
+                  name: post.author.name,
+                },
+                content: post.content,
+                createdAt: post.createdAt,
+                isLiked: likedPostIds.includes(post.id),
+                numberOfLikes: post.likesCount,
+                numberOfComments: post.repliesCount,
+              }}
+              isPreview={true}
+              onLikeTap={() => {
+                tapLikeMutation.mutate(post.id);
+              }}
+              onShowMore={() => {
+                router.push({
+                  pathname: "/post/[postId]",
+                  params: { postId: post.id },
+                });
+              }}
+              onProfileClick={() => {
+                router.push({
+                  pathname: "/user/[userId]",
+                  params: { userId: post.author.id },
+                });
+              }}
+            />
+          </View>
+        )}
+      />
     </View>
   );
 }
