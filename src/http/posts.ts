@@ -1,6 +1,6 @@
 import { apiClient } from "./client";
 
-export type Feed = {
+export type FeedResponse = {
   results: {
     id: number;
     content: string;
@@ -14,23 +14,22 @@ export type Feed = {
   }[];
 };
 
-export const apiGetFeed = async () => {
-  const data = await apiClient.get<Feed>("/feed");
-  return data;
-};
+export type FollowingFeedResponse = FeedResponse;
+export type LikedFeedResponse = FeedResponse;
+export type SavedFeedResponse = FeedResponse;
 
 export const apiGetFollowingFeed = async () => {
-  const data = await apiClient.get<Feed>("/feed/following");
+  const data = await apiClient.get<FollowingFeedResponse>("/feed/following");
   return data;
 };
 
 export const apiGetLikedFeed = async () => {
-  const data = await apiClient.get<Feed>("/feed/liked");
+  const data = await apiClient.get<LikedFeedResponse>("/feed/liked");
   return data;
 };
 
 export const apiGetSavedFeed = async () => {
-  const data = await apiClient.get<Feed>("/feed/saved");
+  const data = await apiClient.get<SavedFeedResponse>("/feed/saved");
   return data;
 };
 

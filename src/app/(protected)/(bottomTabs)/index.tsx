@@ -3,7 +3,7 @@ import PostCard from "@/src/components/postCard";
 import { useAuth } from "@/src/context/AuthContext";
 import { useTheme } from "@/src/context/ThemeContext";
 import { useFollowingFeed } from "@/src/hooks/feed";
-import { apiLikeUnlikePost, Feed } from "@/src/http/posts";
+import { apiLikeUnlikePost, FeedResponse } from "@/src/http/posts";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { FlatList, View } from "react-native";
@@ -41,7 +41,7 @@ export default function Screen() {
       } else {
         setLikedPostIds((prev) => prev.filter((id) => id !== data.postId));
       }
-      queryClient.setQueryData<Feed>(["feed"], (old) => {
+      queryClient.setQueryData<FeedResponse>(["feed"], (old) => {
         if (!old) return old;
         return {
           ...old,
