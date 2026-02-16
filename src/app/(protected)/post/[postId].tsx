@@ -4,13 +4,9 @@ import PostCard from "@/src/components/postCard";
 import TextArea from "@/src/components/textarea";
 import { useAuth } from "@/src/context/AuthContext";
 import { useTheme } from "@/src/context/ThemeContext";
-import {
-  apiCreateReply,
-  apiGetPostChildren,
-  apiGetSinglePost,
-  apiLikeUnlikePost,
-} from "@/src/http/posts";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { usePost, usePostReplies } from "@/src/hooks/posts";
+import { apiCreateReply, apiLikeUnlikePost } from "@/src/http/posts";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
@@ -25,36 +21,17 @@ type FullPostViewProps = {
   id: number;
 };
 
-type Post = {
-  id: number;
-  userId: number;
-  content: string;
-  createdAt: string;
-  author: {
-    id: number;
-    name: string;
-  };
-  likesCount: number;
-  repliesCount: number;
-};
-
 export function FullPostView({ id }: FullPostViewProps) {
   const [reply, setReply] = useState("");
 
-  const { likedPostIds, setLikedPostIds } = useAuth();
   const router = useRouter();
-  const queryClient = useQueryClient();
-
   const { theme } = useTheme();
-  const {
-    data,
-    isLoading: isPostLoading,
-    isError,
-  } = useQuery<Post>({
-    queryKey: ["posts", id],
-    queryFn: () => apiGetSinglePost(id),
-  });
 
+  const { likedPostIds, setLikedPostIds } = useAuth();
+
+  const { data, isLoading: isPostLoading, isError } = usePost(id);
+
+  const queryClient = useQueryClient();
   const tapLikeMutation = useMutation({
     mutationFn: apiLikeUnlikePost,
     onSuccess: (data) => {
@@ -179,15 +156,13 @@ type PostRepliesViewProps = {
 
 function PostRepliesView({ postId }: PostRepliesViewProps) {
   const router = useRouter();
+  const { theme } = useTheme();
 
   const { likedPostIds, setLikedPostIds } = useAuth();
 
-  const queryClient = useQueryClient();
-  const { data, isLoading } = useQuery({
-    queryKey: ["posts", postId, "children"],
-    queryFn: () => apiGetPostChildren(postId),
-  });
+  const { data, isLoading } = usePostReplies(postId);
 
+  const queryClient = useQueryClient();
   const tapLikeMutation = useMutation({
     mutationFn: apiLikeUnlikePost,
     onSuccess: (data) => {
@@ -204,8 +179,6 @@ function PostRepliesView({ postId }: PostRepliesViewProps) {
       alert("Something went wrong");
     },
   });
-
-  const { theme } = useTheme();
 
   if (isLoading) {
     return (
@@ -239,7 +212,6 @@ function PostRepliesView({ postId }: PostRepliesViewProps) {
                   isLiked: likedPostIds.includes(post.id),
                   author: {
                     id: post.author.id,
-
                     name: post.author.name,
                   },
                   numberOfLikes: post.likesCount,

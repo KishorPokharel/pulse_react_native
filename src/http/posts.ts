@@ -52,8 +52,21 @@ export const apiCreateReply = async (body: {
   return data;
 };
 
-export const apiGetSinglePost = async <T>(id: number) => {
-  const data = await apiClient.get<T>("/posts/" + id);
+type PostResponse = {
+  id: number;
+  userId: number;
+  content: string;
+  createdAt: string;
+  author: {
+    id: number;
+    name: string;
+  };
+  likesCount: number;
+  repliesCount: number;
+};
+
+export const apiGetSinglePost = async (id: number) => {
+  const data = await apiClient.get<PostResponse>("/posts/" + id);
   return data;
 };
 
