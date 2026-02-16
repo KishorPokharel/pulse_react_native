@@ -2,7 +2,7 @@ import Avatar from "@/src/components/avatar";
 import Button from "@/src/components/button";
 import FullscreenLoader from "@/src/components/fullscreenLoader";
 import PostCard from "@/src/components/postCard";
-import { useAuth } from "@/src/hooks/useAuth";
+import { useAuth } from "@/src/context/AuthContext";
 import {
   apiGetUserPosts,
   apiLikeUnlikePost,

@@ -1,7 +1,7 @@
 import Button from "@/src/components/button";
 import Input from "@/src/components/input";
 import TextArea from "@/src/components/textarea";
-import { useAuth } from "@/src/hooks/useAuth";
+import { useAuth } from "@/src/context/AuthContext";
 import { apiUpdateProfile } from "@/src/http/users";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";

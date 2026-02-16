@@ -2,8 +2,8 @@ import Button from "@/src/components/button";
 import FullscreenLoader from "@/src/components/fullscreenLoader";
 import PostCard from "@/src/components/postCard";
 import TextArea from "@/src/components/textarea";
+import { useAuth } from "@/src/context/AuthContext";
 import { useTheme } from "@/src/context/ThemeContext";
-import { useAuth } from "@/src/hooks/useAuth";
 import {
   apiCreateReply,
   apiGetPostChildren,

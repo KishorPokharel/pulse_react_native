@@ -1,5 +1,11 @@
 import * as SecureStore from "expo-secure-store";
-import { createContext, PropsWithChildren, useEffect, useState } from "react";
+import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { getMe, loginUser } from "../http/auth";
 import { apiClient } from "../http/client";
 
@@ -13,7 +19,7 @@ export type User = {
   updatedAt: string;
 };
 
-type AuthState = {
+type AuthContextType = {
   isLoggedIn: boolean;
   isAuthLoading: boolean;
   user: User | null;
@@ -24,7 +30,7 @@ type AuthState = {
   setUpdatedUser: (user: { name: string; bio: string }) => void;
 };
 
-export const AuthContext = createContext<AuthState>({
+export const AuthContext = createContext<AuthContextType>({
   isLoggedIn: false,
   isAuthLoading: false,
   user: null,
@@ -109,4 +115,13 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       {children}
     </AuthContext.Provider>
   );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useTheme must be used within AuthProvider");
+  }
+
+  return context;
 };

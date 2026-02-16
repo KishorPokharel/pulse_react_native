@@ -1,7 +1,7 @@
 import FullscreenLoader from "@/src/components/fullscreenLoader";
 import PostCard from "@/src/components/postCard";
+import { useAuth } from "@/src/context/AuthContext";
 import { useTheme } from "@/src/context/ThemeContext";
-import { useAuth } from "@/src/hooks/useAuth";
 import { apiGetFeed, apiLikeUnlikePost, Feed } from "@/src/http/posts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";

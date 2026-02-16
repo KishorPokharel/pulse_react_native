@@ -1,9 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { StatusBar } from "react-native";
-import { AuthProvider } from "../context/AuthContext";
+import { AuthProvider, useAuth } from "../context/AuthContext";
 import { ThemeProvider, useTheme } from "../context/ThemeContext";
-import { useAuth } from "../hooks/useAuth";
 
 function InnerLayout() {
   const { isAuthLoading, isLoggedIn } = useAuth();

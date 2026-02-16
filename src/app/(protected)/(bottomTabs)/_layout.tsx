@@ -1,5 +1,5 @@
 import AppHeader from "@/src/components/appHeader";
-import { useAuth } from "@/src/hooks/useAuth";
+import { useAuth } from "@/src/context/AuthContext";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Tabs, useRouter } from "expo-router";
 

@@ -1,6 +1,6 @@
 import Button from "@/src/components/button";
 import TextArea from "@/src/components/textarea";
-import { useAuth } from "@/src/hooks/useAuth";
+import { useAuth } from "@/src/context/AuthContext";
 import { apiCreatePost } from "@/src/http/posts";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";

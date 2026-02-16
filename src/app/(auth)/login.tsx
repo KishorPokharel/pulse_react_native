@@ -1,7 +1,7 @@
 import Button from "@/src/components/button";
 import Input from "@/src/components/input";
+import { useAuth } from "@/src/context/AuthContext";
 import { useTheme } from "@/src/context/ThemeContext";
-import { useAuth } from "@/src/hooks/useAuth";
 import { sleep } from "@/src/utils";
 import Octicons from "@expo/vector-icons/Octicons";
 import { Link } from "expo-router";
