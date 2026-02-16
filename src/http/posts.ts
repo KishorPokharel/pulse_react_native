@@ -19,6 +19,21 @@ export const apiGetFeed = async () => {
   return data;
 };
 
+export const apiGetFollowingFeed = async () => {
+  const data = await apiClient.get<Feed>("/feed/following");
+  return data;
+};
+
+export const apiGetLikedFeed = async () => {
+  const data = await apiClient.get<Feed>("/feed/liked");
+  return data;
+};
+
+export const apiGetSavedFeed = async () => {
+  const data = await apiClient.get<Feed>("/feed/saved");
+  return data;
+};
+
 export const apiCreatePost = async (body: { content: string }) => {
   const data = await apiClient.post<{
     id: number;
