@@ -2,8 +2,9 @@ import FullscreenLoader from "@/src/components/fullscreenLoader";
 import PostCard from "@/src/components/postCard";
 import { useAuth } from "@/src/context/AuthContext";
 import { useTheme } from "@/src/context/ThemeContext";
-import { apiGetFeed, apiLikeUnlikePost, Feed } from "@/src/http/posts";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useFollowingFeed } from "@/src/hooks/feed";
+import { apiLikeUnlikePost, Feed } from "@/src/http/posts";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { FlatList, View } from "react-native";
 
@@ -20,21 +21,18 @@ type Post = {
 
 export default function Screen() {
   const router = useRouter();
-  let { user: authUser, likedPostIds, setLikedPostIds } = useAuth();
-  authUser = authUser!;
-
   const { theme } = useTheme();
-  const queryClient = useQueryClient();
+
+  const { likedPostIds, setLikedPostIds } = useAuth();
+
   const {
     data: feedData,
     isLoading,
     isRefetching,
     refetch,
-  } = useQuery({
-    queryKey: ["feed"],
-    queryFn: apiGetFeed,
-  });
+  } = useFollowingFeed();
 
+  const queryClient = useQueryClient();
   const tapLikeMutation = useMutation({
     mutationFn: apiLikeUnlikePost,
     onSuccess: (data) => {
