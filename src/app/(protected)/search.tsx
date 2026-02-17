@@ -77,7 +77,35 @@ export default function Screen() {
           <View style={{ paddingBlock: 16 }}>
             <ActivityIndicator color="steelblue" size="large" />
           </View>
-        ) : (
+        ) : null}
+
+        {!isLoading && debouncedText.trim() === "" && users.length === 0 ? (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: theme.background,
+            }}
+          >
+            <Text style={{ color: theme.text }}>Type to search</Text>
+          </View>
+        ) : null}
+
+        {!isLoading && debouncedText.trim() != "" && users.length === 0 ? (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: theme.background,
+            }}
+          >
+            <Text style={{ color: theme.text }}>No users found.</Text>
+          </View>
+        ) : null}
+
+        {!isLoading && users.length > 0 ? (
           <FlatList
             showsVerticalScrollIndicator={false}
             ItemSeparatorComponent={() => (
@@ -120,7 +148,7 @@ export default function Screen() {
               </View>
             )}
           />
-        )}
+        ) : null}
       </View>
     </View>
   );

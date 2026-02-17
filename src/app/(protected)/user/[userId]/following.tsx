@@ -17,6 +17,21 @@ export default function Screen() {
   }
 
   const users = data?.results || [];
+  if (users.length === 0) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: theme.background,
+        }}
+      >
+        <Text style={{ color: theme.text }}>Nothing to see here yet.</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       <FlatList

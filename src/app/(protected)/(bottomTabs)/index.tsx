@@ -5,7 +5,7 @@ import { useTheme } from "@/src/context/ThemeContext";
 import { useFollowingFeed } from "@/src/hooks/feed";
 import { usePostLikeUnlike } from "@/src/hooks/posts";
 import { useRouter } from "expo-router";
-import { FlatList, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 
 export default function Screen() {
   const router = useRouter();
@@ -26,6 +26,21 @@ export default function Screen() {
   }
 
   const feed = feedData?.results || [];
+  if (feed.length === 0) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: theme.background,
+        }}
+      >
+        <Text style={{ color: theme.text }}>Nothing to see here yet.</Text>
+      </View>
+    );
+  }
+
   return (
     <View
       style={{ flex: 1, paddingInline: 16, backgroundColor: theme.background }}
