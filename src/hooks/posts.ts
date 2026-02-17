@@ -9,6 +9,7 @@ import {
   FeedResponse,
   PostRepliesResponse,
   PostResponse,
+  UserProfilePost,
 } from "../http/posts";
 
 export function usePost(postId: number) {
@@ -99,7 +100,13 @@ export function usePostLikeUnlike() {
   const { likedPostIds, setLikedPostIds } = useAuth();
 
   return useMutation({
-    mutationFn: ({ postId }: { postId: number; parentPostId?: number }) => {
+    mutationFn: ({
+      postId,
+    }: {
+      postId: number;
+      parentPostId?: number;
+      authorId?: number;
+    }) => {
       return apiLikeUnlikePost(postId);
     },
     onSuccess: (data, variables) => {
@@ -140,6 +147,29 @@ export function usePostLikeUnlike() {
       if (variables.parentPostId) {
         queryClient.setQueryData<PostRepliesResponse>(
           ["posts", variables.parentPostId, "children"],
+          (old) => {
+            if (!old) return old;
+            return {
+              ...old,
+              results: old.results.map((post) =>
+                post.id === data.postId
+                  ? {
+                      ...post,
+                      likesCount: data.liked
+                        ? post.likesCount + 1
+                        : post.likesCount - 1,
+                    }
+                  : post,
+              ),
+            };
+          },
+        );
+      }
+
+      // Update in user profile feed
+      if (variables.authorId) {
+        queryClient.setQueryData<UserProfilePost>(
+          ["users", variables.authorId, "posts"],
           (old) => {
             if (!old) return old;
             return {

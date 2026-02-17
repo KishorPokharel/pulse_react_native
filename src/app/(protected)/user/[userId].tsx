@@ -3,11 +3,8 @@ import Button from "@/src/components/button";
 import FullscreenLoader from "@/src/components/fullscreenLoader";
 import PostCard from "@/src/components/postCard";
 import { useAuth } from "@/src/context/AuthContext";
-import {
-  apiGetUserPosts,
-  apiLikeUnlikePost,
-  UserProfilePost,
-} from "@/src/http/posts";
+import { usePostLikeUnlike } from "@/src/hooks/posts";
+import { apiGetUserPosts } from "@/src/http/posts";
 import {
   apiFollowUser,
   apiGetUserProfile,
@@ -229,42 +226,7 @@ function UserProfilePosts({ user }: UserProfilePostsProps) {
     queryFn: () => apiGetUserPosts(user.id),
   });
 
-  const tapLikeMutation = useMutation({
-    mutationFn: apiLikeUnlikePost,
-    onSuccess: (data) => {
-      if (data.liked) {
-        setLikedPostIds([...likedPostIds, data.postId]);
-      } else {
-        setLikedPostIds((prev) => prev.filter((id) => id !== data.postId));
-      }
-      queryClient.setQueryData<UserProfilePost>(
-        ["users", user.id, "posts"],
-        (old) => {
-          if (!old) return old;
-          return {
-            ...old,
-            results: old.results.map((post) =>
-              post.id === data.postId
-                ? {
-                    ...post,
-                    likesCount: data.liked
-                      ? post.likesCount + 1
-                      : post.likesCount - 1,
-                  }
-                : post,
-            ),
-          };
-        },
-      );
-    },
-    onError: () => {
-      alert("Something went wrong");
-    },
-  });
-
-  const handleLikeTap = (postId: number) => {
-    tapLikeMutation.mutate(postId);
-  };
+  const likeUnlikeMutation = usePostLikeUnlike();
 
   if (isLoading) {
     return <FullscreenLoader />;
@@ -313,19 +275,22 @@ function UserProfilePosts({ user }: UserProfilePostsProps) {
                 numberOfLikes: post.likesCount,
                 numberOfComments: post.repliesCount,
               }}
-              onLikeTap={() => handleLikeTap(post.id)}
+              onLikeTap={() =>
+                likeUnlikeMutation.mutate({
+                  postId: post.id,
+                  authorId: user.id,
+                })
+              }
               onShowMore={() => {
                 router.push({
                   pathname: "/post/[postId]",
                   params: { postId: post.id },
                 });
               }}
-              // onProfileClick={() => {
-              //   router.push({
-              //     pathname: "/user/[userId]",
-              //     params: { userId: user.id },
-              //   });
-              // }}
+              likeBtnDisabled={
+                likeUnlikeMutation.isPending &&
+                likeUnlikeMutation.variables.postId === post.id
+              }
             />
           </View>
         )}
