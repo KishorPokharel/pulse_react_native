@@ -27,14 +27,14 @@ export const apiGetNotifications = async () => {
 };
 
 export const apiMarkAllNotificationAsRead = async () => {
-  const data = await apiClient.put<{ success: boolean }>(
+  const data = await apiClient.patch<{ success: boolean }>(
     `/notifications/read-all`,
   );
   return data;
 };
 
 export const apiMarkNotificationAsRead = async (notificationId: number) => {
-  const data = await apiClient.put<{ success: boolean }>(
+  const data = await apiClient.patch<{ success: boolean }>(
     `/notifications/${notificationId}/read`,
   );
   return data;
