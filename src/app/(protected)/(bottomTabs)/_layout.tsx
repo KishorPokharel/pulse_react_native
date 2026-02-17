@@ -1,5 +1,6 @@
 import AppHeader from "@/src/components/appHeader";
 import { useAuth } from "@/src/context/AuthContext";
+import { useUnreadNotificationCount } from "@/src/hooks/notifications";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Tabs, useRouter } from "expo-router";
 
@@ -7,6 +8,8 @@ export default function Layout() {
   const router = useRouter();
   let { user } = useAuth();
   user = user!;
+
+  const { data } = useUnreadNotificationCount();
 
   return (
     <Tabs
@@ -47,7 +50,7 @@ export default function Layout() {
         name="notifications"
         options={{
           title: "Notifications",
-          tabBarBadge: undefined,
+          tabBarBadge: data?.count || undefined,
           tabBarIcon: ({ color }) => {
             return (
               <MaterialIcons color={color} size={28} name={"notifications"} />
