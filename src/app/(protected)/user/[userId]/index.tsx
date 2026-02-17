@@ -172,17 +172,27 @@ function UserProfileHeader({
           gap: 16,
         }}
       >
-        <Pressable onPress={() => {
-          router.push({pathname: "/user/[userId]/followers", params: {userId: user.id}})
-        }}>
+        <Pressable
+          onPress={() => {
+            router.push({
+              pathname: "/user/[userId]/followers",
+              params: { userId: user.id },
+            });
+          }}
+        >
           <Text>
             <Text style={{ fontWeight: "bold" }}>{user.followersCount}</Text>
             {" Followers"}
           </Text>
         </Pressable>
-        <Pressable onPress={() => {
-          router.push({pathname: "/user/[userId]/following", params: {userId: user.id}})
-        }}>
+        <Pressable
+          onPress={() => {
+            router.push({
+              pathname: "/user/[userId]/following",
+              params: { userId: user.id },
+            });
+          }}
+        >
           <Text>
             <Text style={{ fontWeight: "bold" }}>{user.followingCount}</Text>
             {" Following"}

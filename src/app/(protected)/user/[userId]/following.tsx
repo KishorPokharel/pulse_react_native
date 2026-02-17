@@ -7,7 +7,7 @@ import { FlatList, Text, TouchableOpacity, View } from "react-native";
 
 export default function Screen() {
   const router = useRouter();
-  const {theme} = useTheme();
+  const { theme } = useTheme();
   const params = useLocalSearchParams<{ userId: string }>();
   const userId = +params.userId;
 
@@ -18,7 +18,7 @@ export default function Screen() {
 
   const users = data?.results || [];
   return (
-    <View style={{flex: 1, backgroundColor: theme.background}}>
+    <View style={{ flex: 1, backgroundColor: theme.background }}>
       <FlatList
         showsVerticalScrollIndicator={false}
         ItemSeparatorComponent={() => (
