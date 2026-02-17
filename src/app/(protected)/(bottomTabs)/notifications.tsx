@@ -6,6 +6,7 @@ import {
   useAllNotificationAsRead,
   useNotificationAsRead,
   useNotifications,
+  useUnreadNotificationCount,
 } from "@/src/hooks/notifications";
 import { timeAgo } from "@/src/utils";
 import { useRouter } from "expo-router";
@@ -16,12 +17,14 @@ export default function Screen() {
   const { data, isLoading, isRefetching, refetch } = useNotifications();
 
   const allReadMutation = useAllNotificationAsRead();
+  const { data: unreadNotifsCountData } = useUnreadNotificationCount();
 
   if (isLoading) {
     return <FullscreenLoader />;
   }
 
   const notifications = data?.results || [];
+  const unreadNotifsCount = unreadNotifsCountData?.count || 0;
   if (notifications.length === 0) {
     return (
       <View
@@ -62,12 +65,14 @@ export default function Screen() {
             <Text style={{ fontWeight: "bold", fontSize: 20 }}>
               Notifications
             </Text>
-            <Pressable
-              disabled={allReadMutation.isPending}
-              onPress={() => allReadMutation.mutate()}
-            >
-              <Text>Mark all as Read</Text>
-            </Pressable>
+            {unreadNotifsCount > 0 ? (
+              <Pressable
+                disabled={allReadMutation.isPending}
+                onPress={() => allReadMutation.mutate()}
+              >
+                <Text>Mark all as Read</Text>
+              </Pressable>
+            ) : null}
           </View>
         }
         data={notifications}
