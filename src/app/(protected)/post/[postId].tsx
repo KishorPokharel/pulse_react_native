@@ -1,16 +1,15 @@
 import Button from "@/src/components/button";
 import FullscreenLoader from "@/src/components/fullscreenLoader";
 import PostCard from "@/src/components/postCard";
-import PostCardSkeleton from "@/src/components/postCardSkeleton";
 import TextArea from "@/src/components/textarea";
 import { useAuth } from "@/src/context/AuthContext";
 import { useTheme } from "@/src/context/ThemeContext";
-import { usePost, usePostReplies } from "@/src/hooks/posts";
-import { apiCreateReply, apiLikeUnlikePost } from "@/src/http/posts";
+import { useCreateReply, usePost, usePostReplies } from "@/src/hooks/posts";
+import { apiLikeUnlikePost } from "@/src/http/posts";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, FlatList, Text, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type PostViewProps = {
@@ -46,17 +45,9 @@ function PostView({ postId }: PostViewProps) {
     },
   });
 
-  const createReplyMutation = useMutation({
-    mutationFn: apiCreateReply,
+  const createReplyMutation = useCreateReply({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts", postId] });
-      queryClient.invalidateQueries({
-        queryKey: ["posts", postId, "children"],
-      });
       setReply("");
-    },
-    onError: () => {
-      Alert.alert("Could not reply");
     },
   });
 
@@ -68,7 +59,7 @@ function PostView({ postId }: PostViewProps) {
   };
 
   if (isPostLoading) {
-    return <PostCardSkeleton />;
+    return <FullscreenLoader />;
   }
 
   const post = postResponse!;
@@ -199,7 +190,7 @@ export default function Screen() {
           <View style={{ height: 1, backgroundColor: "#e9e9e97c" }} />
         )}
         ListHeaderComponent={
-          <>
+          <View style={{ backgroundColor: theme.background }}>
             <PostView postId={postId} />
             {replies.length > 0 ? (
               <Text
@@ -212,10 +203,12 @@ export default function Screen() {
                 Relevant Replies
               </Text>
             ) : null}
-          </>
+          </View>
         }
         data={replies}
         keyExtractor={(post) => post.id + ""}
+        stickyHeaderHiddenOnScroll={true}
+        stickyHeaderIndices={[0]}
         renderItem={({ item: post }) => (
           <View style={{ paddingBlock: 12 }}>
             <PostCard
