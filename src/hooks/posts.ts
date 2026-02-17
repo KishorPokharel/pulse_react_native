@@ -2,13 +2,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Alert } from "react-native";
 import { useAuth } from "../context/AuthContext";
 import {
-    apiCreateReply,
-    apiGetPostChildren,
-    apiGetSinglePost,
-    apiLikeUnlikePost,
-    FeedResponse,
-    PostRepliesResponse,
-    PostResponse,
+  apiCreateReply,
+  apiGetPostChildren,
+  apiGetSinglePost,
+  apiLikeUnlikePost,
+  FeedResponse,
+  PostRepliesResponse,
+  PostResponse,
 } from "../http/posts";
 
 export function usePost(postId: number) {
@@ -37,6 +37,7 @@ export function useCreateReply(options?: {
   return useMutation({
     mutationFn: apiCreateReply,
     onSuccess: (data, variables) => {
+      // Update replies
       queryClient.setQueryData<PostRepliesResponse>(
         ["posts", variables.parentPostId, "children"],
         (old) => {
@@ -55,6 +56,19 @@ export function useCreateReply(options?: {
           };
         },
       );
+
+      // Update replies count
+      queryClient.setQueryData<PostResponse>(
+        ["posts", variables.parentPostId],
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            repliesCount: old.repliesCount + 1,
+          };
+        },
+      );
+
       options?.onSuccess?.();
     },
     onError: () => {
@@ -79,7 +93,7 @@ export function usePostLikeUnlike() {
         setLikedPostIds((prev) => prev.filter((id) => id !== data.postId));
       }
 
-      // update in feed
+      // Update in feed
       queryClient.setQueryData<FeedResponse>(["feed", "following"], (old) => {
         if (!old) return old;
         return {
@@ -97,7 +111,7 @@ export function usePostLikeUnlike() {
         };
       });
 
-      // update single post
+      // Update single post
       queryClient.setQueryData<PostResponse>(["posts", data.postId], (old) => {
         if (!old) return old;
         return {
@@ -106,7 +120,7 @@ export function usePostLikeUnlike() {
         };
       });
 
-      // update replies view
+      // Update replies view
       if (variables.parentPostId) {
         queryClient.setQueryData<PostRepliesResponse>(
           ["posts", variables.parentPostId, "children"],
