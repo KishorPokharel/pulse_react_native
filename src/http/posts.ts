@@ -52,7 +52,7 @@ export const apiCreateReply = async (body: {
   return data;
 };
 
-type PostResponse = {
+export type PostResponse = {
   id: number;
   userId: number;
   content: string;
@@ -86,22 +86,26 @@ export const apiGetUserPosts = async (userId: number) => {
   return data;
 };
 
-export const apiGetPostChildren = async (id: number) => {
-  const data = await apiClient.get<{
-    results: {
+export type PostRepliesResponse = {
+  results: {
+    id: number;
+    content: string;
+    parentPostId: number;
+    userId: number;
+    createdAt: string;
+    author: {
       id: number;
-      content: string;
-      parentPostId: number;
-      userId: number;
-      createdAt: string;
-      author: {
-        id: number;
-        name: string;
-      };
-      likesCount: number;
-      repliesCount: number;
-    }[];
-  }>(`/posts/${id}/children`);
+      name: string;
+    };
+    likesCount: number;
+    repliesCount: number;
+  }[];
+};
+
+export const apiGetPostChildren = async (id: number) => {
+  const data = await apiClient.get<PostRepliesResponse>(
+    `/posts/${id}/children`,
+  );
   return data;
 };
 

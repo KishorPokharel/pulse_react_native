@@ -4,9 +4,12 @@ import PostCard from "@/src/components/postCard";
 import TextArea from "@/src/components/textarea";
 import { useAuth } from "@/src/context/AuthContext";
 import { useTheme } from "@/src/context/ThemeContext";
-import { useCreateReply, usePost, usePostReplies } from "@/src/hooks/posts";
-import { apiLikeUnlikePost } from "@/src/http/posts";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useCreateReply,
+  usePost,
+  usePostLikeUnlike,
+  usePostReplies,
+} from "@/src/hooks/posts";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { FlatList, Text, View } from "react-native";
@@ -19,7 +22,7 @@ type PostViewProps = {
 function PostView({ postId }: PostViewProps) {
   const { theme } = useTheme();
   const router = useRouter();
-  const { likedPostIds, setLikedPostIds } = useAuth();
+  const { likedPostIds } = useAuth();
 
   const [reply, setReply] = useState("");
 
@@ -29,22 +32,7 @@ function PostView({ postId }: PostViewProps) {
     refetch: refetchPost,
   } = usePost(postId);
 
-  const queryClient = useQueryClient();
-  const tapLikeMutation = useMutation({
-    mutationFn: apiLikeUnlikePost,
-    onSuccess: (data) => {
-      if (data.liked) {
-        setLikedPostIds([...likedPostIds, data.postId]);
-      } else {
-        setLikedPostIds((prev) => prev.filter((id) => id !== data.postId));
-      }
-      queryClient.invalidateQueries({ queryKey: ["posts", postId] });
-    },
-    onError: () => {
-      alert("Something went wrong");
-    },
-  });
-
+  const likeUnlikeMutation = usePostLikeUnlike();
   const createReplyMutation = useCreateReply({
     onSuccess: () => {
       setReply("");
@@ -52,10 +40,11 @@ function PostView({ postId }: PostViewProps) {
   });
 
   const handlePostReply = () => {
-    if (reply.trim() === "") {
+    const replyTrimmed = reply.trim();
+    if (replyTrimmed === "") {
       return;
     }
-    createReplyMutation.mutate({ content: reply.trim(), parentPostId: postId });
+    createReplyMutation.mutate({ content: replyTrimmed, parentPostId: postId });
   };
 
   if (isPostLoading) {
@@ -79,8 +68,12 @@ function PostView({ postId }: PostViewProps) {
           numberOfComments: post.repliesCount,
         }}
         isPreview={false}
+        likeBtnDisabled={
+          likeUnlikeMutation.isPending &&
+          likeUnlikeMutation.variables.postId === post.id
+        }
         onLikeTap={() => {
-          tapLikeMutation.mutate(post.id);
+          likeUnlikeMutation.mutate({ postId: post.id });
         }}
         onProfileClick={() => {
           router.push({
@@ -135,7 +128,7 @@ export default function Screen() {
   const router = useRouter();
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
-  const { likedPostIds, setLikedPostIds } = useAuth();
+  const { likedPostIds } = useAuth();
 
   const {
     data: postResponse,
@@ -150,23 +143,7 @@ export default function Screen() {
     isRefetching: isRefetchingReplies,
   } = usePostReplies(postId);
 
-  const queryClient = useQueryClient();
-  const tapLikeMutation = useMutation({
-    mutationFn: apiLikeUnlikePost,
-    onSuccess: (data) => {
-      if (data.liked) {
-        setLikedPostIds([...likedPostIds, data.postId]);
-      } else {
-        setLikedPostIds((prev) => prev.filter((id) => id !== data.postId));
-      }
-      queryClient.invalidateQueries({
-        queryKey: ["posts", postId, "children"],
-      });
-    },
-    onError: () => {
-      alert("Something went wrong");
-    },
-  });
+  const likeUnlikeMutation = usePostLikeUnlike();
 
   if (isPostLoading || isRepliesLoading) {
     return <FullscreenLoader />;
@@ -225,8 +202,15 @@ export default function Screen() {
                 numberOfComments: post.repliesCount,
               }}
               isPreview={true}
+              likeBtnDisabled={
+                likeUnlikeMutation.isPending &&
+                likeUnlikeMutation.variables.postId === post.id
+              }
               onLikeTap={() => {
-                tapLikeMutation.mutate(post.id);
+                likeUnlikeMutation.mutate({
+                  postId: post.id,
+                  parentPostId: postId,
+                });
               }}
               onShowMore={() => {
                 router.push({

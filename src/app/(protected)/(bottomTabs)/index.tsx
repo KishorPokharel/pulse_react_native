@@ -3,27 +3,14 @@ import PostCard from "@/src/components/postCard";
 import { useAuth } from "@/src/context/AuthContext";
 import { useTheme } from "@/src/context/ThemeContext";
 import { useFollowingFeed } from "@/src/hooks/feed";
-import { apiLikeUnlikePost, FeedResponse } from "@/src/http/posts";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { usePostLikeUnlike } from "@/src/hooks/posts";
 import { useRouter } from "expo-router";
 import { FlatList, View } from "react-native";
-
-type Post = {
-  author: {
-    id: number;
-    name: string;
-  };
-  id: number;
-  content: string;
-  createdAt: string;
-  liked: boolean;
-};
 
 export default function Screen() {
   const router = useRouter();
   const { theme } = useTheme();
-
-  const { likedPostIds, setLikedPostIds } = useAuth();
+  const { likedPostIds } = useAuth();
 
   const {
     data: feedData,
@@ -32,40 +19,7 @@ export default function Screen() {
     refetch,
   } = useFollowingFeed();
 
-  const queryClient = useQueryClient();
-  const tapLikeMutation = useMutation({
-    mutationFn: apiLikeUnlikePost,
-    onSuccess: (data) => {
-      if (data.liked) {
-        setLikedPostIds([...likedPostIds, data.postId]);
-      } else {
-        setLikedPostIds((prev) => prev.filter((id) => id !== data.postId));
-      }
-      queryClient.setQueryData<FeedResponse>(["feed"], (old) => {
-        if (!old) return old;
-        return {
-          ...old,
-          results: old.results.map((post) =>
-            post.id === data.postId
-              ? {
-                  ...post,
-                  likesCount: data.liked
-                    ? post.likesCount + 1
-                    : post.likesCount - 1,
-                }
-              : post,
-          ),
-        };
-      });
-    },
-    onError: () => {
-      alert("Something went wrong");
-    },
-  });
-
-  const handleLikeTap = (postId: number) => {
-    tapLikeMutation.mutate(postId);
-  };
+  const likeUnlikeMutation = usePostLikeUnlike();
 
   if (isLoading) {
     return <FullscreenLoader />;
@@ -103,7 +57,11 @@ export default function Screen() {
                 numberOfLikes: post.likesCount,
                 numberOfComments: post.repliesCount,
               }}
-              onLikeTap={() => handleLikeTap(post.id)}
+              likeBtnDisabled={
+                likeUnlikeMutation.isPending &&
+                likeUnlikeMutation.variables.postId === post.id
+              }
+              onLikeTap={() => likeUnlikeMutation.mutate({ postId: post.id })}
               onShowMore={() => {
                 router.push({
                   pathname: "/post/[postId]",

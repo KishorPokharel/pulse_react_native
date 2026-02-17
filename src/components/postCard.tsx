@@ -1,7 +1,14 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Pressable, Share, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  Share,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { WEB_FRONTEND_URL } from "../constants";
 import { useTheme } from "../context/ThemeContext";
 import { formatDate, previewText } from "../utils";
@@ -21,6 +28,7 @@ type PostCardProps = {
     isLiked: boolean;
   };
   isPreview?: boolean;
+  likeBtnDisabled?: boolean;
   onProfileClick?: () => void;
   onShowMore?: () => void;
   onLikeTap?: () => void;
@@ -92,13 +100,16 @@ export default function PostCard({
       >
         <Pressable
           onPress={props.onLikeTap}
+          disabled={props.likeBtnDisabled}
           style={{
             flexDirection: "row",
             gap: 6,
             alignItems: "center",
           }}
         >
-          {post.isLiked ? (
+          {props.likeBtnDisabled ? (
+            <ActivityIndicator color={"#f43f5e"} />
+          ) : post.isLiked ? (
             <AntDesign name="heart" size={20} color={"#f43f5e"} />
           ) : (
             <Feather name="heart" size={20} color={theme.text} />
