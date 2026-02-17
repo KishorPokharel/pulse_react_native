@@ -141,7 +141,6 @@ export function usePostLikeUnlike() {
         queryClient.setQueryData<PostRepliesResponse>(
           ["posts", variables.parentPostId, "children"],
           (old) => {
-            console.log(old);
             if (!old) return old;
             return {
               ...old,
