@@ -53,3 +53,28 @@ export const apiUpdateProfile = async (body: UpdateProfileBody) => {
   }>("/profile", body);
   return data;
 };
+
+export type UserFollowersResponse = {
+  results: {
+    id: number;
+    name: string;
+    bio: string;
+    followedAt: string;
+  }[];
+};
+
+export const apiGetUserFollowers = async (userId: number) => {
+  const data = await apiClient.get<UserFollowersResponse>(
+    `/users/${userId}/followers`,
+  );
+  return data;
+};
+
+export type UserFollowingResponse = UserFollowersResponse;
+
+export const apiGetUserFollowing = async (userId: number) => {
+  const data = await apiClient.get<UserFollowingResponse>(
+    `/users/${userId}/following`,
+  );
+  return data;
+};

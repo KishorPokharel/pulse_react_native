@@ -146,6 +146,7 @@ function UserProfileHeader({
   unfollowUser = () => {},
   followUnfollowRequestPending = false,
 }: UserProfileHeaderProps) {
+  const router = useRouter();
   let { user: authUser } = useAuth();
   authUser = authUser!;
 
@@ -171,13 +172,17 @@ function UserProfileHeader({
           gap: 16,
         }}
       >
-        <Pressable onPress={() => {}}>
+        <Pressable onPress={() => {
+          router.push({pathname: "/user/[userId]/followers", params: {userId: user.id}})
+        }}>
           <Text>
             <Text style={{ fontWeight: "bold" }}>{user.followersCount}</Text>
             {" Followers"}
           </Text>
         </Pressable>
-        <Pressable onPress={() => {}}>
+        <Pressable onPress={() => {
+          router.push({pathname: "/user/[userId]/following", params: {userId: user.id}})
+        }}>
           <Text>
             <Text style={{ fontWeight: "bold" }}>{user.followingCount}</Text>
             {" Following"}
