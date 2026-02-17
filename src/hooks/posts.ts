@@ -2,13 +2,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Alert } from "react-native";
 import { useAuth } from "../context/AuthContext";
 import {
-  apiCreateReply,
-  apiGetPostChildren,
-  apiGetSinglePost,
-  apiLikeUnlikePost,
-  FeedResponse,
-  PostRepliesResponse,
-  PostResponse,
+    apiCreateReply,
+    apiGetPostChildren,
+    apiGetSinglePost,
+    apiLikeUnlikePost,
+    FeedResponse,
+    PostRepliesResponse,
+    PostResponse,
 } from "../http/posts";
 
 export function usePost(postId: number) {
@@ -29,14 +29,32 @@ export function useCreateReply(options?: {
   onSuccess?: () => void;
   onError?: () => void;
 }) {
+  const { user } = useAuth();
+  const authUser = user!;
+
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: apiCreateReply,
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ["posts", variables.parentPostId],
-      });
+      queryClient.setQueryData<PostRepliesResponse>(
+        ["posts", variables.parentPostId, "children"],
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            results: [
+              {
+                ...data,
+                author: { id: authUser.id, name: authUser.name },
+                likesCount: 0,
+                repliesCount: 0,
+              },
+              ...old.results,
+            ],
+          };
+        },
+      );
       options?.onSuccess?.();
     },
     onError: () => {
