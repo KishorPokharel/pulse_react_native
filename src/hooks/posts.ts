@@ -69,6 +69,22 @@ export function useCreateReply(options?: {
         },
       );
 
+      // Update in feed
+      queryClient.setQueryData<FeedResponse>(["feed", "following"], (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          results: old.results.map((post) =>
+            post.id === variables.parentPostId
+              ? {
+                  ...post,
+                  repliesCount: post.repliesCount + 1,
+                }
+              : post,
+          ),
+        };
+      });
+
       options?.onSuccess?.();
     },
     onError: () => {
