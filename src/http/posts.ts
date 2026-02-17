@@ -33,22 +33,26 @@ export const apiGetSavedFeed = async () => {
   return data;
 };
 
+export type CreatePostResponse = {
+  id: number;
+  parentPostId: number;
+  content: string;
+  createdAt: string;
+  userId: number;
+};
+
 export const apiCreatePost = async (body: { content: string }) => {
-  const data = await apiClient.post<{
-    id: number;
-    parentPostId: number;
-    content: string;
-    createdAt: string;
-    userId: number;
-  }>("/posts", body);
+  const data = await apiClient.post<CreatePostResponse>("/posts", body);
   return data;
 };
+
+export type CreateReplyResponse = CreatePostResponse;
 
 export const apiCreateReply = async (body: {
   content: string;
   parentPostId: number;
 }) => {
-  const data = await apiClient.post("/posts", body);
+  const data = await apiClient.post<CreateReplyResponse>("/posts", body);
   return data;
 };
 
