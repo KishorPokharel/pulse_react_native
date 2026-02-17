@@ -7,7 +7,6 @@ export default function Layout() {
       <Stack.Screen name="user" options={{ headerShown: false }} />
       <Stack.Screen name="post" options={{ headerShown: false }} />
       <Stack.Screen name="search" options={{ headerShown: false }} />
-      <Stack.Screen name="followers" options={{ headerShown: false }} />
     </Stack>
   );
 }

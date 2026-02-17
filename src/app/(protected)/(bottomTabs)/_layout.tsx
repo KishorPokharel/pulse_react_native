@@ -47,6 +47,7 @@ export default function Layout() {
         name="notifications"
         options={{
           title: "Notifications",
+          tabBarBadge: undefined,
           tabBarIcon: ({ color }) => {
             return (
               <MaterialIcons color={color} size={28} name={"notifications"} />
