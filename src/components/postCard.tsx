@@ -1,18 +1,12 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import {
-  ActivityIndicator,
-  Pressable,
-  Share,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Pressable, Share, Text, TouchableOpacity, View } from "react-native";
 import { WEB_FRONTEND_URL } from "../constants";
 import { useTheme } from "../context/ThemeContext";
 import { formatDate, previewText } from "../utils";
 import Avatar from "./avatar";
+import { SpinningHeart } from "./spinningHeart";
 
 type PostCardProps = {
   post: {
@@ -108,7 +102,7 @@ export default function PostCard({
           }}
         >
           {props.likeBtnDisabled ? (
-            <ActivityIndicator color={"#f43f5e"} />
+            <SpinningHeart color="#f43f5e" isSpinning={true} />
           ) : post.isLiked ? (
             <AntDesign name="heart" size={20} color={"#f43f5e"} />
           ) : (

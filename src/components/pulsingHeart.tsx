@@ -2,7 +2,13 @@ import Feather from "@expo/vector-icons/Feather";
 import { useEffect, useRef } from "react";
 import { Animated, Easing } from "react-native";
 
-export default function PulsingHeart({ size = 20, color }: { size?: number; color: string }) {
+export default function PulsingHeart({
+  size = 20,
+  color,
+}: {
+  size?: number;
+  color: string;
+}) {
   const scaleValue = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -20,7 +26,7 @@ export default function PulsingHeart({ size = 20, color }: { size?: number; colo
           easing: Easing.ease,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     ).start();
   }, []);
 
