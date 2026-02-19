@@ -6,7 +6,7 @@ class ApiClient {
   private onUnauthorized?: UnauthorizedHandler;
 
   constructor(baseUrl: string) {
-    this.baseUrl = baseUrl.replace(/\/+$/, ""); // trim trailing slash
+    this.baseUrl = baseUrl.replace(/\/+$/, "");
   }
 
   setToken(token: string | null) {
@@ -43,29 +43,36 @@ class ApiClient {
     return response.json() as Promise<T>;
   }
 
-  get<T>(path: string) {
-    return this.request<T>(path, { method: "GET" });
+  get<T>(path: string, signal?: AbortSignal) {
+    return this.request<T>(path, { method: "GET", signal });
   }
 
-  post<T>(path: string, body?: unknown) {
+  post<T>(path: string, body?: unknown, signal?: AbortSignal) {
     return this.request<T>(path, {
       method: "POST",
       body: body ? JSON.stringify(body) : undefined,
+      signal,
     });
   }
 
-  put<T>(path: string, body?: unknown) {
+  put<T>(path: string, body?: unknown, signal?: AbortSignal) {
     return this.request<T>(path, {
       method: "PUT",
       body: body ? JSON.stringify(body) : undefined,
+      signal,
     });
   }
 
-  patch<T>(path: string, body?: unknown) {
+  patch<T>(path: string, body?: unknown, signal?: AbortSignal) {
     return this.request<T>(path, {
       method: "PATCH",
       body: body ? JSON.stringify(body) : undefined,
+      signal,
     });
+  }
+
+  delete<T>(path: string, signal?: AbortSignal) {
+    return this.request<T>(path, { method: "DELETE", signal });
   }
 }
 

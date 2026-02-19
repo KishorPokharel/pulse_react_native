@@ -14,14 +14,14 @@ export const apiGetUserProfile = async (userId: number) => {
   return data;
 };
 
-export const apiSearchUsers = async (name: string) => {
+export const apiSearchUsers = async (name: string, signal: AbortSignal) => {
   const params = new URLSearchParams({
     search: name,
   });
 
   const data = await apiClient.get<{
     results: { id: number; name: string; bio: string }[];
-  }>(`/users?${params}`);
+  }>(`/users?${params}`, signal);
 
   return data;
 };

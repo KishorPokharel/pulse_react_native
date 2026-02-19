@@ -5,7 +5,7 @@ import useDebounce from "@/src/hooks/useDebounce";
 import { apiSearchUsers } from "@/src/http/users";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -19,7 +19,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Screen() {
   const [text, setText] = useState("");
-  const debouncedText = useDebounce(text, 500);
+  const debouncedText = useDebounce(text, 400);
 
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -27,8 +27,11 @@ export default function Screen() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["users", debouncedText.trim()],
-    queryFn: () => apiSearchUsers(debouncedText.trim()),
+    queryFn: ({ signal }) => apiSearchUsers(debouncedText.trim(), signal),
     enabled: !!debouncedText.trim(),
+    placeholderData: keepPreviousData,
+    staleTime: 1 * 60 * 1000, // 1 minute
+    retry: 1,
   });
 
   const users = data?.results || [];
@@ -69,9 +72,11 @@ export default function Screen() {
               onChangeText={setText}
             />
           </View>
-          <TouchableOpacity onPress={() => setText("")}>
-            <MaterialIcons name="clear" size={24} color={theme.text} />
-          </TouchableOpacity>
+          {text.trim().length > 0 ? (
+            <TouchableOpacity onPress={() => setText("")}>
+              <MaterialIcons name="clear" size={24} color={theme.text} />
+            </TouchableOpacity>
+          ) : null}
         </View>
         {isLoading ? (
           <View style={{ paddingBlock: 16 }}>
