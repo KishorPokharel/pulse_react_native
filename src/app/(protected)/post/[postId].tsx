@@ -12,7 +12,13 @@ import {
 } from "@/src/hooks/posts";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import {
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type PostViewProps = {
@@ -90,27 +96,22 @@ function PostView({ postId }: PostViewProps) {
       <View
         style={{
           backgroundColor: theme.background,
+          gap: 16,
         }}
       >
-        <View
-          style={{
-            gap: 16,
-          }}
-        >
-          <TextArea
-            value={reply}
-            onChangeText={setReply}
-            height={72}
-            placeholder="Reply..."
-            placeholderTextColor={theme.text}
-          />
-          <Button
-            label="Reply"
-            disabled={reply.trim() === "" || createReplyMutation.isPending}
-            loading={createReplyMutation.isPending}
-            onPress={() => handlePostReply()}
-          ></Button>
-        </View>
+        <TextArea
+          value={reply}
+          onChangeText={setReply}
+          height={72}
+          placeholder="Reply..."
+          placeholderTextColor={theme.text}
+        />
+        <Button
+          label="Reply"
+          disabled={reply.trim() === "" || createReplyMutation.isPending}
+          loading={createReplyMutation.isPending}
+          onPress={() => handlePostReply()}
+        />
       </View>
       {/* End Reply Section */}
 
@@ -151,83 +152,89 @@ export default function Screen() {
 
   const replies = postRepliesResponse?.results || [];
   return (
-    <View
-      style={{
-        flex: 1,
-        paddingInline: 16,
-        paddingBottom: insets.bottom,
-        backgroundColor: theme.background,
-      }}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={0}
     >
-      <FlatList
-        onRefresh={refetchReplies}
-        refreshing={isRefetchingReplies}
-        showsVerticalScrollIndicator={false}
-        ItemSeparatorComponent={() => (
-          <View style={{ height: 1, backgroundColor: "#e9e9e97c" }} />
-        )}
-        ListHeaderComponent={
-          <View style={{ backgroundColor: theme.background }}>
-            <PostView postId={postId} />
-            {replies.length > 0 ? (
-              <Text
-                style={{
-                  paddingBlock: 8,
-                  fontWeight: "bold",
-                  color: theme.text,
+      <View
+        style={{
+          //flex: 1,
+          paddingInline: 16,
+          paddingBottom: insets.bottom,
+          backgroundColor: theme.background,
+        }}
+      >
+        <FlatList
+          onRefresh={refetchReplies}
+          refreshing={isRefetchingReplies}
+          showsVerticalScrollIndicator={false}
+          ItemSeparatorComponent={() => (
+            <View style={{ height: 1, backgroundColor: "#e9e9e97c" }} />
+          )}
+          ListHeaderComponent={
+            <View style={{ backgroundColor: theme.background }}>
+              <PostView postId={postId} />
+              {replies.length > 0 ? (
+                <Text
+                  style={{
+                    paddingBlock: 8,
+                    fontWeight: "bold",
+                    color: theme.text,
+                  }}
+                >
+                  Relevant Replies
+                </Text>
+              ) : null}
+            </View>
+          }
+          data={replies}
+          keyExtractor={(post) => post.id + ""}
+          stickyHeaderHiddenOnScroll={true}
+          stickyHeaderIndices={[0]}
+          renderItem={({ item: post }) => (
+            <View style={{ paddingBlock: 12 }}>
+              <PostCard
+                post={{
+                  id: post.id,
+                  author: {
+                    id: post.author.id,
+                    name: post.author.name,
+                  },
+                  content: post.content,
+                  createdAt: post.createdAt,
+                  isLiked: likedPostIds.includes(post.id),
+                  numberOfLikes: post.likesCount,
+                  numberOfComments: post.repliesCount,
                 }}
-              >
-                Relevant Replies
-              </Text>
-            ) : null}
-          </View>
-        }
-        data={replies}
-        keyExtractor={(post) => post.id + ""}
-        stickyHeaderHiddenOnScroll={true}
-        stickyHeaderIndices={[0]}
-        renderItem={({ item: post }) => (
-          <View style={{ paddingBlock: 12 }}>
-            <PostCard
-              post={{
-                id: post.id,
-                author: {
-                  id: post.author.id,
-                  name: post.author.name,
-                },
-                content: post.content,
-                createdAt: post.createdAt,
-                isLiked: likedPostIds.includes(post.id),
-                numberOfLikes: post.likesCount,
-                numberOfComments: post.repliesCount,
-              }}
-              isPreview={true}
-              likeBtnDisabled={
-                likeUnlikeMutation.isPending &&
-                likeUnlikeMutation.variables.postId === post.id
-              }
-              onLikeTap={() => {
-                likeUnlikeMutation.mutate({
-                  postId: post.id,
-                  parentPostId: postId,
-                });
-              }}
-              onShowMore={() => {
-                router.push({
-                  pathname: "/post/[postId]",
-                  params: { postId: post.id },
-                });
-              }}
-              onProfileClick={() => {
-                router.push({
-                  pathname: "/user/[userId]",
-                  params: { userId: post.author.id },
-                });
-              }}
-            />
-          </View>
-        )}
-      />
-    </View>
+                isPreview={true}
+                likeBtnDisabled={
+                  likeUnlikeMutation.isPending &&
+                  likeUnlikeMutation.variables.postId === post.id
+                }
+                onLikeTap={() => {
+                  likeUnlikeMutation.mutate({
+                    postId: post.id,
+                    parentPostId: postId,
+                  });
+                }}
+                onShowMore={() => {
+                  router.push({
+                    pathname: "/post/[postId]",
+                    params: { postId: post.id },
+                  });
+                }}
+                onProfileClick={() => {
+                  router.push({
+                    pathname: "/user/[userId]",
+                    params: { userId: post.author.id },
+                  });
+                }}
+              />
+            </View>
+          )}
+        />
+      </View>
+    </KeyboardAvoidingView>
   );
 }
