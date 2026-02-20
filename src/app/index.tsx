@@ -1,5 +1,4 @@
-import Octicons from "@expo/vector-icons/Octicons";
-import { Text, View } from "react-native";
+import { Image, View } from "react-native";
 import { useTheme } from "../context/ThemeContext";
 
 export default function Screen() {
@@ -19,8 +18,11 @@ export default function Screen() {
           backgroundColor: theme.background,
         }}
       >
-        <Octicons name="pulse" size={36} color={theme.text} />
-        <Text style={{ fontSize: 24, color: theme.text }}>Pulse</Text>
+        <Image source={require("../../assets/images/icon.png")} 
+                style={{ width: 200, height: 200 }}
+        />
+        {/* <Octicons name="pulse" size={36} color={theme.text} />
+        <Text style={{ fontSize: 24, color: theme.text }}>Pulse</Text> */}
       </View>
     </View>
   );
