@@ -138,7 +138,13 @@ function NotificationCard({ notification }: NotificationCardProps) {
           }
         }}
       >
-        <View style={{ flexDirection: "row", gap: 12, alignItems: "center" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            gap: 12,
+            alignItems: "center",
+          }}
+        >
           {!notification.read ? (
             <View>
               <View
@@ -152,7 +158,7 @@ function NotificationCard({ notification }: NotificationCardProps) {
             </View>
           ) : null}
           <Avatar id={actor.id} name={actor.name} />
-          <View>
+          <View style={{ flex: 1 }}>
             <Text style={{ color: theme.text }}>
               <Text style={{ fontWeight: "bold" }}>{actor.name}</Text>
               <Text>{getNotificationText(notification.type)}</Text>
