@@ -159,7 +159,7 @@ export default function Screen() {
     >
       <View
         style={{
-          //flex: 1,
+          flex: 1,
           paddingInline: 16,
           paddingBottom: insets.bottom,
           backgroundColor: theme.background,

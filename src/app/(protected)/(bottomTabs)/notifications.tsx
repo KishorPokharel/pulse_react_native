@@ -45,6 +45,7 @@ export default function Screen() {
       style={{
         flex: 1,
         backgroundColor: theme.background,
+        paddingInline: 16,
       }}
     >
       <FlatList
@@ -59,10 +60,11 @@ export default function Screen() {
               flexDirection: "row",
               justifyContent: "space-between",
               marginBlock: 12,
-              paddingInline: 16,
             }}
           >
-            <Text style={{ fontWeight: "bold", fontSize: 20 }}>
+            <Text
+              style={{ fontWeight: "bold", fontSize: 20, color: theme.text }}
+            >
               Notifications
             </Text>
             {unreadNotifsCount > 0 ? (
@@ -70,7 +72,7 @@ export default function Screen() {
                 disabled={allReadMutation.isPending}
                 onPress={() => allReadMutation.mutate()}
               >
-                <Text>Mark all as Read</Text>
+                <Text style={{ color: theme.text }}>Mark all as Read</Text>
               </Pressable>
             ) : null}
           </View>
@@ -80,8 +82,6 @@ export default function Screen() {
           <View
             style={{
               paddingBlock: 12,
-              paddingInline: 16,
-              opacity: notification.read ? 0.4 : 1,
               backgroundColor: theme.background,
             }}
           >
@@ -107,8 +107,10 @@ type NotificationCardProps = {
     };
   };
 };
+
 function NotificationCard({ notification }: NotificationCardProps) {
   const { actor } = notification;
+  const { theme } = useTheme();
   const router = useRouter();
 
   const readMutation = useNotificationAsRead();
@@ -117,6 +119,9 @@ function NotificationCard({ notification }: NotificationCardProps) {
     <>
       <Pressable
         onPress={() => {
+          if (!notification.read) {
+            readMutation.mutate(notification.id);
+          }
           switch (notification.type) {
             case "follow":
               router.push({
@@ -134,18 +139,32 @@ function NotificationCard({ notification }: NotificationCardProps) {
         }}
       >
         <View style={{ flexDirection: "row", gap: 12, alignItems: "center" }}>
+          {!notification.read ? (
+            <View>
+              <View
+                style={{
+                  height: 10,
+                  width: 10,
+                  backgroundColor: "steelblue",
+                  borderRadius: "100%",
+                }}
+              ></View>
+            </View>
+          ) : null}
           <Avatar id={actor.id} name={actor.name} />
           <View>
-            <Text>
+            <Text style={{ color: theme.text }}>
               <Text style={{ fontWeight: "bold" }}>{actor.name}</Text>
-              {getNotificationText(notification.type)}
+              <Text>{getNotificationText(notification.type)}</Text>
             </Text>
-            <Text>{timeAgo(notification.createdAt)}</Text>
+            <Text style={{ color: theme.text }}>
+              {timeAgo(notification.createdAt)}
+            </Text>
           </View>
         </View>
       </Pressable>
-      <View style={{ marginTop: 16 }}>
-        {!notification.read ? (
+      {!notification.read ? (
+        <View style={{ marginTop: 16 }}>
           <Button
             disabled={readMutation.isPending}
             loading={readMutation.isPending}
@@ -155,8 +174,8 @@ function NotificationCard({ notification }: NotificationCardProps) {
             label="Mark as read"
             type="secondary"
           />
-        ) : null}
-      </View>
+        </View>
+      ) : null}
     </>
   );
 }

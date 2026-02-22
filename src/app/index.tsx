@@ -18,8 +18,9 @@ export default function Screen() {
           backgroundColor: theme.background,
         }}
       >
-        <Image source={require("../../assets/images/icon.png")} 
-                style={{ width: 200, height: 200 }}
+        <Image
+          source={require("../../assets/images/icon.png")}
+          style={{ width: 200, height: 200 }}
         />
         {/* <Octicons name="pulse" size={36} color={theme.text} />
         <Text style={{ fontSize: 24, color: theme.text }}>Pulse</Text> */}
