@@ -9,6 +9,7 @@ export type FeedResponse = {
       id: number;
       name: string;
     };
+    parentPostId: number | null;
     likesCount: number;
     repliesCount: number;
   }[];
@@ -65,6 +66,7 @@ export type PostResponse = {
     id: number;
     name: string;
   };
+  parentPostId: number | null;
   likesCount: number;
   repliesCount: number;
 };

@@ -284,6 +284,7 @@ function UserProfilePosts({ user }: UserProfilePostsProps) {
                   id: user.id,
                   name: user.name,
                 },
+                parentPostId: null,
                 content: post.content,
                 createdAt: post.createdAt,
                 isLiked: likedPostIds.includes(post.id),

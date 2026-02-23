@@ -66,6 +66,7 @@ export default function Screen() {
                   id: post.author.id,
                   name: post.author.name,
                 },
+                parentPostId: null,
                 content: post.content,
                 createdAt: post.createdAt,
                 isLiked: likedPostIds.includes(post.id),

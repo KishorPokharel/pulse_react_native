@@ -1,7 +1,17 @@
+import { useActionSheet } from "@expo/react-native-action-sheet";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Pressable, Share, Text, TouchableOpacity, View } from "react-native";
+import { useRouter } from "expo-router";
+import {
+  Alert,
+  Pressable,
+  Share,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WEB_FRONTEND_URL } from "../constants";
 import { useTheme } from "../context/ThemeContext";
 import { formatDate, previewText } from "../utils";
@@ -15,11 +25,13 @@ type PostCardProps = {
       id: number;
       name: string;
     };
+    parentPostId: number | null;
     content: string;
     createdAt: string;
     numberOfLikes: number;
     numberOfComments: number;
     isLiked: boolean;
+    saved?: boolean;
   };
   isPreview?: boolean;
   likeBtnDisabled?: boolean;
@@ -34,6 +46,9 @@ export default function PostCard({
   ...props
 }: PostCardProps) {
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
+  const { showActionSheetWithOptions } = useActionSheet();
+  const router = useRouter();
 
   return (
     <View style={{ backgroundColor: theme.background }}>
@@ -61,7 +76,57 @@ export default function PostCard({
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            const options: string[] = [];
+
+            if (post.saved) {
+              options.push("Unsave");
+            } else {
+              options.push("Save post");
+            }
+            if (post.parentPostId) {
+              options.push("Go to parent post");
+            }
+            options.push("Copy post text");
+            options.push("Report");
+            options.push("Cancel");
+            const cancelButtonIndex = options.length - 1;
+
+            showActionSheetWithOptions(
+              {
+                options,
+                cancelButtonIndex,
+                containerStyle: {
+                  paddingBottom: insets.bottom,
+                },
+              },
+              (selectedIndex) => {
+                if (selectedIndex === undefined) {
+                  return;
+                }
+
+                const option = options[selectedIndex];
+                if (option === "Save post") {
+                  Alert.alert("Saving not implemented.");
+                } else if (option === "Unsave") {
+                  Alert.alert("Unsave not implemented.");
+                } else if (option === "Copy post text") {
+                  Alert.alert("Copying post text implemented.");
+                } else if (option === "Report") {
+                  Alert.alert("Reporting not implemented.");
+                } else if (option === "Go to parent post") {
+                  if (post.parentPostId) {
+                    router.push({
+                      pathname: "/post/[postId]",
+                      params: { postId: post.parentPostId },
+                    });
+                  }
+                }
+              },
+            );
+          }}
+        >
           <Ionicons name="ellipsis-vertical" size={20} color={theme.text} />
           {/* <Entypo name="dots-three-vertical" size={20} color={theme.text} /> */}
         </TouchableOpacity>
