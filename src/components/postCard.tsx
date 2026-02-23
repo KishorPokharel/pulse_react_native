@@ -2,6 +2,7 @@ import { useActionSheet } from "@expo/react-native-action-sheet";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import * as Clipboard from "expo-clipboard";
 import { useRouter } from "expo-router";
 import {
   Alert,
@@ -112,7 +113,10 @@ export default function PostCard({
                 } else if (option === "Unsave") {
                   Alert.alert("Unsave not implemented.");
                 } else if (option === "Copy post text") {
-                  Alert.alert("Copying post text implemented.");
+                  (async function () {
+                    await Clipboard.setStringAsync(post.content);
+                  })();
+                  Alert.alert("Copied", "Post text copied to clipboard.");
                 } else if (option === "Report") {
                   Alert.alert("Reporting not implemented.");
                 } else if (option === "Go to parent post") {
