@@ -3,12 +3,14 @@ import {
   apiGetLikedFeed,
   apiGetSavedFeed,
 } from "@/src/http/posts";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 export function useFollowingFeed() {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ["feed", "following"],
-    queryFn: apiGetFollowingFeed,
+    queryFn: ({ pageParam }) => apiGetFollowingFeed(pageParam),
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
   });
 }
 

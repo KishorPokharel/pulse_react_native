@@ -4,20 +4,30 @@ import { useAuth } from "@/src/context/AuthContext";
 import { useTheme } from "@/src/context/ThemeContext";
 import { useFollowingFeed } from "@/src/hooks/feed";
 import { usePostLikeUnlike } from "@/src/hooks/posts";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { FlatList, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
 
 export default function Screen() {
   const router = useRouter();
   const { theme } = useTheme();
   const { likedPostIds } = useAuth();
 
+  const queryClient = useQueryClient();
   const {
-    data: feedData,
+    data,
     isLoading,
     isRefetching,
-    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
   } = useFollowingFeed();
+
+  const handleRefresh = async () => {
+    await queryClient.resetQueries({
+      queryKey: ["feed", "following"],
+    });
+  };
 
   const likeUnlikeMutation = usePostLikeUnlike();
 
@@ -25,7 +35,8 @@ export default function Screen() {
     return <FullscreenLoader />;
   }
 
-  const feed = feedData?.results || [];
+  const feed = data?.pages.flatMap((page) => page.results) ?? [];
+
   if (feed.length === 0) {
     return (
       <View
@@ -48,7 +59,13 @@ export default function Screen() {
       <FlatList
         showsVerticalScrollIndicator={false}
         refreshing={isRefetching}
-        onRefresh={refetch}
+        onRefresh={handleRefresh}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        }}
+        onEndReachedThreshold={0.5}
         ItemSeparatorComponent={() => (
           <View style={{ height: 1, backgroundColor: "#e9e9e97c" }} />
         )}
@@ -93,6 +110,19 @@ export default function Screen() {
             />
           </View>
         )}
+        ListFooterComponent={
+          isFetchingNextPage ? (
+            <View
+              style={{
+                paddingVertical: 20,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <ActivityIndicator size="large" />
+            </View>
+          ) : null
+        }
         keyExtractor={(post) => post.id + ""}
       />
     </View>

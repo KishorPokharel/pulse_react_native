@@ -13,14 +13,22 @@ export type FeedResponse = {
     likesCount: number;
     repliesCount: number;
   }[];
+  nextCursor: string | null;
 };
 
 export type FollowingFeedResponse = FeedResponse;
 export type LikedFeedResponse = FeedResponse;
 export type SavedFeedResponse = FeedResponse;
 
-export const apiGetFollowingFeed = async () => {
-  const data = await apiClient.get<FollowingFeedResponse>("/feed/following");
+export const apiGetFollowingFeed = async (cursor?: string | null) => {
+  let url = "/feed/following";
+  if (cursor) {
+    const params = new URLSearchParams({
+      cursor: cursor,
+    });
+    url += `?${params}`;
+  }
+  const data = await apiClient.get<FollowingFeedResponse>(url);
   return data;
 };
 
