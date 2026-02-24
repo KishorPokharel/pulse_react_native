@@ -1,9 +1,4 @@
-import {
-  InfiniteData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Alert } from "react-native";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -122,29 +117,22 @@ export function usePostLikeUnlike() {
       }
 
       // Update in feed
-      queryClient.setQueryData<InfiniteData<FeedResponse>>(
-        ["feed", "following"],
-        (old) => {
-          if (!old) return old;
-
-          return {
-            ...old,
-            pages: old.pages.map((page) => ({
-              ...page,
-              results: page.results.map((post) =>
-                post.id === data.postId
-                  ? {
-                      ...post,
-                      likesCount: data.liked
-                        ? post.likesCount + 1
-                        : post.likesCount - 1,
-                    }
-                  : post,
-              ),
-            })),
-          };
-        },
-      );
+      queryClient.setQueryData<FeedResponse>(["feed", "following"], (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          results: old.results.map((post) =>
+            post.id === data.postId
+              ? {
+                  ...post,
+                  likesCount: data.liked
+                    ? post.likesCount + 1
+                    : post.likesCount - 1,
+                }
+              : post,
+          ),
+        };
+      });
 
       // Update single post
       queryClient.setQueryData<PostResponse>(["posts", data.postId], (old) => {
