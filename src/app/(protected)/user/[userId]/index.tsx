@@ -70,7 +70,9 @@ function UserProfileHeader({
     >
       <View style={{}}>
         <Avatar id={user.id} name={user.name} size={48} />
-        <Text style={{ fontSize: 16, marginBlockStart: 8, fontWeight: "bold" }}>{user.name}</Text>
+        <Text style={{ fontSize: 16, marginBlockStart: 8, fontWeight: "bold" }}>
+          {user.name}
+        </Text>
         {user.email === "" ? null : <Text>{user.email}</Text>}
         {user.bio ? (
           <Text style={{ marginBlockStart: 10 }}>{user.bio}</Text>
@@ -151,7 +153,7 @@ function UserProfileView({ user, isMyProfile }: UserProfileViewProops) {
   const followMutation = useFollowUser();
   const unfollowMutation = useUnfollowUser();
   const insets = useSafeAreaInsets();
-  const {theme } = useTheme();
+  const { theme } = useTheme();
 
   const handleLogout = () => {
     Alert.alert("Are you sure?", "", [
@@ -172,11 +174,13 @@ function UserProfileView({ user, isMyProfile }: UserProfileViewProops) {
 
   const posts = data?.results || [];
   return (
-    <View style={{ flex: 1, paddingInline: 16, backgroundColor: theme.background}}>
+    <View
+      style={{ flex: 1, paddingInline: 16, backgroundColor: theme.background }}
+    >
       <FlatList
         ListHeaderComponent={
           <>
-            <View style={{ flex: 1, paddingTop: 16}}>
+            <View style={{ flex: 1, paddingTop: 16 }}>
               <View
                 style={{
                   // marginBottom: 10,
@@ -221,10 +225,11 @@ function UserProfileView({ user, isMyProfile }: UserProfileViewProops) {
               </View>
               {posts.length > 0 ? (
                 <Text
-                  style={{marginTop: 10,
+                  style={{
+                    marginTop: 10,
                     fontSize: 18,
                     color: theme.text,
-                    fontWeight: "bold"
+                    fontWeight: "bold",
                   }}
                 >
                   Posts
