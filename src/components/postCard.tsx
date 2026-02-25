@@ -140,8 +140,14 @@ export default function PostCard({
             );
           }}
         >
-          <View style={{paddingBlockEnd: 8, paddingInlineStart: 8,  borderWidth: 0}}>
-          <Ionicons name="ellipsis-vertical" size={20} color={theme.text} />
+          <View
+            style={{
+              paddingBlockEnd: 8,
+              paddingInlineStart: 8,
+              borderWidth: 0,
+            }}
+          >
+            <Ionicons name="ellipsis-vertical" size={20} color={theme.text} />
           </View>
         </TouchableOpacity>
       </View>
