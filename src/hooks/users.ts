@@ -1,5 +1,26 @@
-import { useQuery } from "@tanstack/react-query";
-import { apiGetUserFollowers, apiGetUserFollowing } from "../http/users";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { apiGetUserPosts } from "../http/posts";
+import {
+  apiFollowUser,
+  apiGetUserFollowers,
+  apiGetUserFollowing,
+  apiGetUserProfile,
+  apiUnfollowUser,
+} from "../http/users";
+
+export function useUserProfile(userId: number) {
+  return useQuery({
+    queryKey: ["users", userId],
+    queryFn: () => apiGetUserProfile(userId),
+  });
+}
+
+export function useUserPosts(userId: number) {
+  return useQuery({
+    queryKey: ["users", userId, "posts"],
+    queryFn: () => apiGetUserPosts(userId),
+  });
+}
 
 export function useFollowers(userId: number) {
   return useQuery({
@@ -12,5 +33,31 @@ export function useFollowing(userId: number) {
   return useQuery({
     queryKey: ["users", userId, "following"],
     queryFn: () => apiGetUserFollowing(userId),
+  });
+}
+
+export function useFollowUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: apiFollowUser,
+    onSuccess: (data, userId) => {
+      queryClient.invalidateQueries({ queryKey: ["users", userId] });
+    },
+    onError: () => {
+      alert("Failed to follow");
+    },
+  });
+}
+
+export function useUnfollowUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: apiUnfollowUser,
+    onSuccess: (data, userId) => {
+      queryClient.invalidateQueries({ queryKey: ["users", userId] });
+    },
+    onError: () => {
+      alert("Failed to unfollow");
+    },
   });
 }

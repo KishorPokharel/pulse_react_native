@@ -1,16 +1,18 @@
 import { apiClient } from "./client";
 
+export type UserProfileResponse = {
+  id: number;
+  name: string;
+  bio: string;
+  email: string;
+  createdAt: string;
+  following: boolean;
+  followersCount: number;
+  followingCount: number;
+};
+
 export const apiGetUserProfile = async (userId: number) => {
-  const data = await apiClient.get<{
-    id: number;
-    name: string;
-    bio: string;
-    email: string;
-    createdAt: string;
-    following: boolean;
-    followersCount: number;
-    followingCount: number;
-  }>("/users/" + userId);
+  const data = await apiClient.get<UserProfileResponse>("/users/" + userId);
   return data;
 };
 

@@ -3,124 +3,36 @@ import Button from "@/src/components/button";
 import FullscreenLoader from "@/src/components/fullscreenLoader";
 import PostCard from "@/src/components/postCard";
 import { useAuth } from "@/src/context/AuthContext";
+import { useTheme } from "@/src/context/ThemeContext";
 import { usePostLikeUnlike } from "@/src/hooks/posts";
-import { apiGetUserPosts } from "@/src/http/posts";
 import {
-  apiFollowUser,
-  apiGetUserProfile,
-  apiUnfollowUser,
-} from "@/src/http/users";
+  useFollowUser,
+  useUnfollowUser,
+  useUserPosts,
+  useUserProfile,
+} from "@/src/hooks/users";
+import { UserProfileResponse } from "@/src/http/users";
 import { formatDate } from "@/src/utils";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Alert, FlatList, Pressable, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Screen() {
   const params = useLocalSearchParams<{ userId: string }>();
+  const userId = +params.userId;
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["users", params.userId],
-    queryFn: () => apiGetUserProfile(+params.userId),
-  });
-
-  const queryClient = useQueryClient();
-  const router = useRouter();
-  const followMutation = useMutation({
-    mutationFn: apiFollowUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users", params.userId] });
-    },
-    onError: () => {
-      alert("Failed to follow");
-    },
-  });
-
-  const unfollowMutation = useMutation({
-    mutationFn: apiUnfollowUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users", params.userId] });
-    },
-    onError: () => {
-      alert("Failed to follow");
-    },
-  });
-
-  let { user: authUser, logout } = useAuth();
+  let { user: authUser } = useAuth();
   authUser = authUser!;
 
-  const isMyProfile = +params.userId === authUser.id;
-  const user = data!;
+  const { data, isLoading: isUserProfileLoading } = useUserProfile(userId);
 
-  const handleLogout = () => {
-    Alert.alert("Are you sure?", "", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Logout",
-        style: "destructive",
-        onPress: async () => {
-          logout();
-        },
-      },
-    ]);
-  };
-
-  if (isLoading) {
+  if (isUserProfileLoading) {
     return <FullscreenLoader />;
   }
 
-  return (
-    <>
-      <View style={{ flex: 1, padding: 16, backgroundColor: "white" }}>
-        <View>
-          <View
-            style={{
-              marginBottom: 10,
-              borderBottomWidth: 1,
-              borderBottomColor: "#e0e0e0",
-              paddingBlockEnd: 10,
-            }}
-          >
-            <UserProfileHeader
-              user={{
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                bio: user.bio || "",
-                joinedAt: user.createdAt,
-                followersCount: user.followersCount,
-                followingCount: user.followingCount,
-              }}
-              following={user.following}
-              followUser={() => {
-                followMutation.mutate(user.id);
-              }}
-              unfollowUser={() => {
-                unfollowMutation.mutate(user.id);
-              }}
-              followUnfollowRequestPending={
-                followMutation.isPending || unfollowMutation.isPending
-              }
-            />
-            {isMyProfile ? (
-              <View style={{ marginBlock: 16, gap: 16 }}>
-                <Button
-                  label="Edit"
-                  type="secondary"
-                  onPress={() => {
-                    router.push("/user/edit");
-                  }}
-                />
-                <Button label="Logout" onPress={handleLogout} />
-              </View>
-            ) : null}
-          </View>
-        </View>
-        <View>
-          <UserProfilePosts user={{ id: user.id, name: user.name }} />
-        </View>
-      </View>
-    </>
-  );
+  const user = data!;
+  const isMyProfile = userId === authUser.id;
+  return <UserProfileView user={user} isMyProfile={isMyProfile} />;
 }
 
 type UserProfileHeaderProps = {
@@ -129,7 +41,7 @@ type UserProfileHeaderProps = {
     name: string;
     email: string;
     bio: string;
-    joinedAt: string;
+    createdAt: string;
     followersCount: number;
     followingCount: number;
   };
@@ -158,14 +70,14 @@ function UserProfileHeader({
     >
       <View style={{}}>
         <Avatar id={user.id} name={user.name} size={48} />
-        <Text style={{ fontSize: 16, marginBlockStart: 8 }}>{user.name}</Text>
+        <Text style={{ fontSize: 16, marginBlockStart: 8, fontWeight: "bold" }}>{user.name}</Text>
         {user.email === "" ? null : <Text>{user.email}</Text>}
         {user.bio ? (
           <Text style={{ marginBlockStart: 10 }}>{user.bio}</Text>
         ) : null}
       </View>
 
-      <Text style={{ fontSize: 12 }}>Joined {formatDate(user.joinedAt)}</Text>
+      <Text style={{ fontSize: 12 }}>Joined {formatDate(user.createdAt)}</Text>
       <View
         style={{
           flexDirection: "row",
@@ -223,25 +135,36 @@ function UserProfileHeader({
   );
 }
 
-type UserProfilePostsProps = {
-  user: {
-    id: number;
-    name: string;
-  };
+type UserProfileViewProops = {
+  user: UserProfileResponse;
+  isMyProfile: boolean;
 };
 
-function UserProfilePosts({ user }: UserProfilePostsProps) {
-  let { likedPostIds, setLikedPostIds } = useAuth();
+function UserProfileView({ user, isMyProfile }: UserProfileViewProops) {
+  let { likedPostIds, setLikedPostIds, logout } = useAuth();
 
   const router = useRouter();
-  const queryClient = useQueryClient();
 
-  const { data, isLoading, isRefetching, refetch } = useQuery({
-    queryKey: ["users", user.id, "posts"],
-    queryFn: () => apiGetUserPosts(user.id),
-  });
+  const { data, isLoading, isRefetching, refetch } = useUserPosts(user.id);
 
   const likeUnlikeMutation = usePostLikeUnlike();
+  const followMutation = useFollowUser();
+  const unfollowMutation = useUnfollowUser();
+  const insets = useSafeAreaInsets();
+  const {theme } = useTheme();
+
+  const handleLogout = () => {
+    Alert.alert("Are you sure?", "", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Logout",
+        style: "destructive",
+        onPress: async () => {
+          logout();
+        },
+      },
+    ]);
+  };
 
   if (isLoading) {
     return <FullscreenLoader />;
@@ -249,23 +172,72 @@ function UserProfilePosts({ user }: UserProfilePostsProps) {
 
   const posts = data?.results || [];
   return (
-    <View style={{ gap: 8 }}>
-      {posts.length > 0 ? (
-        <Text
-          style={{
-            fontSize: 18,
-            color: "#333",
-          }}
-        >
-          Posts
-        </Text>
-      ) : null}
+    <View style={{ flex: 1, paddingInline: 16, backgroundColor: theme.background}}>
       <FlatList
+        ListHeaderComponent={
+          <>
+            <View style={{ flex: 1, paddingTop: 16}}>
+              <View
+                style={{
+                  // marginBottom: 10,
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#e0e0e0",
+                  paddingBlockEnd: 10,
+                }}
+              >
+                <UserProfileHeader
+                  user={{
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    bio: user.bio || "",
+                    createdAt: user.createdAt,
+                    followersCount: user.followersCount,
+                    followingCount: user.followingCount,
+                  }}
+                  following={user.following}
+                  followUser={() => {
+                    followMutation.mutate(user.id);
+                  }}
+                  unfollowUser={() => {
+                    unfollowMutation.mutate(user.id);
+                  }}
+                  followUnfollowRequestPending={
+                    followMutation.isPending || unfollowMutation.isPending
+                  }
+                />
+                {isMyProfile ? (
+                  <View style={{ marginBlock: 16, gap: 16 }}>
+                    <Button
+                      label="Edit"
+                      type="secondary"
+                      onPress={() => {
+                        router.push("/user/edit");
+                      }}
+                    />
+                    <Button label="Logout" onPress={handleLogout} />
+                  </View>
+                ) : null}
+              </View>
+              {posts.length > 0 ? (
+                <Text
+                  style={{marginTop: 10,
+                    fontSize: 18,
+                    color: theme.text,
+                    fontWeight: "bold"
+                  }}
+                >
+                  Posts
+                </Text>
+              ) : null}
+            </View>
+          </>
+        }
         showsVerticalScrollIndicator={false}
         refreshing={isRefetching}
         onRefresh={refetch}
         contentContainerStyle={{
-          paddingBlockEnd: 450,
+          paddingBlockEnd: insets.bottom,
         }}
         ItemSeparatorComponent={() => (
           <View style={{ height: 1, backgroundColor: "#e0e0e0" }} />
