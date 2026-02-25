@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WEB_FRONTEND_URL } from "../constants";
+import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { formatDate, previewText } from "../utils";
 import Avatar from "./avatar";
@@ -46,11 +47,14 @@ export default function PostCard({
   isPreview = true,
   ...props
 }: PostCardProps) {
+  const { user } = useAuth();
+
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const { showActionSheetWithOptions } = useActionSheet();
   const router = useRouter();
 
+  const authUser = user!;
   return (
     <View style={{ backgroundColor: theme.background }}>
       <View
@@ -89,6 +93,9 @@ export default function PostCard({
             if (post.parentPostId) {
               options.push("Go to parent post");
             }
+            if (post.author.id === authUser.id) {
+              options.push("Delete");
+            }
             options.push("Copy post text");
             options.push("Report");
             options.push("Cancel");
@@ -112,6 +119,8 @@ export default function PostCard({
                   Alert.alert("Saving not implemented.");
                 } else if (option === "Unsave") {
                   Alert.alert("Unsave not implemented.");
+                } else if (option === "Delete") {
+                  Alert.alert("Delete not implemented.");
                 } else if (option === "Copy post text") {
                   (async function () {
                     await Clipboard.setStringAsync(post.content);
@@ -131,8 +140,9 @@ export default function PostCard({
             );
           }}
         >
+          <View style={{paddingBlockEnd: 8, paddingInlineStart: 8,  borderWidth: 0}}>
           <Ionicons name="ellipsis-vertical" size={20} color={theme.text} />
-          {/* <Entypo name="dots-three-vertical" size={20} color={theme.text} /> */}
+          </View>
         </TouchableOpacity>
       </View>
 
