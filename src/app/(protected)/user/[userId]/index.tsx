@@ -13,7 +13,7 @@ import {
 } from "@/src/hooks/users";
 import { UserProfileResponse } from "@/src/http/users";
 import { formatDate } from "@/src/utils";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Alert, FlatList, Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -177,6 +177,7 @@ function UserProfileView({ user, isMyProfile }: UserProfileViewProops) {
     <View
       style={{ flex: 1, paddingInline: 16, backgroundColor: theme.background }}
     >
+      <Stack.Screen options={{ title: `${user.name}'s Profile` }} />
       <FlatList
         ListHeaderComponent={
           <>
