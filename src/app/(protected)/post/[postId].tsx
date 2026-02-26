@@ -136,6 +136,7 @@ export default function Screen() {
     data: postResponse,
     isLoading: isPostLoading,
     refetch: refetchPost,
+    isRefetching: isRefetchingPost,
   } = usePost(postId);
 
   const {
@@ -144,6 +145,11 @@ export default function Screen() {
     refetch: refetchReplies,
     isRefetching: isRefetchingReplies,
   } = usePostReplies(postId);
+
+  const refetch = () => {
+    refetchPost();
+    refetchReplies();
+  };
 
   const likeUnlikeMutation = usePostLikeUnlike();
 
@@ -167,8 +173,8 @@ export default function Screen() {
         }}
       >
         <FlatList
-          onRefresh={refetchReplies}
-          refreshing={isRefetchingReplies}
+          onRefresh={refetch}
+          refreshing={isRefetchingReplies || isRefetchingPost}
           showsVerticalScrollIndicator={false}
           ItemSeparatorComponent={() => (
             <View style={{ height: 1, backgroundColor: "#e9e9e97c" }} />
