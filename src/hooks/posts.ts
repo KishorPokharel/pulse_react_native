@@ -31,7 +31,8 @@ export function useDeletePost() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ postId }: { postId: number }) => apiDeletePost(postId),
+    mutationFn: ({ postId }: { postId: number; parentPostId: number | null }) =>
+      apiDeletePost(postId),
     onSuccess: (data, variables) => {
       queryClient.setQueryData<FeedResponse>(["feed", "following"], (old) => {
         if (!old) return old;
@@ -40,6 +41,12 @@ export function useDeletePost() {
           results: old.results.filter((post) => post.id != variables.postId),
         };
       });
+
+      if (variables.parentPostId) {
+        queryClient.invalidateQueries({
+          queryKey: ["posts", variables.parentPostId],
+        });
+      }
     },
     onError: () => {
       Alert.alert("Failed to delete post.");

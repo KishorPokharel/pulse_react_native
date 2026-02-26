@@ -122,12 +122,24 @@ export default function PostCard({
                 } else if (option === "Unsave") {
                   Alert.alert("Unsave not implemented.");
                 } else if (option === "Delete") {
-                  if (
-                    !deletePostMutation.isPending &&
-                    deletePostMutation.variables?.postId != post.id
-                  ) {
-                    deletePostMutation.mutate({ postId: post.id });
-                  }
+                  Alert.alert("Are you sure?", "", [
+                    { text: "Cancel", style: "cancel" },
+                    {
+                      text: "Delete",
+                      style: "destructive",
+                      onPress: () => {
+                        if (
+                          !deletePostMutation.isPending &&
+                          deletePostMutation.variables?.postId != post.id
+                        ) {
+                          deletePostMutation.mutate({
+                            postId: post.id,
+                            parentPostId: post.parentPostId,
+                          });
+                        }
+                      },
+                    },
+                  ]);
                 } else if (option === "Copy post text") {
                   (async function () {
                     await Clipboard.setStringAsync(post.content);
