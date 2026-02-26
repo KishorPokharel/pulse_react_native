@@ -121,3 +121,10 @@ export const apiLikeUnlikePost = async (postId: number) => {
   );
   return data;
 };
+
+export const apiDeletePost = async (postId: number) => {
+  const data = await apiClient.delete<{ success: boolean; postId: number }>(
+    `/posts/${postId}`,
+  );
+  return data;
+};

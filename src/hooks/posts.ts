@@ -3,6 +3,7 @@ import { Alert } from "react-native";
 import { useAuth } from "../context/AuthContext";
 import {
   apiCreateReply,
+  apiDeletePost,
   apiGetPostChildren,
   apiGetSinglePost,
   apiLikeUnlikePost,
@@ -23,6 +24,26 @@ export function usePostReplies(postId: number) {
   return useQuery({
     queryKey: ["posts", postId, "children"],
     queryFn: () => apiGetPostChildren(postId),
+  });
+}
+
+export function useDeletePost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ postId }: { postId: number }) => apiDeletePost(postId),
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData<FeedResponse>(["feed", "following"], (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          results: old.results.filter((post) => post.id != variables.postId),
+        };
+      });
+    },
+    onError: () => {
+      Alert.alert("Failed to delete post.");
+    },
   });
 }
 

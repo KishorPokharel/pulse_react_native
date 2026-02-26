@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WEB_FRONTEND_URL } from "../constants";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
+import { useDeletePost } from "../hooks/posts";
 import { formatDate, previewText } from "../utils";
 import Avatar from "./avatar";
 import { SpinningHeart } from "./spinningHeart";
@@ -53,6 +54,7 @@ export default function PostCard({
   const insets = useSafeAreaInsets();
   const { showActionSheetWithOptions } = useActionSheet();
   const router = useRouter();
+  const deletePostMutation = useDeletePost();
 
   const authUser = user!;
   return (
@@ -120,7 +122,12 @@ export default function PostCard({
                 } else if (option === "Unsave") {
                   Alert.alert("Unsave not implemented.");
                 } else if (option === "Delete") {
-                  Alert.alert("Delete not implemented.");
+                  if (
+                    !deletePostMutation.isPending &&
+                    deletePostMutation.variables?.postId != post.id
+                  ) {
+                    deletePostMutation.mutate({ postId: post.id });
+                  }
                 } else if (option === "Copy post text") {
                   (async function () {
                     await Clipboard.setStringAsync(post.content);
