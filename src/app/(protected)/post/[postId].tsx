@@ -10,6 +10,7 @@ import {
   usePostLikeUnlike,
   usePostReplies,
 } from "@/src/hooks/posts";
+import { PostResponse } from "@/src/http/posts";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -22,21 +23,15 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type PostViewProps = {
-  postId: number;
+  post: PostResponse;
 };
 
-function PostView({ postId }: PostViewProps) {
+function PostView({ post }: PostViewProps) {
   const { theme } = useTheme();
   const router = useRouter();
   const { likedPostIds } = useAuth();
 
   const [reply, setReply] = useState("");
-
-  const {
-    data: postResponse,
-    isLoading: isPostLoading,
-    refetch: refetchPost,
-  } = usePost(postId);
 
   const likeUnlikeMutation = usePostLikeUnlike();
   const createReplyMutation = useCreateReply({
@@ -50,14 +45,12 @@ function PostView({ postId }: PostViewProps) {
     if (replyTrimmed === "") {
       return;
     }
-    createReplyMutation.mutate({ content: replyTrimmed, parentPostId: postId });
+    createReplyMutation.mutate({
+      content: replyTrimmed,
+      parentPostId: post.id,
+    });
   };
 
-  if (isPostLoading) {
-    return <FullscreenLoader />;
-  }
-
-  const post = postResponse!;
   return (
     <View style={{ paddingTop: 16 }}>
       <PostCard
@@ -158,6 +151,7 @@ export default function Screen() {
   }
 
   const replies = postRepliesResponse?.results || [];
+  const post = postResponse!;
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -181,7 +175,7 @@ export default function Screen() {
           )}
           ListHeaderComponent={
             <View style={{ backgroundColor: theme.background }}>
-              <PostView postId={postId} />
+              <PostView post={post} />
               {replies.length > 0 ? (
                 <Text
                   style={{
