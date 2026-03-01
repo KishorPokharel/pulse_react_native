@@ -1,9 +1,10 @@
 import { createContext, PropsWithChildren, useContext } from "react";
-import { useColorScheme } from "react-native";
+import { ColorSchemeName, useColorScheme } from "react-native";
 import { darkTheme, lightTheme, Theme } from "../constants/theme";
 
 type ThemeContextType = {
   theme: Theme;
+  colorScheme: ColorSchemeName;
 };
 
 export const ThemeContext = createContext<ThemeContextType | undefined>(
@@ -15,7 +16,9 @@ export function ThemeProvider({ children }: PropsWithChildren) {
   const theme = colorScheme === "dark" ? darkTheme : lightTheme;
 
   return (
-    <ThemeContext.Provider value={{ theme }}>{children}</ThemeContext.Provider>
+    <ThemeContext.Provider value={{ theme, colorScheme }}>
+      {children}
+    </ThemeContext.Provider>
   );
 }
 

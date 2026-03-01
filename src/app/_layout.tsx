@@ -7,12 +7,14 @@ import { ThemeProvider, useTheme } from "../context/ThemeContext";
 
 function InnerLayout() {
   const { isAuthLoading, isLoggedIn } = useAuth();
-  const { theme } = useTheme();
+  const { theme, colorScheme } = useTheme();
 
   return (
     <>
       <Stack
-        screenOptions={{ contentStyle: { backgroundColor: theme.background } }}
+        screenOptions={{
+          contentStyle: { backgroundColor: theme.background },
+        }}
       >
         <Stack.Protected guard={isAuthLoading}>
           <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -24,7 +26,9 @@ function InnerLayout() {
           <Stack.Screen name="(protected)" options={{ headerShown: false }} />
         </Stack.Protected>
       </Stack>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar
+        barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
+      />
     </>
   );
 }

@@ -42,7 +42,7 @@ export default function Screen() {
         flex: 1,
         paddingTop: insets.top + 8,
         padding: 16,
-        backgroundColor: "white",
+        backgroundColor: theme.background,
       }}
     >
       <View style={{ flex: 1, borderWidth: 0 }}>
@@ -139,10 +139,11 @@ export default function Screen() {
                   >
                     <Avatar id={user.id} name={user.name} />
                     <View>
-                      <Text>{user.name}</Text>
+                      <Text style={{ color: theme.text }}>{user.name}</Text>
                       <Text
                         style={{
                           marginBlockStart: 4,
+                          color: theme.text,
                         }}
                       >
                         {user.bio || ""}

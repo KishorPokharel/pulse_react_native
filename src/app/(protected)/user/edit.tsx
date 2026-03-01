@@ -2,6 +2,7 @@ import Button from "@/src/components/button";
 import Input from "@/src/components/input";
 import TextArea from "@/src/components/textarea";
 import { useAuth } from "@/src/context/AuthContext";
+import { useTheme } from "@/src/context/ThemeContext";
 import { apiUpdateProfile } from "@/src/http/users";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
@@ -27,6 +28,7 @@ export default function Screen() {
     bio: authUser.bio,
   });
   const [errors, setErrors] = useState<FormErrors>({});
+  const { theme } = useTheme();
 
   const handleChange = <K extends keyof ProfileFormData>(
     name: K,
@@ -71,7 +73,7 @@ export default function Screen() {
   };
 
   return (
-    <View style={{ flex: 1, padding: 16, backgroundColor: "white" }}>
+    <View style={{ flex: 1, padding: 16, backgroundColor: theme.background }}>
       <View style={{ gap: 10 }}>
         <Input
           label="Name"

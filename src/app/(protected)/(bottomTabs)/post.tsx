@@ -1,6 +1,7 @@
 import Button from "@/src/components/button";
 import TextArea from "@/src/components/textarea";
 import { useAuth } from "@/src/context/AuthContext";
+import { useTheme } from "@/src/context/ThemeContext";
 import { apiCreatePost } from "@/src/http/posts";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
@@ -14,6 +15,7 @@ export default function Screen() {
   const router = useRouter();
 
   const queryClient = useQueryClient();
+  const { theme } = useTheme();
 
   const createPostMutation = useMutation({
     mutationFn: apiCreatePost,
@@ -36,7 +38,7 @@ export default function Screen() {
   };
 
   return (
-    <View style={{ flex: 1, padding: 16, backgroundColor: "white" }}>
+    <View style={{ flex: 1, padding: 16, backgroundColor: theme.background }}>
       <View
         style={{
           //flex: 1,

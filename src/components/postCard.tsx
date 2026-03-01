@@ -109,6 +109,12 @@ export default function PostCard({
                 cancelButtonIndex,
                 containerStyle: {
                   paddingBottom: insets.bottom,
+                  backgroundColor: theme.background,
+                  borderTopLeftRadius: 12,
+                  borderTopRightRadius: 12,
+                },
+                textStyle: {
+                  color: theme.text,
                 },
               },
               (selectedIndex) => {

@@ -61,6 +61,7 @@ function UserProfileHeader({
   const router = useRouter();
   let { user: authUser } = useAuth();
   authUser = authUser!;
+  const { theme } = useTheme();
 
   return (
     <View
@@ -70,16 +71,29 @@ function UserProfileHeader({
     >
       <View style={{}}>
         <Avatar id={user.id} name={user.name} size={48} />
-        <Text style={{ fontSize: 16, marginBlockStart: 8, fontWeight: "bold" }}>
+        <Text
+          style={{
+            fontSize: 16,
+            marginBlockStart: 8,
+            fontWeight: "bold",
+            color: theme.text,
+          }}
+        >
           {user.name}
         </Text>
-        {user.email === "" ? null : <Text>{user.email}</Text>}
+        {user.email === "" ? null : (
+          <Text style={{ color: theme.text }}>{user.email}</Text>
+        )}
         {user.bio ? (
-          <Text style={{ marginBlockStart: 10 }}>{user.bio}</Text>
+          <Text style={{ marginBlockStart: 10, color: theme.text }}>
+            {user.bio}
+          </Text>
         ) : null}
       </View>
 
-      <Text style={{ fontSize: 12 }}>Joined {formatDate(user.createdAt)}</Text>
+      <Text style={{ fontSize: 12, color: theme.text }}>
+        Joined {formatDate(user.createdAt)}
+      </Text>
       <View
         style={{
           flexDirection: "row",
@@ -94,7 +108,7 @@ function UserProfileHeader({
             });
           }}
         >
-          <Text>
+          <Text style={{ color: theme.text }}>
             <Text style={{ fontWeight: "bold" }}>{user.followersCount}</Text>
             {" Followers"}
           </Text>
@@ -107,7 +121,7 @@ function UserProfileHeader({
             });
           }}
         >
-          <Text>
+          <Text style={{ color: theme.text }}>
             <Text style={{ fontWeight: "bold" }}>{user.followingCount}</Text>
             {" Following"}
           </Text>

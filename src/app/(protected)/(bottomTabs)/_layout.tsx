@@ -1,5 +1,6 @@
 import AppHeader from "@/src/components/appHeader";
 import { useAuth } from "@/src/context/AuthContext";
+import { useTheme } from "@/src/context/ThemeContext";
 import { useUnreadNotificationCount } from "@/src/hooks/notifications";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Tabs, useRouter } from "expo-router";
@@ -10,11 +11,16 @@ export default function Layout() {
   user = user!;
 
   const { data } = useUnreadNotificationCount();
+  const { theme } = useTheme();
 
   return (
     <Tabs
       screenOptions={{
         headerShown: true,
+        tabBarActiveBackgroundColor: theme.background,
+        tabBarInactiveBackgroundColor: theme.background,
+        tabBarActiveTintColor: "steelblue",
+
         header: (props) => (
           <AppHeader
             user={{ id: user.id, name: user.name }}

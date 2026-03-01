@@ -1,4 +1,4 @@
-import Octicons from "@expo/vector-icons/Octicons";
+import { Octicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -42,7 +42,9 @@ export default function AppHeader({ user, onPressAvatar }: AppHeaderProps) {
         onPress={() => router.push("/search")}
         style={{
           flex: 1,
-          backgroundColor: "#f1f5f9",
+          backgroundColor: theme.background,
+          borderWidth: 1,
+          borderColor: "#e0e0e0", //theme.text,
           paddingBlock: 8,
           paddingInline: 10,
           borderRadius: 100,
