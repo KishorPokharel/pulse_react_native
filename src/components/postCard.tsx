@@ -85,34 +85,63 @@ export default function PostCard({
 
         <TouchableOpacity
           onPress={() => {
-            const options: string[] = [];
+            type OptionId =
+              | "unsave"
+              | "save"
+              | "go-to-parent"
+              | "delete"
+              | "copy"
+              | "report"
+              | "cancel";
 
-            if (post.saved) {
-              options.push("Unsave");
-            } else {
-              options.push("Save post");
-            }
-            if (post.parentPostId) {
-              options.push("Go to parent post");
-            }
-            if (post.author.id === authUser.id) {
-              options.push("Delete");
-            }
-            options.push("Copy post text");
-            options.push("Report");
-            options.push("Cancel");
-            const cancelButtonIndex = options.length - 1;
+            const myOptions: { id: OptionId; label: string; shown: boolean }[] =
+              [
+                {
+                  id: "unsave",
+                  label: "Unsave",
+                  shown: post.saved ? true : false,
+                },
+                {
+                  id: "save",
+                  label: "Save Post",
+                  shown: post.saved ? false : true,
+                },
+                {
+                  id: "go-to-parent",
+                  label: "Go to parent post",
+                  shown: post.parentPostId != null,
+                },
+                {
+                  id: "delete",
+                  label: "Delete",
+                  shown: post.author.id === authUser.id,
+                },
+                { id: "copy", label: "Copy post text", shown: true },
+                {
+                  id: "report",
+                  label: "Report",
+                  shown: post.author.id != authUser.id,
+                },
+                { id: "cancel", label: "Cancel", shown: true },
+              ];
+            const shownOptions = myOptions.filter((option) => option.shown);
+            const cancelOptionIndex = shownOptions.findIndex(
+              (option) => option.id === "cancel",
+            );
+            const options = shownOptions.map((option) => option.label);
 
             showActionSheetWithOptions(
               {
                 options,
-                cancelButtonIndex,
+                cancelButtonIndex: cancelOptionIndex,
                 containerStyle: {
+                  paddingInline: 12,
                   paddingBottom: insets.bottom,
                   backgroundColor: theme.background,
                   borderTopLeftRadius: 12,
                   borderTopRightRadius: 12,
                 },
+                showSeparators: true,
                 textStyle: {
                   color: theme.text,
                 },
@@ -122,12 +151,18 @@ export default function PostCard({
                   return;
                 }
 
-                const option = options[selectedIndex];
-                if (option === "Save post") {
+                const { id: optionId } = shownOptions[selectedIndex];
+                if (optionId === "save") {
                   Alert.alert("Saving not implemented.");
-                } else if (option === "Unsave") {
+                  return;
+                }
+
+                if (optionId === "unsave") {
                   Alert.alert("Unsave not implemented.");
-                } else if (option === "Delete") {
+                  return;
+                }
+
+                if (optionId === "delete") {
                   Alert.alert("Are you sure?", "", [
                     { text: "Cancel", style: "cancel" },
                     {
@@ -146,20 +181,30 @@ export default function PostCard({
                       },
                     },
                   ]);
-                } else if (option === "Copy post text") {
+                  return;
+                }
+
+                if (optionId === "copy") {
                   (async function () {
                     await Clipboard.setStringAsync(post.content);
                   })();
                   Alert.alert("Copied", "Post text copied to clipboard.");
-                } else if (option === "Report") {
+                  return;
+                }
+
+                if (optionId === "report") {
                   Alert.alert("Reporting not implemented.");
-                } else if (option === "Go to parent post") {
+                  return;
+                }
+
+                if (optionId === "go-to-parent") {
                   if (post.parentPostId) {
                     router.push({
                       pathname: "/post/[postId]",
                       params: { postId: post.parentPostId },
                     });
                   }
+                  return;
                 }
               },
             );
@@ -248,18 +293,6 @@ export default function PostCard({
           <Feather name="share" size={20} color={theme.text} />
           <Text style={{ fontSize: 16, color: theme.text }}>Share</Text>
         </Pressable>
-        {/* <Pressable
-          onPress={() => {
-            alert("Not implemented");
-          }}
-          style={{
-            flexDirection: "row",
-            gap: 8,
-            alignItems: "center",
-          }}
-        >
-          <Ionicons name="ellipsis-vertical" size={20} color={theme.text} />
-        </Pressable> */}
       </View>
     </View>
   );
