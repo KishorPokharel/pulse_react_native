@@ -11,8 +11,10 @@ import {
 import { timeAgo } from "@/src/utils";
 import { useRouter } from "expo-router";
 import { FlatList, Pressable, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Screen() {
+  const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const { data, isLoading, isRefetching, refetch } = useNotifications();
 
@@ -24,6 +26,7 @@ export default function Screen() {
   }
 
   const notifications = data?.results || [];
+  // const notifications = [];
   const unreadNotifsCount = unreadNotifsCountData?.count || 0;
   if (notifications.length === 0) {
     return (
@@ -35,7 +38,7 @@ export default function Screen() {
           backgroundColor: theme.background,
         }}
       >
-        <Text>Nothing to see here.</Text>
+        <Text style={{ color: theme.text }}>Nothing to see here yet.</Text>
       </View>
     );
   }
@@ -44,6 +47,7 @@ export default function Screen() {
     <View
       style={{
         flex: 1,
+        paddingTop: insets.top,
         backgroundColor: theme.background,
         paddingInline: 16,
       }}
@@ -63,7 +67,7 @@ export default function Screen() {
             }}
           >
             <Text
-              style={{ fontWeight: "bold", fontSize: 20, color: theme.text }}
+              style={{ fontWeight: "bold", fontSize: 24, color: theme.text }}
             >
               Notifications
             </Text>

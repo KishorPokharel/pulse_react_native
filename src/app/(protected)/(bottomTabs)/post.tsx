@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Screen() {
   const { user } = useAuth();
@@ -14,6 +15,7 @@ export default function Screen() {
 
   const router = useRouter();
 
+  const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const { theme } = useTheme();
 
@@ -38,7 +40,14 @@ export default function Screen() {
   };
 
   return (
-    <View style={{ flex: 1, padding: 16, backgroundColor: theme.background }}>
+    <View
+      style={{
+        flex: 1,
+        paddingTop: insets.top + 16,
+        paddingInline: 16,
+        backgroundColor: theme.background,
+      }}
+    >
       <View
         style={{
           //flex: 1,

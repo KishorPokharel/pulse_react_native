@@ -20,24 +20,23 @@ export default function Layout() {
         tabBarActiveBackgroundColor: theme.background,
         tabBarInactiveBackgroundColor: theme.background,
         tabBarActiveTintColor: "steelblue",
-
-        header: (props) => (
-          <AppHeader
-            user={{ id: user.id, name: user.name }}
-            onPressAvatar={() => {
-              router.push({
-                pathname: "/user/[userId]",
-                params: { userId: user.id },
-              });
-            }}
-          />
-        ),
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: "Home",
+          header: (props) => (
+            <AppHeader
+              user={{ id: user.id, name: user.name }}
+              onPressAvatar={() => {
+                router.push({
+                  pathname: "/user/[userId]",
+                  params: { userId: user.id },
+                });
+              }}
+            />
+          ),
           tabBarIcon: ({ color }) => {
             return <MaterialIcons color={color} size={28} name={"home"} />;
           },
@@ -47,6 +46,7 @@ export default function Layout() {
         name="post"
         options={{
           title: "Add Post",
+          headerShown: false,
           tabBarIcon: ({ color }) => {
             return <MaterialIcons color={color} size={28} name={"add-box"} />;
           },
@@ -56,11 +56,25 @@ export default function Layout() {
         name="notifications"
         options={{
           title: "Notifications",
+
+          headerShown: false,
           tabBarBadge: data?.count || undefined,
           tabBarIcon: ({ color }) => {
             return (
               <MaterialIcons color={color} size={28} name={"notifications"} />
             );
+          },
+        }}
+      />
+
+      <Tabs.Screen
+        name="settings"
+        options={{
+          href: null,
+          title: "Settings",
+          headerShown: false,
+          tabBarIcon: ({ color }) => {
+            return <MaterialIcons color={color} size={28} name={"settings"} />;
           },
         }}
       />
