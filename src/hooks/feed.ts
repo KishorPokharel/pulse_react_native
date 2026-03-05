@@ -12,6 +12,13 @@ export function useFollowingFeed() {
   });
 }
 
+export function useGlobalFeed() {
+  return useQuery({
+    queryKey: ["feed", "global"],
+    queryFn: apiGetFollowingFeed,
+  });
+}
+
 export function useSavedFeed() {
   return useQuery({
     queryKey: ["feed", "saved"],
