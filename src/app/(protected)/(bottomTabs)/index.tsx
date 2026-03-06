@@ -1,23 +1,13 @@
 import FullscreenLoader from "@/src/components/fullscreenLoader";
 import PostCard from "@/src/components/postCard";
-import { useAuth } from "@/src/context/AuthContext";
 import { useTheme } from "@/src/context/ThemeContext";
 import { useFollowingFeed } from "@/src/hooks/feed";
 import { usePostLikeUnlike } from "@/src/hooks/posts";
-import { useRouter } from "expo-router";
 import { FlatList, Text, View } from "react-native";
 
 export default function Screen() {
-  const router = useRouter();
   const { theme } = useTheme();
-  const { likedPostIds } = useAuth();
-
-  const {
-    data: feedData,
-    isLoading,
-    isRefetching,
-    refetch,
-  } = useFollowingFeed();
+  const { data, isLoading, isRefetching, refetch } = useFollowingFeed();
 
   const likeUnlikeMutation = usePostLikeUnlike();
 
@@ -25,8 +15,8 @@ export default function Screen() {
     return <FullscreenLoader />;
   }
 
-  const feed = feedData?.results || [];
-  if (feed.length === 0) {
+  const postIds = data || [];
+  if (postIds.length === 0) {
     return (
       <View
         style={{
@@ -52,48 +42,24 @@ export default function Screen() {
         ItemSeparatorComponent={() => (
           <View style={{ height: 1, backgroundColor: "#e9e9e97c" }} />
         )}
-        data={feed}
-        renderItem={({ item: post }) => (
+        data={postIds}
+        renderItem={({ item: postId }) => (
           <View
             style={{
               paddingBlock: 12,
             }}
           >
             <PostCard
-              post={{
-                id: post.id,
-                author: {
-                  id: post.author.id,
-                  name: post.author.name,
-                },
-                parentPostId: null,
-                content: post.content,
-                createdAt: post.createdAt,
-                isLiked: likedPostIds.includes(post.id),
-                numberOfLikes: post.likesCount,
-                numberOfComments: post.repliesCount,
-              }}
+              postId={postId}
               likeBtnDisabled={
                 likeUnlikeMutation.isPending &&
-                likeUnlikeMutation.variables.postId === post.id
+                likeUnlikeMutation.variables.postId === postId
               }
-              onLikeTap={() => likeUnlikeMutation.mutate({ postId: post.id })}
-              onShowMore={() => {
-                router.push({
-                  pathname: "/post/[postId]",
-                  params: { postId: post.id },
-                });
-              }}
-              onProfileClick={() => {
-                router.push({
-                  pathname: "/user/[userId]",
-                  params: { userId: post.author.id },
-                });
-              }}
+              onLikeTap={() => likeUnlikeMutation.mutate({ postId: postId })}
             />
           </View>
         )}
-        keyExtractor={(post) => post.id + ""}
+        keyExtractor={(postId) => `following-feed-post-${postId}`}
       />
     </View>
   );

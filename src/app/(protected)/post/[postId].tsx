@@ -2,15 +2,12 @@ import Button from "@/src/components/button";
 import FullscreenLoader from "@/src/components/fullscreenLoader";
 import PostCard from "@/src/components/postCard";
 import TextArea from "@/src/components/textarea";
-import { useAuth } from "@/src/context/AuthContext";
 import { useTheme } from "@/src/context/ThemeContext";
 import {
   useCreateReply,
-  usePost,
   usePostLikeUnlike,
   usePostReplies,
 } from "@/src/hooks/posts";
-import { PostResponse } from "@/src/http/posts";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -23,13 +20,11 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type PostViewProps = {
-  post: PostResponse;
+  postId: number;
 };
 
-function PostView({ post }: PostViewProps) {
+function PostView({ postId }: PostViewProps) {
   const { theme } = useTheme();
-  const router = useRouter();
-  const { likedPostIds } = useAuth();
 
   const [reply, setReply] = useState("");
 
@@ -47,39 +42,22 @@ function PostView({ post }: PostViewProps) {
     }
     createReplyMutation.mutate({
       content: replyTrimmed,
-      parentPostId: post.id,
+      parentPostId: postId,
     });
   };
 
   return (
     <View style={{ paddingTop: 16 }}>
       <PostCard
-        post={{
-          id: post.id,
-          author: {
-            id: post.author.id,
-            name: post.author.name,
-          },
-          parentPostId: post.parentPostId,
-          content: post.content,
-          createdAt: post.createdAt,
-          isLiked: likedPostIds.includes(post.id),
-          numberOfLikes: post.likesCount,
-          numberOfComments: post.repliesCount,
-        }}
+        postId={postId}
         isPreview={false}
+        canShowMore={false}
         likeBtnDisabled={
           likeUnlikeMutation.isPending &&
-          likeUnlikeMutation.variables.postId === post.id
+          likeUnlikeMutation.variables.postId === postId
         }
         onLikeTap={() => {
-          likeUnlikeMutation.mutate({ postId: post.id });
-        }}
-        onProfileClick={() => {
-          router.push({
-            pathname: "/user/[userId]",
-            params: { userId: post.userId },
-          });
+          likeUnlikeMutation.mutate({ postId: postId });
         }}
       />
       <View
@@ -123,35 +101,21 @@ export default function Screen() {
   const router = useRouter();
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
-  const { likedPostIds } = useAuth();
 
   const {
-    data: postResponse,
-    isLoading: isPostLoading,
-    refetch: refetchPost,
-    isRefetching: isRefetchingPost,
-  } = usePost(postId);
-
-  const {
-    data: postRepliesResponse,
+    data: repliesIdsData,
     isLoading: isRepliesLoading,
     refetch: refetchReplies,
     isRefetching: isRefetchingReplies,
   } = usePostReplies(postId);
 
   const refetch = () => {
-    refetchPost();
     refetchReplies();
   };
 
   const likeUnlikeMutation = usePostLikeUnlike();
 
-  if (isPostLoading || isRepliesLoading) {
-    return <FullscreenLoader />;
-  }
-
-  const replies = postRepliesResponse?.results || [];
-  const post = postResponse!;
+  const repliesIds = repliesIdsData || [];
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -168,15 +132,15 @@ export default function Screen() {
       >
         <FlatList
           onRefresh={refetch}
-          refreshing={isRefetchingReplies || isRefetchingPost}
+          refreshing={isRefetchingReplies}
           showsVerticalScrollIndicator={false}
           ItemSeparatorComponent={() => (
             <View style={{ height: 1, backgroundColor: "#e9e9e97c" }} />
           )}
           ListHeaderComponent={
             <View style={{ backgroundColor: theme.background }}>
-              <PostView post={post} />
-              {replies.length > 0 ? (
+              <PostView postId={postId} />
+              {repliesIds.length > 0 ? (
                 <Text
                   style={{
                     paddingBlock: 8,
@@ -189,47 +153,24 @@ export default function Screen() {
               ) : null}
             </View>
           }
-          data={replies}
-          keyExtractor={(post) => post.id + ""}
+          data={repliesIds}
+          keyExtractor={(postId) => `posts-replies-${postId}`}
           stickyHeaderHiddenOnScroll={true}
           stickyHeaderIndices={[0]}
-          renderItem={({ item: post }) => (
+          ListEmptyComponent={isRepliesLoading ? <FullscreenLoader /> : null}
+          renderItem={({ item: replyId }) => (
             <View style={{ paddingBlock: 12 }}>
               <PostCard
-                post={{
-                  id: post.id,
-                  author: {
-                    id: post.author.id,
-                    name: post.author.name,
-                  },
-                  parentPostId: post.parentPostId,
-                  content: post.content,
-                  createdAt: post.createdAt,
-                  isLiked: likedPostIds.includes(post.id),
-                  numberOfLikes: post.likesCount,
-                  numberOfComments: post.repliesCount,
-                }}
+                postId={replyId}
                 isPreview={true}
                 likeBtnDisabled={
                   likeUnlikeMutation.isPending &&
-                  likeUnlikeMutation.variables.postId === post.id
+                  likeUnlikeMutation.variables.postId === replyId
                 }
                 onLikeTap={() => {
                   likeUnlikeMutation.mutate({
-                    postId: post.id,
+                    postId: replyId,
                     parentPostId: postId,
-                  });
-                }}
-                onShowMore={() => {
-                  router.push({
-                    pathname: "/post/[postId]",
-                    params: { postId: post.id },
-                  });
-                }}
-                onProfileClick={() => {
-                  router.push({
-                    pathname: "/user/[userId]",
-                    params: { userId: post.author.id },
                   });
                 }}
               />

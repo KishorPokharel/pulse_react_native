@@ -16,47 +16,59 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WEB_FRONTEND_URL } from "../constants";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
-import { useDeletePost } from "../hooks/posts";
+import { useDeletePost, usePost } from "../hooks/posts";
 import { formatDate, previewText } from "../utils";
 import Avatar from "./avatar";
+import FullscreenLoader from "./fullscreenLoader";
 import { SpinningHeart } from "./spinningHeart";
 
 type PostCardProps = {
-  post: {
-    id: number;
-    author: {
-      id: number;
-      name: string;
-    };
-    parentPostId: number | null;
-    content: string;
-    createdAt: string;
-    numberOfLikes: number;
-    numberOfComments: number;
-    isLiked: boolean;
-    saved?: boolean;
-  };
+  postId: number;
   isPreview?: boolean;
   likeBtnDisabled?: boolean;
-  onProfileClick?: () => void;
-  onShowMore?: () => void;
+  canShowMore?: boolean;
   onLikeTap?: () => void;
 };
 
 export default function PostCard({
-  post,
+  postId,
   isPreview = true,
+  canShowMore = true,
   ...props
 }: PostCardProps) {
-  const { user } = useAuth();
+  const { user, likedPostIds, setLikedPostIds } = useAuth();
 
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const { showActionSheetWithOptions } = useActionSheet();
   const router = useRouter();
+  const { data: postData, isLoading: isPostLoading } = usePost(postId);
   const deletePostMutation = useDeletePost();
 
+  if (isPostLoading) {
+    return <FullscreenLoader />;
+  }
+
+  function handleShowProfile(): void {
+    router.push({
+      pathname: "/user/[userId]",
+      params: { userId: post.author.id },
+    });
+  }
+
+  function handleShowMore(postId: number) {
+    if (!canShowMore) {
+      return;
+    }
+    router.push({
+      pathname: "/post/[postId]",
+      params: { postId: postId },
+    });
+  }
+
   const authUser = user!;
+  const post = postData!;
+
   return (
     <View style={{ backgroundColor: theme.background }}>
       <View
@@ -68,7 +80,7 @@ export default function PostCard({
       >
         <TouchableOpacity
           style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
-          onPress={props.onProfileClick}
+          onPress={handleShowProfile}
         >
           <Avatar id={post.author.id} name={post.author.name} />
           <View>
@@ -99,12 +111,14 @@ export default function PostCard({
                 {
                   id: "unsave",
                   label: "Unsave",
-                  shown: post.saved ? true : false,
+                  // shown: post.saved ? true : false,
+                  shown: true,
                 },
                 {
                   id: "save",
                   label: "Save Post",
-                  shown: post.saved ? false : true,
+                  // shown: post.saved ? false : true,
+                  shown: true,
                 },
                 {
                   id: "go-to-parent",
@@ -222,11 +236,7 @@ export default function PostCard({
         </TouchableOpacity>
       </View>
 
-      <Pressable
-        onPress={() => {
-          props.onShowMore?.();
-        }}
-      >
+      <Pressable onPress={() => handleShowMore(post.id)}>
         <Text
           style={{
             fontSize: 16,
@@ -258,17 +268,17 @@ export default function PostCard({
         >
           {props.likeBtnDisabled ? (
             <SpinningHeart color="#f43f5e" isSpinning={true} />
-          ) : post.isLiked ? (
+          ) : likedPostIds.includes(post.id) ? (
             <AntDesign name="heart" size={20} color={"#f43f5e"} />
           ) : (
             <Feather name="heart" size={20} color={theme.text} />
           )}
           <Text style={{ fontSize: 16, color: theme.text }}>
-            {post.numberOfLikes}
+            {post.likesCount}
           </Text>
         </Pressable>
         <Pressable
-          onPress={props.onShowMore}
+          onPress={() => handleShowMore(post.id)}
           style={{
             flexDirection: "row",
             gap: 6,
@@ -277,7 +287,7 @@ export default function PostCard({
         >
           <AntDesign name="comment" size={20} color={theme.text} />
           <Text style={{ fontSize: 16, color: theme.text }}>
-            {post.numberOfComments}
+            {post.repliesCount}
           </Text>
         </Pressable>
         <Pressable

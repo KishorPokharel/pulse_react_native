@@ -182,11 +182,7 @@ function UserProfileView({ user, isMyProfile }: UserProfileViewProops) {
     ]);
   };
 
-  if (isLoading) {
-    return <FullscreenLoader />;
-  }
-
-  const posts = data?.results || [];
+  const postIds = data || [];
   return (
     <View
       style={{ flex: 1, paddingInline: 16, backgroundColor: theme.background }}
@@ -238,7 +234,7 @@ function UserProfileView({ user, isMyProfile }: UserProfileViewProops) {
                   </View>
                 ) : null}
               </View>
-              {posts.length > 0 ? (
+              {postIds.length > 0 ? (
                 <Text
                   style={{
                     marginTop: 10,
@@ -259,50 +255,33 @@ function UserProfileView({ user, isMyProfile }: UserProfileViewProops) {
         contentContainerStyle={{
           paddingBlockEnd: insets.bottom,
         }}
+        ListEmptyComponent={isLoading ? <FullscreenLoader /> : null}
         ItemSeparatorComponent={() => (
           <View style={{ height: 1, backgroundColor: "#e0e0e0" }} />
         )}
-        data={posts}
-        renderItem={({ item: post }) => (
+        data={postIds}
+        renderItem={({ item: postId }) => (
           <View
             style={{
               paddingBlock: 16,
             }}
           >
             <PostCard
-              post={{
-                id: post.id,
-                author: {
-                  id: user.id,
-                  name: user.name,
-                },
-                parentPostId: null,
-                content: post.content,
-                createdAt: post.createdAt,
-                isLiked: likedPostIds.includes(post.id),
-                numberOfLikes: post.likesCount,
-                numberOfComments: post.repliesCount,
-              }}
+              postId={postId}
               onLikeTap={() =>
                 likeUnlikeMutation.mutate({
-                  postId: post.id,
+                  postId: postId,
                   authorId: user.id,
                 })
               }
-              onShowMore={() => {
-                router.push({
-                  pathname: "/post/[postId]",
-                  params: { postId: post.id },
-                });
-              }}
               likeBtnDisabled={
                 likeUnlikeMutation.isPending &&
-                likeUnlikeMutation.variables.postId === post.id
+                likeUnlikeMutation.variables.postId === postId
               }
             />
           </View>
         )}
-        keyExtractor={(post) => post.id + ""}
+        keyExtractor={(postId) => `user-profile-postlist-${postId}`}
       />
     </View>
   );

@@ -7,23 +7,30 @@ import {
   apiGetPostChildren,
   apiGetSinglePost,
   apiLikeUnlikePost,
-  FeedResponse,
-  PostRepliesResponse,
-  PostResponse,
-  UserProfilePost,
+  PostResponse
 } from "../http/posts";
 
 export function usePost(postId: number) {
   return useQuery({
     queryKey: ["posts", postId],
     queryFn: () => apiGetSinglePost(postId),
+    staleTime: Infinity,
   });
 }
 
 export function usePostReplies(postId: number) {
+  const queryClient = useQueryClient();
+
   return useQuery({
     queryKey: ["posts", postId, "children"],
-    queryFn: () => apiGetPostChildren(postId),
+    queryFn: async () => {
+      const data = await apiGetPostChildren(postId);
+      const postIds = data.results.map((post) => {
+        queryClient.setQueryData(["posts", post.id], post);
+        return post.id;
+      });
+      return postIds;
+    },
   });
 }
 
@@ -34,12 +41,9 @@ export function useDeletePost() {
     mutationFn: ({ postId }: { postId: number; parentPostId: number | null }) =>
       apiDeletePost(postId),
     onSuccess: (data, variables) => {
-      queryClient.setQueryData<FeedResponse>(["feed", "following"], (old) => {
+      queryClient.setQueryData<number[]>(["feed", "following"], (old) => {
         if (!old) return old;
-        return {
-          ...old,
-          results: old.results.filter((post) => post.id != variables.postId),
-        };
+        return old.filter(oldId => oldId != variables.postId);
       });
 
       if (variables.parentPostId) {
@@ -66,23 +70,15 @@ export function useCreateReply(options?: {
   return useMutation({
     mutationFn: apiCreateReply,
     onSuccess: (data, variables) => {
+      // Add new post
+      queryClient.setQueryData(["posts", data.id], data);
+
       // Update replies
-      queryClient.setQueryData<PostRepliesResponse>(
+      queryClient.setQueryData<number[]>(
         ["posts", variables.parentPostId, "children"],
         (old) => {
           if (!old) return old;
-          return {
-            ...old,
-            results: [
-              {
-                ...data,
-                author: { id: authUser.id, name: authUser.name },
-                likesCount: 0,
-                repliesCount: 0,
-              },
-              ...old.results,
-            ],
-          };
+          return [data.id, ...old];
         },
       );
 
@@ -97,22 +93,6 @@ export function useCreateReply(options?: {
           };
         },
       );
-
-      // Update in feed
-      queryClient.setQueryData<FeedResponse>(["feed", "following"], (old) => {
-        if (!old) return old;
-        return {
-          ...old,
-          results: old.results.map((post) =>
-            post.id === variables.parentPostId
-              ? {
-                  ...post,
-                  repliesCount: post.repliesCount + 1,
-                }
-              : post,
-          ),
-        };
-      });
 
       options?.onSuccess?.();
     },
@@ -144,25 +124,7 @@ export function usePostLikeUnlike() {
         setLikedPostIds((prev) => prev.filter((id) => id !== data.postId));
       }
 
-      // Update in feed
-      queryClient.setQueryData<FeedResponse>(["feed", "following"], (old) => {
-        if (!old) return old;
-        return {
-          ...old,
-          results: old.results.map((post) =>
-            post.id === data.postId
-              ? {
-                  ...post,
-                  likesCount: data.liked
-                    ? post.likesCount + 1
-                    : post.likesCount - 1,
-                }
-              : post,
-          ),
-        };
-      });
-
-      // Update single post
+      // Update post
       queryClient.setQueryData<PostResponse>(["posts", data.postId], (old) => {
         if (!old) return old;
         return {
@@ -170,52 +132,6 @@ export function usePostLikeUnlike() {
           likesCount: data.liked ? old.likesCount + 1 : old.likesCount - 1,
         };
       });
-
-      // Update replies view
-      if (variables.parentPostId) {
-        queryClient.setQueryData<PostRepliesResponse>(
-          ["posts", variables.parentPostId, "children"],
-          (old) => {
-            if (!old) return old;
-            return {
-              ...old,
-              results: old.results.map((post) =>
-                post.id === data.postId
-                  ? {
-                      ...post,
-                      likesCount: data.liked
-                        ? post.likesCount + 1
-                        : post.likesCount - 1,
-                    }
-                  : post,
-              ),
-            };
-          },
-        );
-      }
-
-      // Update in user profile feed
-      if (variables.authorId) {
-        queryClient.setQueryData<UserProfilePost>(
-          ["users", variables.authorId, "posts"],
-          (old) => {
-            if (!old) return old;
-            return {
-              ...old,
-              results: old.results.map((post) =>
-                post.id === data.postId
-                  ? {
-                      ...post,
-                      likesCount: data.liked
-                        ? post.likesCount + 1
-                        : post.likesCount - 1,
-                    }
-                  : post,
-              ),
-            };
-          },
-        );
-      }
     },
     onError: () => {
       Alert.alert("Something went wrong.");

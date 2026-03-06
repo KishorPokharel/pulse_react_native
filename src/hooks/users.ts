@@ -16,9 +16,18 @@ export function useUserProfile(userId: number) {
 }
 
 export function useUserPosts(userId: number) {
+  const queryClient = useQueryClient();
+
   return useQuery({
     queryKey: ["users", userId, "posts"],
-    queryFn: () => apiGetUserPosts(userId),
+    queryFn: async () => {
+      const data = await apiGetUserPosts(userId);
+      const postIds = data.results.map((post) => {
+        queryClient.setQueryData(["posts", post.id], post);
+        return post.id;
+      });
+      return postIds;
+    },
   });
 }
 

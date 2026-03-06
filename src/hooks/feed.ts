@@ -3,12 +3,21 @@ import {
   apiGetLikedFeed,
   apiGetSavedFeed,
 } from "@/src/http/posts";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useFollowingFeed() {
+  const queryClient = useQueryClient();
+
   return useQuery({
     queryKey: ["feed", "following"],
-    queryFn: apiGetFollowingFeed,
+    queryFn: async () => {
+      const data = await apiGetFollowingFeed();
+      const postIds = data.results.map((post) => {
+        queryClient.setQueryData(["posts", post.id], post);
+        return post.id;
+      });
+      return postIds;
+    },
   });
 }
 
