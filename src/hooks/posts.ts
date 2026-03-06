@@ -7,7 +7,7 @@ import {
   apiGetPostChildren,
   apiGetSinglePost,
   apiLikeUnlikePost,
-  PostResponse
+  PostResponse,
 } from "../http/posts";
 
 export function usePost(postId: number) {
@@ -43,7 +43,7 @@ export function useDeletePost() {
     onSuccess: (data, variables) => {
       queryClient.setQueryData<number[]>(["feed", "following"], (old) => {
         if (!old) return old;
-        return old.filter(oldId => oldId != variables.postId);
+        return old.filter((oldId) => oldId != variables.postId);
       });
 
       if (variables.parentPostId) {
