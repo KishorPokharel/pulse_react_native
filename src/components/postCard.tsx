@@ -17,7 +17,7 @@ import { WEB_FRONTEND_URL } from "../constants";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { useDeletePost, usePost } from "../hooks/posts";
-import { formatDate, previewText } from "../utils";
+import { formatDate } from "../utils";
 import Avatar from "./avatar";
 import FullscreenLoader from "./fullscreenLoader";
 import { SpinningHeart } from "./spinningHeart";
@@ -237,16 +237,31 @@ export default function PostCard({
       </View>
 
       <Pressable onPress={() => handleShowMore(post.id)}>
-        <Text
-          style={{
-            fontSize: 16,
-            marginBlockStart: 10,
-            color: theme.text,
-            lineHeight: 16 * 1.5,
-          }}
-        >
-          {isPreview ? previewText(post.content, 350) : post.content}
-        </Text>
+        {isPreview ? (
+          <Text
+            numberOfLines={8}
+            ellipsizeMode="tail"
+            style={{
+              fontSize: 16,
+              marginBlockStart: 10,
+              color: theme.text,
+              lineHeight: 16 * 1.5,
+            }}
+          >
+            {post.content}
+          </Text>
+        ) : (
+          <Text
+            style={{
+              fontSize: 16,
+              marginBlockStart: 10,
+              color: theme.text,
+              lineHeight: 16 * 1.5,
+            }}
+          >
+            {post.content}
+          </Text>
+        )}
       </Pressable>
 
       <View
